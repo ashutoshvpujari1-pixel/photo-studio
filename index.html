@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Photo Studio - Free Online Photo Editing Tools</title>
+
+<meta name="description" content="Welcome to Photo Studio. Explore free online photo editing tools, photo merger, photo compressor, photo frames, sketch converter, passport photo maker and much more.">
+
+<meta name="keywords" content="Photo Studio, online photo editor, photo merger, photo compressor, photo frames, photo sketch converter, passport photo maker">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f6fc;
+    color: #252542;
+}
+
+header {
+    background: linear-gradient(120deg,#5125a8,#2869d8);
+    color: white;
+    padding: 18px 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #ffdc55;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+nav a:hover {
+    color: #ffdc55;
+}
+
+.hero {
+    background: linear-gradient(130deg,#5125a8,#347de7);
+    color: white;
+    text-align: center;
+    padding: 75px 20px 85px;
+}
+
+.hero h1 {
+    font-size: 43px;
+    margin-bottom: 18px;
+}
+
+.hero p {
+    font-size: 17px;
+    line-height: 1.7;
+    max-width: 700px;
+    margin: auto;
+}
+
+.search-box {
+    margin: 30px auto 0;
+    max-width: 550px;
+    display: flex;
+    background: white;
+    padding: 6px;
+    border-radius: 40px;
+}
+
+.search-box input {
+    flex: 1;
+    min-width: 0;
+    padding: 13px 18px;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    border-radius: 40px;
+}
+
+.search-box button {
+    background: #ffbd35;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.section {
+    padding: 55px 7%;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.section-heading h2 {
+    font-size: 30px;
+    color: #30205f;
+    margin-bottom: 12px;
+}
+
+.section-heading p {
+    color: #777;
+    font-size: 15px;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: 22px;
+}
+
+.tool-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px 20px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(30,30,80,.07);
+    text-decoration: none;
+    color: #29294b;
+    transition: .3s;
+    border: 1px solid #eeeeF7;
+}
+
+.tool-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 12px 30px rgba(75,55,160,.16);
+    border-color: #a58bff;
+}
+
+.tool-icon {
+    font-size: 43px;
+    margin-bottom: 17px;
+}
+
+.tool-card h3 {
+    font-size: 17px;
+    margin-bottom: 10px;
+    color: #382477;
+}
+
+.tool-card p {
+    font-size: 13px;
+    color: #777;
+    line-height: 1.6;
+}
+
+.about {
+    background: white;
+    text-align: center;
+    padding: 55px 8%;
+}
+
+.about h2 {
+    color: #30205f;
+    font-size: 28px;
+    margin-bottom: 18px;
+}
+
+.about p {
+    color: #666;
+    line-height: 1.8;
+    max-width: 850px;
+    margin: auto;
+}
+
+footer {
+    background: #201442;
+    color: white;
+    text-align: center;
+    padding: 28px 15px;
+}
+
+footer p {
+    font-size: 13px;
+    line-height: 2;
+}
+
+footer a {
+    color: #ffdc55;
+    text-decoration: none;
+}
+
+.no-results {
+    display: none;
+    text-align: center;
+    color: #777;
+    padding: 30px;
+    grid-column: 1/-1;
+}
+
+@media(max-width:600px) {
+    header {
+        justify-content: center;
+        text-align: center;
+    }
+
+    nav {
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .hero {
+        padding: 55px 18px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+
+    .section {
+        padding: 40px 5%;
+    }
+
+    .tools-grid {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+        gap: 12px;
+    }
+
+    .tool-card {
+        padding: 20px 10px;
+    }
+
+    .tool-icon {
+        font-size: 34px;
+    }
+
+    .tool-card h3 {
+        font-size: 14px;
+    }
+
+    .tool-card p {
+        font-size: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">📸 Photo<span>Studio</span></div>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="#tools">Photo Tools</a>
+        <a href="#about">About Us</a>
+        <a href="#contact">Contact</a>
+    </nav>
+</header>
+
+<!--
+<section class="hero">
+    <h1>Welcome to Photo Studio</h1>
+
+    <p>
+        Your Complete Online Photo Editing Destination!
+        Create beautiful photos, merge images, convert photos
+        into sketches, make passport photos and explore
+        amazing photo editing tools.
+    </p>
+
+    <div class="search-box">
+        <input type="text" id="searchInput"
+        placeholder="Search your favourite photo tool...">
+        <button onclick="searchTools()">Search</button>
+    </div>
+
+</section>
+-->
+<section class="section" id="tools">
+
+    <div class="section-heading">
+        <h2>Explore Our Photo Editing Tools</h2>
+        <p>Choose your favourite tool and start creating amazing photos!</p>
+    </div>
+
+    <div class="tools-grid" id="toolsGrid">
+
+        <a class="tool-card" href="photo_compressor.html">
+            <div class="tool-icon">📦</div>
+            <h3>Photo Compressor</h3>
+            <p>Reduce image size while maintaining quality.</p>
+        </a>
+
+        <a class="tool-card" href="PassportPhotoSheetMaker.html">
+            <div class="tool-icon">🪪</div>
+            <h3>Passport Photo Sheet Maker</h3>
+            <p>Create passport-size photos and printable sheets.</p>
+        </a>
+
+        <a class="tool-card" href="ZigzagPhotoGiftStudio.html">
+            <div class="tool-icon">🎁</div>
+            <h3>Zigzag Photo Gift Studio</h3>
+            <p>Create beautiful zigzag photo gifts and designs.</p>
+        </a>
+
+        <a class="tool-card" href="Photos_Collection_Studio.html">
+            <div class="tool-icon">🖼️</div>
+            <h3>Photos Collection Studio</h3>
+            <p>Organize and create attractive photo collections.</p>
+        </a>
+
+        <a class="tool-card" href="PhotoToSketchConverter.html">
+            <div class="tool-icon">✏️</div>
+            <h3>Photo to Sketch Converter</h3>
+            <p>Convert your favourite photos into artistic sketches.</p>
+        </a>
+
+        <a class="tool-card" href="photo_merger_with_background.html">
+            <div class="tool-icon">🌄</div>
+            <h3>Photo Merger with Background</h3>
+            <p>Combine photos with beautiful backgrounds.</p>
+        </a>
+
+        <a class="tool-card" href="MergeTwoPhotos.html">
+            <div class="tool-icon">🔗</div>
+            <h3>Merge Two Photos</h3>
+            <p>Merge two pictures into one beautiful image.</p>
+        </a>
+
+        <a class="tool-card" href="PhotoNameSignatureStudio.html">
+            <div class="tool-icon">✍️</div>
+            <h3>Name & Signature Studio</h3>
+            <p>Create stylish names and digital signatures.</p>
+        </a>
+
+        <a class="tool-card" href="PhotoRotationTool.html">
+            <div class="tool-icon">🔄</div>
+            <h3>Photo Rotation Tool</h3>
+            <p>Rotate and adjust your photos easily.</p>
+        </a>
+
+        <a class="tool-card" href="PhotoStudioPro.html">
+            <div class="tool-icon">🎨</div>
+            <h3>Photo Studio Pro</h3>
+            <p>Discover advanced photo editing features.</p>
+        </a>
+
+        <a class="tool-card" href="PhotoFrameGenerator.html">
+            <div class="tool-icon">🖼️</div>
+            <h3>Photo Frame Generator</h3>
+            <p>Add beautiful frames to your favourite pictures.</p>
+        </a>
+
+        <a class="tool-card" href="photo_animation_studio.html">
+            <div class="tool-icon">🎬</div>
+            <h3>Photo Animation Studio</h3>
+            <p>Bring your photos to life with animation effects.</p>
+        </a>
+
+        <a class="tool-card" href="Photo_with_selected_background.html">
+            <div class="tool-icon">🌈</div>
+            <h3>Photo with Selected Background</h3>
+            <p>Change photo backgrounds with your choice.</p>
+        </a>
+
+        <a class="tool-card" href="PhotoArtStudio.html">
+            <div class="tool-icon">🖌️</div>
+            <h3>Photo Art Studio</h3>
+            <p>Transform ordinary photos into beautiful artwork.</p>
+        </a>
+
+        <div class="no-results" id="noResults">
+            No matching tools found. Please try another search.
+        </div>
+
+    </div>
+</section>
+
+<section class="about" id="about">
+    <h2>About Photo Studio</h2>
+
+    <p>
+        Photo Studio is your creative destination for online
+        photo editing. Our collection of easy-to-use tools
+        helps you create photo gifts, merge pictures, generate
+        photo frames, compress images, create passport photos
+        and transform your pictures into amazing artwork.
+        Explore our tools and unleash your creativity!
+    </p>
+</section>
+
+<footer id="contact">
+    <p>© 2026 Photo Studio | www.photo-studio.in</p>
+    <p>Your Creative World of Photo Editing</p>
+    <p>
+        <a href="index.html">Home</a> |
+        <a href="#tools">Photo Tools</a> |
+        <a href="#about">About Us</a>
+    </p>
+</footer>
+
+<script>
+function searchTools() {
+    let input = document.getElementById("searchInput")
+        .value.toLowerCase().trim();
+
+    let cards = document.querySelectorAll(".tool-card");
+    let count = 0;
+
+    cards.forEach(function(card) {
+        let text = card.innerText.toLowerCase();
+
+        if (text.includes(input)) {
+            card.style.display = "block";
+            count++;
+        } else {
+            card.style.display = "none";
+        }
+    });
+
+    document.getElementById("noResults").style.display =
+        count === 0 ? "block" : "none";
+}
+
+document.getElementById("searchInput")
+.addEventListener("input", searchTools);
+</script>
+
+</body>
+</html>
