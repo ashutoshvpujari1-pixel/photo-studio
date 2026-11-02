@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Animation Studio</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Photo Motion Studio - 50 Dynamic Animations</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -12,703 +12,946 @@
             theme: {
                 extend: {
                     colors: {
-                        darkBg: '#0f172a',
-                        cardBg: '#1e293b',
-                        accent: '#6366f1',
-                        accentHover: '#4f46e5'
+                        brand: {
+                            50: '#eef2ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
                     }
                 }
             }
         }
     </script>
-    <!-- FontAwesome for icons -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Font Inter -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: #090d16;
-            color: #f8fafc;
         }
-        /* Custom scrollbars */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+
+        /* -------------------------------------------------------------
+           50 DISTINCT CSS KEYFRAME ANIMATIONS & PERSPECTIVES
+           ------------------------------------------------------------- */
+        .anim-card-container {
+            perspective: 1000px;
         }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
+
+        /* 1. Zigzag Horizontal */
+        @keyframes anim-1 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(15px, -15px) rotate(5deg); }
+            50% { transform: translate(-15px, 15px) rotate(-5deg); }
+            75% { transform: translate(15px, 15px) rotate(5deg); }
         }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 3px;
+        /* 2. 3D Tilt Wave */
+        @keyframes anim-2 {
+            0%, 100% { transform: rotateX(0deg) rotateY(0deg) scale(1); }
+            50% { transform: rotateX(25deg) rotateY(-25deg) scale(1.05); }
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
+        /* 3. Helix Spin */
+        @keyframes anim-3 {
+            0% { transform: rotateY(0deg) scale(1); }
+            50% { transform: rotateY(180deg) scale(0.8); }
+            100% { transform: rotateY(360deg) scale(1); }
         }
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        /* 4. Pulse & Bounce */
+        @keyframes anim-4 {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.1); }
         }
-        .glow-btn {
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
-            transition: all 0.3s ease;
+        /* 5. Isometric Skew Slide */
+        @keyframes anim-5 {
+            0%, 100% { transform: skew(0deg, 0deg) rotate(0deg); }
+            50% { transform: skew(10deg, -10deg) rotate(5deg); }
         }
-        .glow-btn:hover {
-            box-shadow: 0 0 30px rgba(99, 102, 241, 0.7);
+        /* 6. Diagonal Zigzag Float */
+        @keyframes anim-6 {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(20px, -20px); }
+            40% { transform: translate(-20px, -40px); }
+            60% { transform: translate(20px, -60px); }
+            80% { transform: translate(-20px, -20px); }
+        }
+        /* 7. Flip X Perspective */
+        @keyframes anim-7 {
+            0%, 100% { transform: rotateX(0deg); }
+            50% { transform: rotateX(180deg); }
+        }
+        /* 8. 3D Vortex Swing */
+        @keyframes anim-8 {
+            0%, 100% { transform: rotate3d(1, 1, 1, 0deg); }
+            50% { transform: rotate3d(1, 1, 1, 45deg) scale(1.1); }
+        }
+        /* 9. Glitch Shiver */
+        @keyframes anim-9 {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-4px, 4px) skewX(5deg); }
+            40% { transform: translate(4px, -4px) skewY(-5deg); }
+            60% { transform: translate(-4px, -2px); }
+            80% { transform: translate(4px, 2px); }
+        }
+        /* 10. Floating Wobble */
+        @keyframes anim-10 {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(3deg); }
+            75% { transform: translateY(10px) rotate(-3deg); }
+        }
+        /* 11. Deep Perspective Roll */
+        @keyframes anim-11 {
+            0%, 100% { transform: rotateY(0deg) translateZ(0); }
+            50% { transform: rotateY(45deg) translateZ(50px); }
+        }
+        /* 12. Zigzag Zoom Pop */
+        @keyframes anim-12 {
+            0%, 100% { transform: scale(1) translate(0); }
+            33% { transform: scale(1.15) translate(-10px, -10px); }
+            66% { transform: scale(0.9) translate(10px, 10px); }
+        }
+        /* 13. Rubber Band Flex */
+        @keyframes anim-13 {
+            0%, 100% { transform: scale(1, 1); }
+            30% { transform: scale(1.25, 0.75); }
+            50% { transform: scale(0.75, 1.25); }
+            70% { transform: scale(1.1, 0.9); }
+        }
+        /* 14. Pendulum Swing */
+        @keyframes anim-14 {
+            0%, 100% { transform: rotate(15deg); transform-origin: top center; }
+            50% { transform: rotate(-15deg); transform-origin: top center; }
+        }
+        /* 15. 3D Card Flip Left-Right */
+        @keyframes anim-15 {
+            0%, 100% { transform: rotateY(0deg); }
+            50% { transform: rotateY(-180deg); }
+        }
+        /* 16. Wave Slinky */
+        @keyframes anim-16 {
+            0%, 100% { transform: skewY(0deg) translateY(0); }
+            50% { transform: skewY(12deg) translateY(-15px); }
+        }
+        /* 17. 3D Barrel Roll */
+        @keyframes anim-17 {
+            0% { transform: rotateZ(0deg) rotateX(0deg); }
+            50% { transform: rotateZ(180deg) rotateX(45deg); }
+            100% { transform: rotateZ(360deg) rotateX(0deg); }
+        }
+        /* 18. Corner Pivot Bounce */
+        @keyframes anim-18 {
+            0%, 100% { transform: rotate(0deg); transform-origin: bottom left; }
+            50% { transform: rotate(20deg); transform-origin: bottom left; }
+        }
+        /* 19. Zigzag Tremor */
+        @keyframes anim-19 {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-8px, -8px); }
+            30% { transform: translate(8px, 8px); }
+            50% { transform: translate(-8px, 8px); }
+            70% { transform: translate(8px, -8px); }
+        }
+        /* 20. Hyper Isometric Float */
+        @keyframes anim-20 {
+            0%, 100% { transform: rotateX(45deg) rotateZ(-45deg) translateZ(0); }
+            50% { transform: rotateX(45deg) rotateZ(-45deg) translateZ(30px); }
+        }
+        /* 21. Spiral Orbit */
+        @keyframes anim-21 {
+            0% { transform: rotate(0deg) translateX(15px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(15px) rotate(-360deg); }
+        }
+        /* 22. Elastic Push Pull */
+        @keyframes anim-22 {
+            0%, 100% { transform: scale3d(1, 1, 1); }
+            50% { transform: scale3d(1.2, 0.8, 1.5) rotateX(20deg); }
+        }
+        /* 23. Top Tilt Slide */
+        @keyframes anim-23 {
+            0%, 100% { transform: rotateX(0deg) translateY(0); }
+            50% { transform: rotateX(35deg) translateY(-25px); }
+        }
+        /* 24. Zigzag Step Climb */
+        @keyframes anim-24 {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(15px, -10px); }
+            50% { transform: translate(0px, -20px); }
+            75% { transform: translate(-15px, -10px); }
+        }
+        /* 25. Mirror Warp Tilt */
+        @keyframes anim-25 {
+            0%, 100% { transform: rotateY(0deg) skewY(0deg); }
+            50% { transform: rotateY(40deg) skewY(-8deg); }
+        }
+        /* 26. Floating 3D Cube Spin */
+        @keyframes anim-26 {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+        /* 27. Pulse Shadow Depth */
+        @keyframes anim-27 {
+            0%, 100% { transform: scale(1) translateZ(0); filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }
+            50% { transform: scale(1.08) translateZ(40px); filter: drop-shadow(0 25px 20px rgba(0,0,0,0.5)); }
+        }
+        /* 28. Zigzag Snake Walk */
+        @keyframes anim-28 {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            20% { transform: translateX(-20px) rotate(-4deg); }
+            40% { transform: translateX(20px) rotate(4deg); }
+            60% { transform: translateX(-10px) rotate(-2deg); }
+            80% { transform: translateX(10px) rotate(2deg); }
+        }
+        /* 29. Accordion Compress */
+        @keyframes anim-29 {
+            0%, 100% { transform: scaleX(1); }
+            50% { transform: scaleX(0.4) rotateY(30deg); }
+        }
+        /* 30. Floating Page Curl */
+        @keyframes anim-30 {
+            0%, 100% { transform: rotate3d(1, -1, 0, 0deg); }
+            50% { transform: rotate3d(1, -1, 0, 35deg); }
+        }
+        /* 31. Quick Shutter Shake */
+        @keyframes anim-31 {
+            0%, 100% { transform: scale(1) rotate(0); }
+            25% { transform: scale(0.95) rotate(-3deg); }
+            75% { transform: scale(1.05) rotate(3deg); }
+        }
+        /* 32. Diamond Rotator */
+        @keyframes anim-32 {
+            0%, 100% { transform: rotate(45deg) scale(0.8); }
+            50% { transform: rotate(225deg) scale(1); }
+        }
+        /* 33. 3D Swing Door */
+        @keyframes anim-33 {
+            0%, 100% { transform: rotateY(0deg); transform-origin: left center; }
+            50% { transform: rotateY(-60deg); transform-origin: left center; }
+        }
+        /* 34. Zigzag Drop Bounce */
+        @keyframes anim-34 {
+            0%, 100% { transform: translateY(-20px) translateX(-10px); }
+            50% { transform: translateY(15px) translateX(10px); }
+        }
+        /* 35. Soft Breathing Float */
+        @keyframes anim-35 {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-12px) scale(1.03); }
+        }
+        /* 36. Skew Wave Flow */
+        @keyframes anim-36 {
+            0%, 100% { transform: skewX(-10deg); }
+            50% { transform: skewX(10deg); }
+        }
+        /* 37. 3D Pyramid Tilt */
+        @keyframes anim-37 {
+            0%, 100% { transform: rotateX(30deg) rotateZ(0deg); }
+            50% { transform: rotateX(30deg) rotateZ(180deg); }
+        }
+        /* 38. Glitch Twitch */
+        @keyframes anim-38 {
+            0%, 90%, 100% { transform: none; }
+            92% { transform: skew(10deg, -5deg) scale(1.05); }
+            96% { transform: skew(-10deg, 5deg) scale(0.95); }
+        }
+        /* 39. Zigzag Spiral Sweep */
+        @keyframes anim-39 {
+            0%, 100% { transform: translate(0,0) rotate(0deg); }
+            25% { transform: translate(-20px, 10px) rotate(-10deg); }
+            50% { transform: translate(20px, -20px) rotate(10deg); }
+            75% { transform: translate(-10px, -10px) rotate(-5deg); }
+        }
+        /* 40. Undercover Flip */
+        @keyframes anim-40 {
+            0%, 100% { transform: rotateX(0deg) translateY(0); }
+            50% { transform: rotateX(-80deg) translateY(30px); }
+        }
+        /* 41. Floating Horizon Spin */
+        @keyframes anim-41 {
+            0%, 100% { transform: rotateX(60deg) rotateZ(0deg); }
+            50% { transform: rotateX(60deg) rotateZ(180deg); }
+        }
+        /* 42. Corner Fold Stretch */
+        @keyframes anim-42 {
+            0%, 100% { transform: scale(1) rotate(0deg); transform-origin: top right; }
+            50% { transform: scale(1.15) rotate(-12deg); transform-origin: top right; }
+        }
+        /* 43. Wobble Drop */
+        @keyframes anim-43 {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            20% { transform: translateY(-15px) rotate(-8deg); }
+            40% { transform: translateY(0) rotate(6deg); }
+            60% { transform: translateY(-7px) rotate(-3deg); }
+            80% { transform: translateY(0) rotate(1deg); }
+        }
+        /* 44. Zigzag Pulse Surge */
+        @keyframes anim-44 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(15px, -15px) scale(1.12); }
+        }
+        /* 45. Perspective Lift Off */
+        @keyframes anim-45 {
+            0%, 100% { transform: rotateX(0deg) translateZ(0); }
+            50% { transform: rotateX(-30deg) translateZ(60px); }
+        }
+        /* 46. Twisting Ribbon */
+        @keyframes anim-46 {
+            0%, 100% { transform: rotateY(0deg) rotateZ(0deg); }
+            50% { transform: rotateY(180deg) rotateZ(15deg); }
+        }
+        /* 47. Floating Orbit Tilt */
+        @keyframes anim-47 {
+            0%, 100% { transform: rotateY(-20px) translateY(-10px); }
+            50% { transform: rotateY(20px) translateY(10px); }
+        }
+        /* 48. Elastic Corner Pull */
+        @keyframes anim-49 {
+            0%, 100% { transform: skew(0deg, 0deg); }
+            50% { transform: skew(-15deg, -15deg); }
+        }
+        /* 49. Zigzag Whirlwind */
+        @keyframes anim-49-zz {
+            0% { transform: translate(0,0) rotate(0deg); }
+            25% { transform: translate(20px, -20px) rotate(90deg); }
+            50% { transform: translate(-20px, -20px) rotate(180deg); }
+            75% { transform: translate(-20px, 20px) rotate(270deg); }
+            100% { transform: translate(0,0) rotate(360deg); }
+        }
+        /* 50. Super 3D Infinity Bounce */
+        @keyframes anim-50 {
+            0%, 100% { transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg); }
+            25% { transform: translate3d(15px, -15px, 30px) rotateX(20deg) rotateY(-20deg); }
+            50% { transform: translate3d(-15px, 15px, -30px) rotateX(-20deg) rotateY(20deg); }
+            75% { transform: translate3d(15px, 15px, 30px) rotateX(10deg) rotateY(-10deg); }
+        }
+
+        /* Assign Keyframes dynamically via utility classes */
+        .anim-1 { animation: anim-1 3s infinite ease-in-out; }
+        .anim-2 { animation: anim-2 4s infinite ease-in-out; }
+        .anim-3 { animation: anim-3 5s infinite linear; }
+        .anim-4 { animation: anim-4 2s infinite ease-in-out; }
+        .anim-5 { animation: anim-5 4s infinite ease-in-out; }
+        .anim-6 { animation: anim-6 3.5s infinite ease-in-out; }
+        .anim-7 { animation: anim-7 3s infinite ease-in-out; }
+        .anim-8 { animation: anim-8 4s infinite ease-in-out; }
+        .anim-9 { animation: anim-9 1.5s infinite linear; }
+        .anim-10 { animation: anim-10 3s infinite ease-in-out; }
+        .anim-11 { animation: anim-11 4s infinite ease-in-out; }
+        .anim-12 { animation: anim-12 3s infinite ease-in-out; }
+        .anim-13 { animation: anim-13 2s infinite ease-in-out; }
+        .anim-14 { animation: anim-14 3s infinite ease-in-out; }
+        .anim-15 { animation: anim-15 4s infinite ease-in-out; }
+        .anim-16 { animation: anim-16 3s infinite ease-in-out; }
+        .anim-17 { animation: anim-17 6s infinite linear; }
+        .anim-18 { animation: anim-18 2.5s infinite ease-in-out; }
+        .anim-19 { animation: anim-19 1.2s infinite ease-in-out; }
+        .anim-20 { animation: anim-20 3.5s infinite ease-in-out; }
+        .anim-21 { animation: anim-21 4s infinite linear; }
+        .anim-22 { animation: anim-22 2.5s infinite ease-in-out; }
+        .anim-23 { animation: anim-23 3.5s infinite ease-in-out; }
+        .anim-24 { animation: anim-24 4s infinite ease-in-out; }
+        .anim-25 { animation: anim-25 3.5s infinite ease-in-out; }
+        .anim-26 { animation: anim-26 6s infinite linear; }
+        .anim-27 { animation: anim-27 3s infinite ease-in-out; }
+        .anim-28 { animation: anim-28 3.5s infinite ease-in-out; }
+        .anim-29 { animation: anim-29 3s infinite ease-in-out; }
+        .anim-30 { animation: anim-30 4s infinite ease-in-out; }
+        .anim-31 { animation: anim-31 1.8s infinite ease-in-out; }
+        .anim-32 { animation: anim-32 5s infinite ease-in-out; }
+        .anim-33 { animation: anim-33 3.5s infinite ease-in-out; }
+        .anim-34 { animation: anim-34 2.8s infinite ease-in-out; }
+        .anim-35 { animation: anim-35 3s infinite ease-in-out; }
+        .anim-36 { animation: anim-36 3.2s infinite ease-in-out; }
+        .anim-37 { animation: anim-37 5s infinite ease-in-out; }
+        .anim-38 { animation: anim-38 2s infinite linear; }
+        .anim-39 { animation: anim-39 4s infinite ease-in-out; }
+        .anim-40 { animation: anim-40 3.5s infinite ease-in-out; }
+        .anim-41 { animation: anim-41 6s infinite linear; }
+        .anim-42 { animation: anim-42 3s infinite ease-in-out; }
+        .anim-43 { animation: anim-43 2.5s infinite ease-in-out; }
+        .anim-44 { animation: anim-44 3s infinite ease-in-out; }
+        .anim-45 { animation: anim-45 3.5s infinite ease-in-out; }
+        .anim-46 { animation: anim-46 4.5s infinite ease-in-out; }
+        .anim-47 { animation: anim-47 3.2s infinite ease-in-out; }
+        .anim-48 { animation: anim-49 3s infinite ease-in-out; }
+        .anim-49 { animation: anim-49-zz 5s infinite ease-in-out; }
+        .anim-50 { animation: anim-50 4s infinite ease-in-out; }
+
+        /* Pause animations globally when paused */
+        .animations-paused .animated-img {
+            animation-play-state: paused !important;
+        }
+
+        /* Toast notification styling */
+        #toast {
+            transition: transform 0.3s ease, opacity 0.3s ease;
         }
     </style>
 </head>
-<body class="h-full flex flex-col overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col transition-colors duration-200">
 
-    <header class="w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                <i class="fa-solid fa-wand-magic-sparkles text-white text-lg"></i>
+    <!-- Header Navbar -->
+    <header class="border-b border-gray-800 bg-gray-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-tr from-indigo-500 to-purple-500 p-2 rounded-xl text-white shadow-lg">
+                    <i class="fa-solid fa-cube text-xl"></i>
+                </div>
+                <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                    Photo Motion Studio
+                </h1>
+                <span class="text-xs bg-indigo-500/20 text-indigo-300 font-semibold px-2.5 py-0.5 rounded-full border border-indigo-500/30">
+                    50 Styles
+                </span>
             </div>
-            <div>
-                <h1 class="font-bold text-lg text-slate-100 tracking-tight">Photo Animator <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-500/30 font-medium ml-2">Pro</span></h1>
-                <p class="text-xs text-slate-400">Bring static images to life with cinematic motion</p>
+            
+            <div class="flex items-center space-x-3">
+                <button id="themeToggleBtn" class="p-2 rounded-lg bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition">
+                    <i class="fa-solid fa-sun" id="themeIcon"></i>
+                </button>
+                <a href="#studio" class="px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white transition shadow-md hover:shadow-indigo-500/20">
+                    Get Started
+                </a>
             </div>
-        </div>
-        <div class="flex items-center space-x-3">
-            <button id="fullscreenBtn" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition flex items-center space-x-2 border border-slate-700" title="Toggle Fullscreen">
-                <i class="fa-solid fa-expand text-xs"></i>
-                <span class="hidden sm:inline">Fullscreen</span>
-            </button>
-            <button id="downloadBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-sm font-medium transition flex items-center space-x-2 glow-btn">
-                <i class="fa-solid fa-download text-xs"></i>
-                <span>Export Snapshot</span>
-            </button>
         </div>
     </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        <section class="lg:col-span-4 flex flex-col space-y-6">
-            
-            <!-- Upload Panel -->
-            <div class="glass-panel rounded-2xl p-5 shadow-xl">
-                <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-3 flex items-center space-x-2">
-                    <i class="fa-solid fa-image text-indigo-400"></i>
-                    <span>1. Source Photo</span>
-                </h2>
-                <div id="dropZone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-xl p-6 text-center cursor-pointer transition bg-slate-900/40 relative group">
-                    <input type="file" id="fileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                    <div class="flex flex-col items-center justify-center space-y-2">
-                        <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition duration-300">
-                            <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
-                        </div>
-                        <p class="text-sm font-medium text-slate-300">Drop your photo here, or <span class="text-indigo-400 underline">browse</span></p>
-                        <p class="text-xs text-slate-500">Supports JPG, PNG, WEBP</p>
-                    </div>
-                </div>
-                <!-- Quick samples -->
-                <div class="mt-4">
-                    <p class="text-xs text-slate-400 mb-2 font-medium">Or try with sample photos:</p>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick="loadSample('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800')" class="rounded-lg overflow-hiden h-16 border border-slate-700 hover:border-indigo-500 transition group relative">
-                            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Sample Beach">
-                            <span class="absolute inset-0 bg-black/30 flex items-end p-1 text-[10px] text-white font-medium">Ocean</span>
-                        </button>
-                        <button onclick="loadSample('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800')" class="rounded-lg overflow-hiden h-16 border border-slate-700 hover:border-indigo-500 transition group relative">
-                            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=200" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Sample Mountains">
-                            <span class="absolute inset-0 bg-black/30 flex items-end p-1 text-[10px] text-white font-medium">Peaks</span>
-                        </button>
-                        <button onclick="loadSample('https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=800')" class="rounded-lg overflow-hiden h-16 border border-slate-700 hover:border-indigo-500 transition group relative">
-                            <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=200" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Sample City">
-                            <span class="absolute inset-0 bg-black/30 flex items-end p-1 text-[10px] text-white font-medium">Cyber</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8" id="studio">
 
-            <!-- Effect Selection Panel -->
-            <div class="glass-panel rounded-2xl p-5 shadow-xl">
-                <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-3 flex items-center space-x-2">
-                    <i class="fa-solid fa-masks-theater text-indigo-400"></i>
-                    <span>2. Animation Style</span>
-                </h2>
-                <div class="grid grid-cols-1 gap-2.5" id="effectList">
-                    <label class="effect-card flex items-center p-3 rounded-xl bg-slate-900/60 border border-indigo-500/50 cursor-pointer transition hover:bg-slate-800/80">
-                        <input type="radio" name="effect" value="kenburns" checked class="hidden peer">
-                        <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center mr-3 peer-checked:bg-indigo-600 peer-checked:text-white transition">
-                            <i class="fa-solid fa-camera-retro"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="text-sm font-semibold text-slate-200">Ken Burns Cinematic</div>
-                            <div class="text-xs text-slate-400">Smooth zoom and panning movement</div>
-                        </div>
-                        <div class="w-4 h-4 rounded-full border border-slate-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-500 flex items-center justify-center">
-                            <div class="w-1.5 h-1.5 rounded-full bg-white scale-0 peer-checked:scale-100 transition"></div>
-                        </div>
-                    </label>
-
-                    <label class="effect-card flex items-center p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 cursor-pointer transition hover:bg-slate-800/80">
-                        <input type="radio" name="effect" value="ripple" class="hidden peer">
-                        <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center mr-3 peer-checked:bg-sky-600 peer-checked:text-white transition">
-                            <i class="fa-solid fa-water"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="text-sm font-semibold text-slate-200">Ocean Ripple</div>
-                            <div class="text-xs text-slate-400">Interactive wave & liquid distortion</div>
-                        </div>
-                        <div class="w-4 h-4 rounded-full border border-slate-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-500 flex items-center justify-center">
-                            <div class="w-1.5 h-1.5 rounded-full bg-white scale-0 peer-checked:scale-100 transition"></div>
-                        </div>
-                    </label>
-
-                    <label class="effect-card flex items-center p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 cursor-pointer transition hover:bg-slate-800/80">
-                        <input type="radio" name="effect" value="hologram" class="hidden peer">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center mr-3 peer-checked:bg-emerald-600 peer-checked:text-white transition">
-                            <i class="fa-solid fa-cube"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="text-sm font-semibold text-slate-200">3D Hologram Tilt</div>
-                            <div class="text-xs text-slate-400">Interactive perspective & scanlines</div>
-                        </div>
-                        <div class="w-4 h-4 rounded-full border border-slate-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-500 flex items-center justify-center">
-                            <div class="w-1.5 h-1.5 rounded-full bg-white scale-0 peer-checked:scale-100 transition"></div>
-                        </div>
-                    </label>
-
-                    <label class="effect-card flex items-center p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 cursor-pointer transition hover:bg-slate-800/80">
-                        <input type="radio" name="effect" value="glitch" class="hidden peer">
-                        <div class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center mr-3 peer-checked:bg-rose-600 peer-checked:text-white transition">
-                            <i class="fa-solid fa-bolt"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="text-sm font-semibold text-slate-200">Cyberpunk Glitch</div>
-                            <div class="text-xs text-slate-400">RGB split and digital jitter artifacts</div>
-                        </div>
-                        <div class="w-4 h-4 rounded-full border border-slate-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-500 flex items-center justify-center">
-                            <div class="w-1.5 h-1.5 rounded-full bg-white scale-0 peer-checked:scale-100 transition"></div>
-                        </div>
-                    </label>
-
-                    <label class="effect-card flex items-center p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 cursor-pointer transition hover:bg-slate-800/80">
-                        <input type="radio" name="effect" value="particles" class="hidden peer">
-                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center mr-3 peer-checked:bg-amber-600 peer-checked:text-white transition">
-                            <i class="fa-solid fa-wand-magic"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="text-sm font-semibold text-slate-200">Magic Dust Particles</div>
-                            <div class="text-xs text-slate-400">Glowing floating sparkles overlay</div>
-                        </div>
-                        <div class="w-4 h-4 rounded-full border border-slate-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-500 flex items-center justify-center">
-                            <div class="w-1.5 h-1.5 rounded-full bg-white scale-0 peer-checked:scale-100 transition"></div>
-                        </div>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Customization Controls Panel -->
-            <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-4">
-                <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider flex items-center space-x-2">
-                    <i class="fa-solid fa-sliders text-indigo-400"></i>
-                    <span>3. Customization</span>
-                </h2>
-
-                <div>
-                    <div class="flex justify-between text-xs text-slate-300 mb-1.5">
-                        <span>Animation Speed</span>
-                        <span id="speedVal" class="font-mono text-indigo-400">1.0x</span>
-                    </div>
-                    <input type="range" id="speedRange" min="0.2" max="3.0" step="0.1" value="1.0" class="w-full accent-indigo-500 bg-slate-800 rounded-lg appearance-none h-2 cursor-pointer">
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-xs text-slate-300 mb-1.5">
-                        <span>Effect Intensity</span>
-                        <span id="intensityVal" class="font-mono text-indigo-400">50%</span>
-                    </div>
-                    <input type="range" id="intensityRange" min="10" max="100" step="1" value="50" class="w-full accent-indigo-500 bg-slate-800 rounded-lg appearance-none h-2 cursor-pointer">
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-xs text-slate-300 mb-1.5">
-                        <span>Particle Density</span>
-                        <span id="densityVal" class="font-mono text-indigo-400">Med</span>
-                    </div>
-                    <input type="range" id="densityRange" min="20" max="200" step="10" value="80" class="w-full accent-indigo-500 bg-slate-800 rounded-lg appearance-none h-2 cursor-pointer">
-                </div>
-
-                <div class="pt-2 flex space-x-3">
-                    <button id="playPauseBtn" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold transition border border-slate-700 flex items-center justify-center space-x-2">
-                        <i id="playPauseIcon" class="fa-solid fa-pause text-xs"></i>
-                        <span id="playPauseText">Pause</span>
-                    </button>
-                    <button id="resetBtn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-sm font-semibold transition border border-slate-700 flex items-center justify-center" title="Reset parameters">
-                        <i class="fa-solid fa-rotate-right text-xs"></i>
-                    </button>
-                </div>
-            </div>
-
-        </section>
-
-        <section class="lg:col-span-8 flex flex-col space-y-4">
-            
-            <div class="glass-panel rounded-2xl p-4 md:p-6 shadow-2xl relative flex flex-col items-center justify-center min-h-[500px] md:min-h-[600px] overflow-hidden group">
+        <!-- Hero / Upload Section -->
+        <section class="bg-gray-800/50 border border-gray-700/60 rounded-2xl p-6 sm:p-8 backdrop-blur shadow-xl">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 
-                <!-- Status badge / Watermark -->
-                <div class="absolute top-6 left-6 z-20 flex items-center space-x-2 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700/80 text-xs text-slate-300">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="activeStatusLabel" class="font-medium">Ken Burns Cinematic Active</span>
-                </div>
+                <!-- Left: Controls & Upload Input -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                            Transform Static Photos into Motion
+                        </h2>
+                        <p class="mt-2 text-gray-400 text-sm sm:text-base">
+                            Upload your photo to instantly view 50 dynamic 3D angle variations, zigzag motions, perspective tilts, and animated visual styles.
+                        </p>
+                    </div>
 
-                <!-- Canvas Container -->
-                <div id="canvasContainer" class="relative w-full h-full flex items-center justify-center rounded-xl overflow-hidden bg-black/40 shadow-inner max-h-[70vh]">
-                    <canvas id="animCanvas" class="max-w-full max-h-[65vh] object-contain rounded-lg transition-transform duration-75"></canvas>
-                    
-                    <!-- Overlay message when loading or waiting for image -->
-                    <div id="placeholderOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm transition-opacity duration-300">
-                        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-4 animate-bounce">
-                            <i class="fa-solid fa-image text-2xl"></i>
-                        </div>
-                        <h3 class="text-base font-semibold text-slate-200">No Image Loaded</h3>
-                        <p class="text-xs text-slate-400 mt-1 max-w-xs text-center">Upload your photo or choose a sample image from the left panel to begin animating.</p>
+                    <!-- File Drop Area -->
+                    <div class="space-y-3">
+                        <label for="photoInput" class="relative group cursor-pointer block">
+                            <div class="border-2 border-dashed border-gray-600 group-hover:border-indigo-500 rounded-xl p-6 text-center transition bg-gray-900/40 group-hover:bg-indigo-500/5">
+                                <div class="w-12 h-12 bg-indigo-500/10 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition">
+                                    <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-200">
+                                    Click to upload <span class="text-gray-400 font-normal">or drag & drop image</span>
+                                </p>
+                                <p class="text-xs text-gray-500 mt-1">PNG, JPG, WEBP or GIF (Max 10MB)</p>
+                            </div>
+                            <input type="file" id="photoInput" accept="image/*" class="hidden">
+                        </label>
+                    </div>
+
+                    <!-- Action Control Buttons -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button id="generateBtn" class="flex-1 sm:flex-none px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-indigo-500/25 transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Generate 50 Animations</span>
+                        </button>
+
+                        <button id="togglePlayBtn" class="px-4 py-3 bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium rounded-xl transition flex items-center space-x-2">
+                            <i class="fa-solid fa-pause" id="playPauseIcon"></i>
+                            <span id="playPauseText">Pause All</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Bottom Quick Action Toolbar on Canvas -->
-                <div class="absolute bottom-6 z-20 flex items-center space-x-2 bg-slate-900/80 backdrop-blur-md px-4 py-2 rounded-xl border border-slate-700/80 shadow-lg opacity-90 group-hover:opacity-100 transition">
-                    <button onclick="triggerAction('zoomIn')" class="p-2 text-slate-300 hover:text-white transition rounded-lg hover:bg-slate-800" title="Zoom In">
-                        <i class="fa-solid fa-magnifying-glass-plus text-sm"></i>
-                    </button>
-                    <button onclick="triggerAction('zoomOut')" class="p-2 text-slate-300 hover:text-white transition rounded-lg hover:bg-slate-800" title="Zoom Out">
-                        <i class="fa-solid fa-magnifying-glass-minus text-sm"></i>
-                    </button>
-                    <div class="w-px h-4 bg-slate-700 mx-1"></div>
-                    <button onclick="triggerAction('recenter')" class="p-2 text-slate-300 hover:text-white transition rounded-lg hover:bg-slate-800" title="Recenter View">
-                        <i class="fa-solid fa-compress text-sm"></i>
-                    </button>
-                    <div class="w-px h-4 bg-slate-700 mx-1"></div>
-                    <span id="canvasDimLabel" class="text-xs font-mono text-slate-400">1920 x 1080</span>
-                </div>
-
-            </div>
-
-            <!-- Pro Tip Banner -->
-            <div class="glass-panel rounded-xl p-4 flex items-start space-x-3 text-xs text-slate-300 border border-indigo-500/20 bg-indigo-950/10">
-                <i class="fa-solid fa-circle-info text-indigo-400 mt-0.5 text-sm"></i>
-                <div>
-                    <span class="font-semibold text-slate-200">Interactive Preview Tip:</span> Move your cursor over the canvas when using the <strong class="text-indigo-300">3D Hologram</strong> or <strong class="text-indigo-300">Ocean Ripple</strong> effects to interact directly with the wave distortion and tilt angles!
+                <!-- Right: Image Preview Box -->
+                <div class="lg:col-span-5 flex flex-col items-center justify-center">
+                    <div class="w-full max-w-xs sm:max-w-sm aspect-square rounded-2xl border border-gray-700 bg-gray-900/60 p-4 flex flex-col items-center justify-center relative overflow-hidden shadow-inner group">
+                        <div id="previewPlaceholder" class="flex flex-col items-center text-center p-6 text-gray-500 space-y-3">
+                            <div class="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center border border-gray-700">
+                                <i class="fa-regular fa-image text-2xl text-gray-400"></i>
+                            </div>
+                            <p class="text-sm font-medium text-gray-400">No Photo Selected</p>
+                            <p class="text-xs text-gray-500">Upload a photo to preview and generate animations</p>
+                        </div>
+                        <img id="mainPreview" src="" 
+                             alt="Upload Preview" 
+                             class="hidden w-full h-full object-cover rounded-xl shadow-lg transition duration-300">
+                        <span id="currentPhotoBadge" class="hidden absolute top-6 right-6 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur">
+                            Current Photo
+                        </span>
+                    </div>
                 </div>
             </div>
-
         </section>
 
+        <!-- SINGLE GLOBAL OPTIONS TOOLBAR -->
+        <section id="globalActionToolbar" class="bg-gray-800/80 border border-gray-700/80 rounded-2xl p-4 sm:p-5 shadow-lg backdrop-blur">
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+                
+                <!-- Target Selection Dropdown -->
+                <div class="flex items-center space-x-3">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">Selected Style:</span>
+                    <select id="selectedStyleSelect" class="bg-gray-900 border border-gray-700 text-sm rounded-xl px-3 py-2 text-indigo-300 focus:outline-none focus:border-indigo-500 w-full sm:w-64 font-medium">
+                        <!-- Populated dynamically via JavaScript -->
+                    </select>
+                </div>
+
+                <!-- Global Action Buttons (Single source for Download, Copy, Share, Email) -->
+                <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
+                    <button id="globalDownloadBtn" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition flex items-center justify-center space-x-2 shadow-md">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Download Frame</span>
+                    </button>
+                    
+                    <button id="globalCopyBtn" class="px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs font-semibold rounded-xl transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Copy Link</span>
+                    </button>
+                    
+                    <button id="globalShareBtn" class="px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs font-semibold rounded-xl transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-share-nodes"></i>
+                        <span>Share</span>
+                    </button>
+                    
+                    <button id="globalEmailBtn" class="px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs font-semibold rounded-xl transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>Email</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter & Search Controls Bar -->
+        <section class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-gray-800/30 p-4 rounded-xl border border-gray-800">
+            <div class="flex items-center space-x-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-none">
+                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2">Filter:</span>
+                <button class="filter-btn active px-3 py-1.5 text-xs font-medium rounded-lg bg-indigo-600 text-white transition" data-filter="all">All (50)</button>
+                <button class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-800 text-gray-400 hover:text-white transition" data-filter="zigzag">Zigzag & Wave</button>
+                <button class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-800 text-gray-400 hover:text-white transition" data-filter="3d">3D & Perspective</button>
+                <button class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-800 text-gray-400 hover:text-white transition" data-filter="rotate">Spin & Rotate</button>
+                <button class="filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-800 text-gray-400 hover:text-white transition" data-filter="pulse">Pulse & Bounce</button>
+            </div>
+
+            <!-- Search input -->
+            <div class="relative min-w-[200px]">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                <input type="text" id="searchInput" placeholder="Search animation..." class="w-full bg-gray-800 border border-gray-700 text-xs rounded-lg pl-8 pr-3 py-2 text-gray-200 focus:outline-none focus:border-indigo-500">
+            </div>
+        </section>
+
+        <!-- 50 Animation Grid Section -->
+        <section>
+            <div id="animationGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Javascript will render 50 animated cards dynamically -->
+            </div>
+        </section>
     </main>
 
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 bg-gray-900 mt-12 py-6 text-center text-xs text-gray-500">
+        <p>Photo Motion Studio &copy; 2026. Interactive Photo Animation & 3D Transform Generator.</p>
+    </footer>
+
+    <!-- Global Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 translate-y-20 opacity-0 bg-indigo-600 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 z-50 pointer-events-none transition-all duration-300">
+        <i class="fa-solid fa-circle-check text-lg"></i>
+        <span id="toastMessage" class="text-sm font-medium">Action completed successfully!</span>
+    </div>
+
+    <!-- Hidden Canvas for Frame Capturing/Downloading Static Snapshot -->
+    <canvas id="exportCanvas" class="hidden"></canvas>
+
+    <!-- JavaScript Application Logic -->
     <script>
-        // DOM Elements
-        const fileInput = document.getElementById('fileInput');
-        const dropZone = document.getElementById('dropZone');
-        const animCanvas = document.getElementById('animCanvas');
-        const ctx = animCanvas.getContext('2d');
-        const placeholderOverlay = document.getElementById('placeholderOverlay');
-        const speedRange = document.getElementById('speedRange');
-        const speedVal = document.getElementById('speedVal');
-        const intensityRange = document.getElementById('intensityRange');
-        const intensityVal = document.getElementById('intensityVal');
-        const densityRange = document.getElementById('densityRange');
-        const densityVal = document.getElementById('densityVal');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const playPauseIcon = document.getElementById('playPauseIcon');
-        const playPauseText = document.getElementById('playPauseText');
-        const resetBtn = document.getElementById('resetBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        const activeStatusLabel = document.getElementById('activeStatusLabel');
-        const canvasDimLabel = document.getElementById('canvasDimLabel');
-        const effectCards = document.querySelectorAll('.effect-card');
+        // 50 Animation Metadata definitions with labels and categories
+        const animationCatalog = [
+            { id: 1, name: "Zigzag Horizontal Drift", class: "anim-1", category: "zigzag" },
+            { id: 2, name: "3D Perspective Wave", class: "anim-2", category: "3d" },
+            { id: 3, name: "Helix Y-Axis Spin", class: "anim-3", category: "rotate" },
+            { id: 4, name: "Pulse & Vertical Bounce", class: "anim-4", category: "pulse" },
+            { id: 5, name: "Isometric Skew Slide", class: "anim-5", category: "3d" },
+            { id: 6, name: "Diagonal Zigzag Float", class: "anim-6", category: "zigzag" },
+            { id: 7, name: "3D Flip X-Axis", class: "anim-7", category: "3d" },
+            { id: 8, name: "Vortex 3D Swing", class: "anim-8", category: "3d" },
+            { id: 9, name: "Glitch Shiver Motion", class: "anim-9", category: "pulse" },
+            { id: 10, name: "Floating Pendulum Wobble", class: "anim-10", category: "pulse" },
+            { id: 11, name: "Deep Perspective Roll", class: "anim-11", category: "3d" },
+            { id: 12, name: "Zigzag Zoom Pop", class: "anim-12", category: "zigzag" },
+            { id: 13, name: "Rubber Band Stretch", class: "anim-13", category: "pulse" },
+            { id: 14, name: "Top-Anchor Swing", class: "anim-14", category: "rotate" },
+            { id: 15, name: "3D Card Flip Y", class: "anim-15", category: "3d" },
+            { id: 16, name: "Wave Slinky Skew", class: "anim-16", category: "zigzag" },
+            { id: 17, name: "3D Barrel Roll Orbit", class: "anim-17", category: "rotate" },
+            { id: 18, name: "Corner Pivot Bounce", class: "anim-18", category: "rotate" },
+            { id: 19, name: "Zigzag Tremor Vibro", class: "anim-19", category: "zigzag" },
+            { id: 20, name: "Hyper Isometric Elevate", class: "anim-20", category: "3d" },
+            { id: 21, name: "Spiral Circular Orbit", class: "anim-21", category: "rotate" },
+            { id: 22, name: "Elastic Push-Pull Depth", class: "anim-22", category: "3d" },
+            { id: 23, name: "Top Tilt Slide Down", class: "anim-23", category: "3d" },
+            { id: 24, name: "Zigzag Step Climb", class: "anim-24", category: "zigzag" },
+            { id: 25, name: "Mirror Warp Tilt", class: "anim-25", category: "3d" },
+            { id: 26, name: "Cube 3D Multi-Axis Spin", class: "anim-26", category: "rotate" },
+            { id: 27, name: "Pulse Depth Shadow Float", class: "anim-27", category: "pulse" },
+            { id: 28, name: "Zigzag Snake Walk", class: "anim-28", category: "zigzag" },
+            { id: 29, name: "3D Accordion Compress", class: "anim-29", category: "3d" },
+            { id: 30, name: "Floating Page Curl Tilt", class: "anim-30", category: "3d" },
+            { id: 31, name: "Quick Shutter Shake", class: "anim-31", category: "pulse" },
+            { id: 32, name: "Diamond Axis Rotator", class: "anim-32", category: "rotate" },
+            { id: 33, name: "3D Swing Door Hinge", class: "anim-33", category: "3d" },
+            { id: 34, name: "Zigzag Drop & Rebound", class: "anim-34", category: "zigzag" },
+            { id: 35, name: "Soft Breathing Float", class: "anim-35", category: "pulse" },
+            { id: 36, name: "Skew Wave Shear", class: "anim-36", category: "zigzag" },
+            { id: 37, name: "3D Pyramid Gyro Tilt", class: "anim-37", category: "3d" },
+            { id: 38, name: "Twitch Glitch Shift", class: "anim-38", category: "pulse" },
+            { id: 39, name: "Zigzag Spiral Sweep", class: "anim-39", category: "zigzag" },
+            { id: 40, name: "Undercover Perspective Flip", class: "anim-40", category: "3d" },
+            { id: 41, name: "Floating Horizon Spin", class: "anim-41", category: "rotate" },
+            { id: 42, name: "Corner Fold Elastic Stretch", class: "anim-42", category: "pulse" },
+            { id: 43, name: "Wobble Gravity Drop", class: "anim-43", category: "pulse" },
+            { id: 44, name: "Zigzag Pulse Surge", class: "anim-44", category: "zigzag" },
+            { id: 45, name: "Perspective 3D Lift-Off", class: "anim-45", category: "3d" },
+            { id: 46, name: "Twisting Ribbon Spin", class: "anim-46", category: "rotate" },
+            { id: 47, name: "Floating Orbit Tilt", class: "anim-47", category: "3d" },
+            { id: 48, name: "Elastic Corner Shear", class: "anim-48", category: "pulse" },
+            { id: 49, name: "Zigzag Whirlwind Sweep", class: "anim-49", category: "zigzag" },
+            { id: 50, name: "Super 3D Infinity Bounce", class: "anim-50", category: "3d" }
+        ];
 
         // State variables
-        let img = new Image();
-        let isImageLoaded = false;
-        let currentEffect = 'kenburns';
-        let isPlaying = true;
-        let animationId = null;
-        let startTime = Date.now();
-        let mouseX = 0, mouseY = 0;
-        let targetTiltX = 0, targetTiltY = 0;
-        let currentTiltX = 0, currentTiltY = 0;
-        
-        // Particles array
-        let particles = [];
+        let currentImageUrl = null;
+        let isPaused = false;
+        let activeFilter = "all";
+        let searchQuery = "";
+        let selectedStyleId = 1;
 
-        // Effect titles mapping
-        const effectNames = {
-            'kenburns': 'Ken Burns Cinematic Active',
-            'ripple': 'Ocean Ripple Distortion Active',
-            'hologram': '3D Hologram Tilt Active',
-            'glitch': 'Cyberpunk Glitch Active',
-            'particles': 'Magic Dust Particles Active'
-        };
+        // DOM Element references
+        const photoInput = document.getElementById('photoInput');
+        const mainPreview = document.getElementById('mainPreview');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        const currentPhotoBadge = document.getElementById('currentPhotoBadge');
+        const generateBtn = document.getElementById('generateBtn');
+        const togglePlayBtn = document.getElementById('togglePlayBtn');
+        const playPauseIcon = document.getElementById('playPauseIcon');
+        const playPauseText = document.getElementById('playPauseText');
+        const animationGrid = document.getElementById('animationGrid');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const exportCanvas = document.getElementById('exportCanvas');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+        const searchInput = document.getElementById('searchInput');
+        const filterBtns = document.querySelectorAll('.filter-btn');
 
-        // Initialize sample image on startup
+        // Global Toolbar elements
+        const selectedStyleSelect = document.getElementById('selectedStyleSelect');
+        const globalDownloadBtn = document.getElementById('globalDownloadBtn');
+        const globalCopyBtn = document.getElementById('globalCopyBtn');
+        const globalShareBtn = document.getElementById('globalShareBtn');
+        const globalEmailBtn = document.getElementById('globalEmailBtn');
+
+        // Initial setup
         window.addEventListener('DOMContentLoaded', () => {
-            loadSample('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800');
-            setupEventListeners();
+            populateStyleDropdown();
+            renderGrid();
+            setupGlobalActions();
         });
 
-        function loadSample(url) {
-            img = new Image();
-            img.crossOrigin = "anonymous";
-            img.onload = function() {
-                isImageLoaded = true;
-                placeholderOverlay.style.opacity = '0';
-                setTimeout(() => placeholderOverlay.style.display = 'none', 300);
-                initCanvasSize();
-                initParticles();
-                if (!animationId) animate();
-            };
-            img.src = url;
+        function populateStyleDropdown() {
+            selectedStyleSelect.innerHTML = animationCatalog.map(anim => 
+                `<option value="${anim.id}">Style #${anim.id}: ${anim.name}</option>`
+            ).join('');
+            selectedStyleSelect.value = selectedStyleId;
+
+            selectedStyleSelect.addEventListener('change', (e) => {
+                selectedStyleId = parseInt(e.target.value, 10);
+                highlightSelectedCard();
+            });
         }
 
-        // File upload handling
-        fileInput.addEventListener('change', (e) => {
+        // 1. File Upload Handler
+        photoInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    img = new Image();
-                    img.onload = function() {
-                        isImageLoaded = true;
-                        placeholderOverlay.style.opacity = '0';
-                        setTimeout(() => placeholderOverlay.style.display = 'none', 300);
-                        initCanvasSize();
-                        initParticles();
-                        if (!animationId) animate();
-                    };
-                    img.src = event.target.result;
+                reader.onload = (event) => {
+                    currentImageUrl = event.target.result;
+                    mainPreview.src = currentImageUrl;
+                    mainPreview.classList.remove('hidden');
+                    previewPlaceholder.classList.add('hidden');
+                    if (currentPhotoBadge) currentPhotoBadge.classList.remove('hidden');
+                    renderGrid();
+                    showToast("Photo uploaded successfully!");
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Drag and drop support
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('border-indigo-500', 'bg-slate-900/80');
+        // Drag and drop handlers
+        const dropArea = photoInput.closest('label');
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropArea.classList.add('border-indigo-500');
+            }, false);
         });
-        dropZone.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('border-indigo-500', 'bg-slate-900/80');
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropArea.classList.remove('border-indigo-500');
+            }, false);
         });
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('border-indigo-500', 'bg-slate-900/80');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    img = new Image();
-                    img.onload = function() {
-                        isImageLoaded = true;
-                        placeholderOverlay.style.opacity = '0';
-                        setTimeout(() => placeholderOverlay.style.display = 'none', 300);
-                        initCanvasSize();
-                        initParticles();
-                        if (!animationId) animate();
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
+        dropArea.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files && files.length > 0) {
+                photoInput.files = files;
+                photoInput.dispatchEvent(new Event('change'));
             }
         });
 
-        function initCanvasSize() {
-            if (!img.width) return;
-            // Set max bounds
-            const maxWidth = 1200;
-            const maxHeight = 800;
-            let w = img.width;
-            let h = img.height;
+        // 2. Render 50 Cards Grid (WITHOUT individual action buttons)
+        function renderGrid() {
+            animationGrid.innerHTML = '';
 
-            if (w > maxWidth) {
-                h = (maxWidth / w) * h;
-                w = maxWidth;
+            if (!currentImageUrl) {
+                animationGrid.innerHTML = `
+                    <div class="col-span-full text-center py-16 text-gray-500 bg-gray-800/20 rounded-2xl border border-dashed border-gray-800">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl mb-3 text-indigo-400/60"></i>
+                        <h3 class="text-base font-semibold text-gray-300">No Image Uploaded Yet</h3>
+                        <p class="text-xs text-gray-500 mt-1">Upload a photo above to render all 50 animated 3D angle styles.</p>
+                    </div>
+                `;
+                return;
             }
-            if (h > maxHeight) {
-                w = (maxHeight / h) * w;
-                h = maxHeight;
+            
+            const filteredItems = animationCatalog.filter(item => {
+                const matchesFilter = activeFilter === 'all' || item.category === activeFilter;
+                const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filteredItems.length === 0) {
+                animationGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-gray-500">
+                        <i class="fa-solid fa-face-frown text-3xl mb-2"></i>
+                        <p>No matching animations found for "${searchQuery}"</p>
+                    </div>
+                `;
+                return;
             }
 
-            animCanvas.width = Math.floor(w);
-            animCanvas.height = Math.floor(h);
-            canvasDimLabel.textContent = `${animCanvas.width} x ${animCanvas.height}`;
+            filteredItems.forEach(anim => {
+                const isSelected = anim.id === selectedStyleId;
+                const card = document.createElement('div');
+                card.dataset.id = anim.id;
+                card.className = `anim-card cursor-pointer bg-gray-800/60 border rounded-2xl p-4 flex flex-col justify-between space-y-3 transition duration-300 shadow-lg group relative ${
+                    isSelected ? 'border-indigo-500 ring-2 ring-indigo-500/50 bg-indigo-950/20' : 'border-gray-700/60 hover:border-gray-500'
+                }`;
+
+                card.innerHTML = `
+                    <div>
+                        <!-- Card Header -->
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${isSelected ? 'bg-indigo-500 text-white' : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'}">
+                                #${anim.id}
+                            </span>
+                            <span class="text-xs text-gray-400 font-medium capitalize">${anim.category}</span>
+                        </div>
+
+                        <!-- Animated Image Frame -->
+                        <div class="anim-card-container w-full h-48 bg-gray-900/80 rounded-xl flex items-center justify-center p-3 overflow-hidden border border-gray-800">
+                            <img src="${currentImageUrl}" 
+                                 alt="${anim.name}" 
+                                 class="animated-img ${anim.class} max-h-full max-w-full object-contain rounded-lg shadow-md">
+                        </div>
+
+                        <!-- Animation Name -->
+                        <h3 class="text-sm font-semibold text-gray-200 mt-3 line-clamp-1 group-hover:text-indigo-400 transition">
+                            ${anim.name}
+                        </h3>
+                    </div>
+                `;
+
+                // Clicking a card selects it in the global toolbar
+                card.addEventListener('click', () => {
+                    selectedStyleId = anim.id;
+                    selectedStyleSelect.value = anim.id;
+                    highlightSelectedCard();
+                });
+
+                animationGrid.appendChild(card);
+            });
         }
 
-        // Setup Event Listeners for Controls
-        function setupEventListeners() {
-            // Effect selection radio buttons
-            const radios = document.querySelectorAll('input[name="effect"]');
-            radios.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    currentEffect = e.target.value;
-                    activeStatusLabel.textContent = effectNames[currentEffect];
-                    // Update border highlights on cards
-                    effectCards.forEach(card => {
-                        card.classList.remove('border-indigo-500', 'bg-indigo-950/20');
-                        card.classList.add('border-slate-700/60', 'bg-slate-900/60');
-                    });
-                    const parentCard = e.target.closest('.effect-card');
-                    parentCard.classList.remove('border-slate-700/60', 'bg-slate-900/60');
-                    parentCard.classList.add('border-indigo-500', 'bg-indigo-950/20');
-                });
-            });
-
-            // Sliders update
-            speedRange.addEventListener('input', (e) => {
-                speedVal.textContent = parseFloat(e.target.value).toFixed(1) + 'x';
-            });
-            intensityRange.addEventListener('input', (e) => {
-                intensityVal.textContent = e.target.value + '%';
-            });
-            densityRange.addEventListener('input', (e) => {
-                densityVal.textContent = e.target.value < 60 ? 'Low' : e.target.value < 140 ? 'Med' : 'High';
-                initParticles();
-            });
-
-            // Play / Pause button
-            playPauseBtn.addEventListener('click', () => {
-                isPlaying = !isPlaying;
-                if (isPlaying) {
-                    playPauseIcon.className = "fa-solid fa-pause text-xs";
-                    playPauseText.textContent = "Pause";
-                    animate();
+        function highlightSelectedCard() {
+            document.querySelectorAll('.anim-card').forEach(card => {
+                const cardId = parseInt(card.dataset.id, 10);
+                const isSelected = cardId === selectedStyleId;
+                if (isSelected) {
+                    card.classList.add('border-indigo-500', 'ring-2', 'ring-indigo-500/50', 'bg-indigo-950/20');
+                    card.classList.remove('border-gray-700/60', 'hover:border-gray-500');
                 } else {
-                    playPauseIcon.className = "fa-solid fa-play text-xs";
-                    playPauseText.textContent = "Play";
-                    if (animationId) cancelAnimationFrame(animationId);
+                    card.classList.remove('border-indigo-500', 'ring-2', 'ring-indigo-500/50', 'bg-indigo-950/20');
+                    card.classList.add('border-gray-700/60');
                 }
             });
+        }
 
-            // Reset button
-            resetBtn.addEventListener('click', () => {
-                speedRange.value = 1.0;
-                speedVal.textContent = "1.0x";
-                intensityRange.value = 50;
-                intensityVal.textContent = "50%";
-                densityRange.value = 80;
-                densityVal.textContent = "Med";
-                startTime = Date.now();
-                initParticles();
-            });
-
-            // Mouse interaction for canvas
-            animCanvas.addEventListener('mousemove', (e) => {
-                const rect = animCanvas.getBoundingClientRect();
-                mouseX = (e.clientX - rect.left) / rect.width;
-                mouseY = (e.clientY - rect.top) / rect.height;
-                targetTiltX = (mouseX - 0.5) * 25;
-                targetTiltY = (0.5 - mouseY) * 25;
-            });
-
-            animCanvas.addEventListener('mouseleave', () => {
-                targetTiltX = 0;
-                targetTiltY = 0;
-            });
-
-            // Fullscreen button
-            fullscreenBtn.addEventListener('click', () => {
-                const container = document.getElementById('canvasContainer');
-                if (!document.fullscreenElement) {
-                    container.requestFullscreen().catch(err => {
-                        console.error(`Error attempting to enable fullscreen: ${err.message}`);
-                    });
-                } else {
-                    document.exitFullscreen();
+        // Setup unified global action handlers
+        function setupGlobalActions() {
+            globalDownloadBtn.addEventListener('click', () => {
+                if (!currentImageUrl) {
+                    showToast("Please upload a photo first!");
+                    return;
                 }
+                const currentAnim = animationCatalog.find(a => a.id === selectedStyleId) || animationCatalog[0];
+                downloadCardFrame(currentAnim.id, currentAnim.name);
             });
 
-            // Export / Download button
-            downloadBtn.addEventListener('click', () => {
-                if (!isImageLoaded) return;
+            globalCopyBtn.addEventListener('click', () => {
+                copyImageLink(selectedStyleId);
+            });
+
+            globalShareBtn.addEventListener('click', () => {
+                const currentAnim = animationCatalog.find(a => a.id === selectedStyleId) || animationCatalog[0];
+                shareAnimation(currentAnim.id, currentAnim.name);
+            });
+
+            globalEmailBtn.addEventListener('click', () => {
+                const currentAnim = animationCatalog.find(a => a.id === selectedStyleId) || animationCatalog[0];
+                emailAnimation(currentAnim.id, currentAnim.name);
+            });
+        }
+
+        // 3. Generate Button Handler
+        generateBtn.addEventListener('click', () => {
+            if (!currentImageUrl) {
+                showToast("Please upload a photo first!");
+                photoInput.click();
+                return;
+            }
+            renderGrid();
+            showToast("50 dynamic photo animations rendered!");
+        });
+
+        // 4. Play / Pause Global Toggle
+        togglePlayBtn.addEventListener('click', () => {
+            isPaused = !isPaused;
+            if (isPaused) {
+                document.body.classList.add('animations-paused');
+                playPauseIcon.className = "fa-solid fa-play";
+                playPauseText.textContent = "Resume All";
+            } else {
+                document.body.classList.remove('animations-paused');
+                playPauseIcon.className = "fa-solid fa-pause";
+                playPauseText.textContent = "Pause All";
+            }
+        });
+
+        // 5. Download Image Capture Helper
+        function downloadCardFrame(id, name) {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.onload = () => {
+                const ctx = exportCanvas.getContext('2d');
+                exportCanvas.width = img.naturalWidth || 600;
+                exportCanvas.height = img.naturalHeight || 600;
+                ctx.drawImage(img, 0, 0);
+
                 const link = document.createElement('a');
-                link.download = `animated-photo-${currentEffect}-${Date.now()}.png`;
-                link.href = animCanvas.toDataURL('image/png');
+                link.download = `photo-motion-style-${id}-${name.toLowerCase().replace(/[^a-z0-9]/g, '-')}.png`;
+                link.href = exportCanvas.toDataURL('image/png');
                 link.click();
-            });
+                showToast(`Downloaded static frame for Style #${id}!`);
+            };
+            img.src = currentImageUrl;
         }
 
-        // Particle system for Magic Particles / Overlay
-        function initParticles() {
-            particles = [];
-            const count = parseInt(densityRange.value);
-            for (let i = 0; i < count; i++) {
-                particles.push({
-                    x: Math.random() * animCanvas.width,
-                    y: Math.random() * animCanvas.height,
-                    size: Math.random() * 3 + 1,
-                    speedX: (Math.random() - 0.5) * 0.8,
-                    speedY: -Math.random() * 1.5 - 0.5,
-                    opacity: Math.random() * 0.8 + 0.2,
-                    pulseSpeed: Math.random() * 0.05 + 0.01,
-                    angle: Math.random() * Math.PI * 2
+        // 6. Copy Link Handler
+        function copyImageLink(id) {
+            const shareUrl = `${window.location.origin}${window.location.pathname}?style=${id}`;
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = shareUrl;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+
+            showToast(`Style #${id} link copied to clipboard!`);
+        }
+
+        // 7. Web Share API Handler
+        function shareAnimation(id, name) {
+            const shareData = {
+                title: `Photo Motion - ${name}`,
+                text: `Check out this 3D photo animation style (#${id}: ${name}) created with Photo Motion Studio!`,
+                url: `${window.location.origin}${window.location.pathname}?style=${id}`
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData).then(() => {
+                    showToast("Shared successfully!");
+                }).catch(() => {
+                    copyImageLink(id);
                 });
+            } else {
+                copyImageLink(id);
             }
         }
 
-        function updateAndDrawParticles(intensity, speed) {
-            particles.forEach(p => {
-                p.x += p.speedX * speed;
-                p.y += p.speedY * speed;
-                p.angle += p.pulseSpeed * speed;
+        // 8. Email Handler
+        function emailAnimation(id, name) {
+            const subject = encodeURIComponent(`Photo Animation Style #${id}: ${name}`);
+            const body = encodeURIComponent(`Hi!\n\nCheck out this dynamic photo animation style "${name}" (#${id}).\n\nView it here: ${window.location.origin}${window.location.pathname}?style=${id}`);
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+            showToast("Mail client opened!");
+        }
 
-                // Wrap around edges
-                if (p.y < 0) {
-                    p.y = animCanvas.height + 10;
-                    p.x = Math.random() * animCanvas.width;
-                }
-                if (p.x < 0) p.x = animCanvas.width;
-                if (p.x > animCanvas.width) p.x = 0;
-
-                const currentAlpha = (Math.sin(p.angle) * 0.3 + 0.7) * (intensity / 100) * p.opacity;
+        // Filter buttons listener
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-indigo-600', 'text-white', 'active');
+                    b.classList.add('bg-gray-800', 'text-gray-400');
+                });
+                btn.classList.remove('bg-gray-800', 'text-gray-400');
+                btn.classList.add('bg-indigo-600', 'text-white', 'active');
                 
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size * (intensity / 50), 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 223, 128, ${currentAlpha})`;
-                ctx.shadowColor = 'rgba(255, 200, 50, 0.8)';
-                ctx.shadowBlur = 8;
-                ctx.fill();
-                ctx.restore();
+                activeFilter = btn.dataset.filter;
+                renderGrid();
             });
-        }
+        });
 
-        // Main Animation Loop
-        function animate() {
-            if (!isPlaying || !isImageLoaded) return;
+        // Search Input Listener
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderGrid();
+        });
 
-            const now = Date.now();
-            const elapsed = (now - startTime) / 1000;
-            const speed = parseFloat(speedRange.value);
-            const intensity = parseInt(intensityRange.value);
-
-            ctx.clearRect(0, 0, animCanvas.width, animCanvas.height);
-
-            // Smooth tilt interpolation
-            currentTiltX += (targetTiltX - currentTiltX) * 0.1;
-            currentTiltY += (targetTiltY - currentTiltY) * 0.1;
-
-            ctx.save();
-
-            if (currentEffect === 'kenburns') {
-                // Cinematic Pan & Zoom
-                const t = (elapsed * speed * 0.15) % (2 * Math.PI);
-                const scale = 1.0 + (Math.sin(t) * 0.1 + 0.1) * (intensity / 50);
-                const transX = Math.cos(t * 0.7) * 30 * (intensity / 50);
-                const transY = Math.sin(t * 0.5) * 20 * (intensity / 50);
-
-                ctx.translate(animCanvas.width / 2 + transX, animCanvas.height / 2 + transY);
-                ctx.scale(scale, scale);
-                ctx.drawImage(img, -animCanvas.width / 2, -animCanvas.height / 2, animCanvas.width, animCanvas.height);
-
-            } else if (currentEffect === 'ripple') {
-                // Ocean Ripple / Wave Distortion effect using strip rendering
-                ctx.drawImage(img, 0, 0, animCanvas.width, animCanvas.height);
-                
-                const waveFreq = 0.02 * (intensity / 50);
-                const waveAmp = 4 * (intensity / 50) * speedRange.value;
-                const timeFactor = elapsed * speed * 3;
-
-                // Draw subtle water reflection overlay lines
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-                ctx.lineWidth = 1.5;
-                for (let y = 20; y < animCanvas.height; y += 30) {
-                    ctx.beginPath();
-                    for (let x = 0; x < animCanvas.width; x += 10) {
-                        const offsetY = Math.sin(x * waveFreq + timeFactor + (currentTiltX * 0.1)) * waveAmp;
-                        if (x === 0) ctx.moveTo(x, y + offsetY);
-                        else ctx.lineTo(x, y + offsetY);
-                    }
-                    ctx.stroke();
-                }
-
-            } else if (currentEffect === 'hologram') {
-                // 3D Hologram Tilt & Scanlines
-                ctx.translate(animCanvas.width / 2, animCanvas.height / 2);
-                
-                // Apply rotation based on mouse or auto wave
-                const autoWave = Math.sin(elapsed * speed * 2) * 5;
-                const tiltX = (currentTiltX !== 0 ? currentTiltX : autoWave);
-                const tiltY = currentTiltY;
-
-                ctx.transform(1, tiltY * 0.005, tiltX * 0.005, 1, 0, 0);
-                ctx.drawImage(img, -animCanvas.width / 2, -animCanvas.height / 2, animCanvas.width, animCanvas.height);
-
-                // Hologram glowing cyan tint & scanlines
-                ctx.fillStyle = 'rgba(0, 240, 255, 0.08)';
-                ctx.fillRect(-animCanvas.width / 2, -animCanvas.height / 2, animCanvas.width, animCanvas.height);
-
-                // Scanline moving down
-                const scanLineY = ((elapsed * 150 * speed) % animCanvas.height) - (animCanvas.height / 2);
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-                ctx.fillRect(-animCanvas.width / 2, scanLineY, animCanvas.width, 3);
-
-            } else if (currentEffect === 'glitch') {
-                // Cyberpunk Glitch
-                ctx.drawImage(img, 0, 0, animCanvas.width, animCanvas.height);
-
-                const glitchChance = (intensity / 100) * 0.2;
-                if (Math.random() < glitchChance) {
-                    const sliceY = Math.random() * animCanvas.height;
-                    const sliceH = Math.random() * 30 + 5;
-                    const offsetX = (Math.random() - 0.5) * 40 * (intensity / 50);
-
-                    try {
-                        const sliceData = ctx.getImageData(0, sliceY, animCanvas.width, sliceH);
-                        ctx.putImageData(sliceData, offsetX, sliceY);
-                    } catch (e) {
-                        // Handle potential cross-origin or boundary constraints gracefully
-                    }
-
-                    // RGB split aesthetic flash
-                    ctx.fillStyle = 'rgba(255, 0, 80, 0.12)';
-                    ctx.fillRect(0, sliceY, animCanvas.width, sliceH);
-                }
-
-                // CRT Scanlines overlay
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-                for (let y = 0; y < animCanvas.height; y += 4) {
-                    ctx.fillRect(0, y, animCanvas.width, 1.5);
-                }
-
-            } else if (currentEffect === 'particles') {
-                // Base Image + Magic Dust Particles
-                ctx.drawImage(img, 0, 0, animCanvas.width, animCanvas.height);
-                updateAndDrawParticles(intensity, speed);
+        // Theme Toggle (Light / Dark mode)
+        themeToggleBtn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            if (isDark) {
+                themeIcon.className = "fa-solid fa-sun";
+                document.body.classList.remove('bg-gray-50', 'text-gray-900');
+                document.body.classList.add('bg-gray-900', 'text-gray-100');
+            } else {
+                themeIcon.className = "fa-solid fa-moon";
+                document.body.classList.remove('bg-gray-900', 'text-gray-100');
+                document.body.classList.add('bg-gray-50', 'text-gray-900');
             }
+        });
 
-            ctx.restore();
-
-            // Always update particles for other modes if intensity is high or requested
-            if (currentEffect !== 'particles' && intensity > 70) {
-                updateAndDrawParticles(intensity * 0.5, speed);
-            }
-
-            animationId = requestAnimationFrame(animate);
-        }
-
-        // Quick toolbar actions
-        function triggerAction(action) {
-            if (!isImageLoaded) return;
-            if (action === 'zoomIn') {
-                const w = animCanvas.width * 1.1;
-                const h = animCanvas.height * 1.1;
-                animCanvas.width = w;
-                animCanvas.height = h;
-            } else if (action === 'zoomOut') {
-                const w = animCanvas.width * 0.9;
-                const h = animCanvas.height * 0.9;
-                animCanvas.width = w;
-                animCanvas.height = h;
-            } else if (action === 'recenter') {
-                initCanvasSize();
-            }
+        // Toast Notification Function
+        function showToast(msg) {
+            toastMessage.textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
         }
     </script>
 </body>
