@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Create a photo slideshow presentation online. Upload multiple photos, configure timing and transitions, play continuously, and export to PowerPoint.">
+<meta property="og:title" content="Photo Presentation Studio">
+<meta property="og:description" content="Create and share beautiful photo presentations in your browser.">
+<title>Photo Presentation Studio</title>
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+<style>
+:root{--bg:#f4f7fb;--panel:#fff;--ink:#172033;--muted:#667085;--accent:#6558e8;--accent2:#8b5cf6;--line:#e5e9f2;--shadow:0 14px 40px rgba(30,41,59,.09)}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#f5f7ff,#eef5fb);color:var(--ink)}
+header{padding:25px 5vw;background:linear-gradient(110deg,#211b55,#5546c8 60%,#8b5cf6);color:#fff}
+header .top{max-width:1300px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{font-size:25px;font-weight:800;letter-spacing:.2px}.brand span{color:#c9c3ff}
+header p{margin:8px 0 0;color:#e7e4ff;font-size:14px}
+main{max-width:1300px;margin:28px auto;padding:0 22px 50px;display:grid;grid-template-columns:360px 1fr;gap:22px}
+.panel,.stage-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+.panel{padding:22px;height:max-content}.section-title{font-size:16px;font-weight:800;margin:0 0 15px}
+.drop{border:2px dashed #b9b4f6;background:#f8f7ff;border-radius:15px;padding:25px 14px;text-align:center;cursor:pointer;transition:.2s}
+.drop:hover,.drop.drag{background:#efedff;border-color:var(--accent)}.drop .up{font-size:31px}.drop strong{display:block;margin:7px 0}.drop small{color:var(--muted)}
+input[type=file]{display:none}.field{margin:17px 0}.field label{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:8px}
+select,input[type=number],input[type=text]{width:100%;padding:11px 12px;border:1px solid #d9deea;border-radius:10px;background:#fff;color:var(--ink);font-size:14px;outline:none}
+select:focus,input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #6558e822}
+.inline{display:grid;grid-template-columns:1fr 1fr;gap:10px}.check{display:flex;align-items:center;gap:9px;font-size:13px;color:#344054;margin:13px 0}.check input{accent-color:var(--accent);width:16px;height:16px}
+.btn{border:0;border-radius:11px;padding:11px 14px;font-weight:750;font-size:13px;cursor:pointer;transition:.18s}.btn:hover{transform:translateY(-1px);filter:brightness(1.04)}.primary{background:var(--accent);color:white}.dark{background:#202944;color:#fff}.light{background:#f0efff;color:#5144c7}.outline{background:#fff;border:1px solid #d9deea;color:#344054}.danger{background:#fff0f0;color:#c03939}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}.actions .wide{grid-column:1/-1}
+.hint{font-size:11px;color:var(--muted);line-height:1.5;margin-top:12px}
+.workspace{min-width:0}.stage-card{padding:18px}.stage-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.stage-head h2{font-size:17px;margin:0}.counter{font-size:12px;color:var(--muted);font-weight:700}
+.screen{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:14px;background:#111827;min-height:380px;aspect-ratio:16/9;color:#fff}
+.screen img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;display:none}.empty{text-align:center;padding:25px;color:#cbd5e1}.empty b{display:block;font-size:18px;margin:8px}
+.caption{position:absolute;bottom:0;left:0;right:0;padding:28px 18px 15px;background:linear-gradient(transparent,rgba(0,0,0,.65));font-size:15px;font-weight:650;display:none}
+.playbar{display:flex;align-items:center;justify-content:center;gap:10px;margin:14px 0 5px;flex-wrap:wrap}.playbar .btn{min-width:92px}.progress{height:5px;background:#eceef5;border-radius:20px;overflow:hidden;margin-top:13px}.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .2s}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:10px;margin-top:17px}.thumb{position:relative;border:2px solid transparent;border-radius:10px;overflow:hidden;aspect-ratio:4/3;background:#edf0f6;cursor:pointer}.thumb.active{border-color:var(--accent)}.thumb img{width:100%;height:100%;object-fit:cover}.thumb button{position:absolute;right:4px;top:4px;border:0;border-radius:50%;width:23px;height:23px;background:#111c;color:#fff;cursor:pointer}
+.status{font-size:12px;color:var(--muted);margin-top:10px;min-height:18px}
+footer{text-align:center;color:#8a93a5;font-size:12px;padding:0 15px 25px}
+@media(max-width:900px){main{grid-template-columns:1fr}.panel{order:1}.workspace{order:2}.screen{min-height:260px}}
+@media(max-width:520px){header .top{align-items:flex-start;flex-direction:column}.inline{grid-template-columns:1fr}.stage-card{padding:12px}.screen{min-height:210px}}
+#screen:fullscreen{width:100vw;height:100vh;min-height:100vh;max-height:100vh;aspect-ratio:auto;border-radius:0}
+#screen:fullscreen img{width:100%;height:100%;max-width:100vw;max-height:100vh}
+#screen:fullscreen .caption{font-size:clamp(16px,2vw,28px);padding:5vh 3vw 3vh}
+#screen:-webkit-full-screen{width:100vw;height:100vh;min-height:100vh;max-height:100vh;aspect-ratio:auto;border-radius:0}
+#screen:-webkit-full-screen img{width:100%;height:100%;max-width:100vw;max-height:100vh}
+</style>
+</head>
+<body>
+<header><div class="top"><div><div class="brand">Photo <span>Presentation Studio</span></div><p>Turn your photos into a beautiful, continuous slideshow.</p></div><div style="font-size:12px;color:#e7e4ff">No account • No upload to a server • Runs in your browser</div></div></header>
+<main>
+<aside class="panel">
+  <h2 class="section-title">1. Add your photos</h2>
+  <div class="drop" id="dropZone" role="button" tabindex="0"><div class="up">＋</div><strong>Choose or drop multiple photos</strong><small>JPG, PNG, WEBP, GIF • Select as many as you like</small></div>
+  <input id="fileInput" type="file" accept="image/*" multiple>
+  <div class="status" id="photoStatus">No photos selected yet.</div>
+  <div class="field"><label for="interval">Slide interval <span id="intervalLabel">5 seconds</span></label><input id="interval" type="range" min="1" max="60" value="5" style="width:100%;accent-color:var(--accent)"></div>
+  <div class="inline">
+    <div class="field"><label for="transition">Transition</label><select id="transition"><option value="fade">Fade</option><option value="slide">Slide</option><option value="none">None</option></select></div>
+    <div class="field"><label for="fit">Photo display</label><select id="fit"><option value="contain">Fit (no crop)</option><option value="cover">Fill (may crop)</option></select></div>
+  </div>
+  <div class="field"><label for="bgColor">Presentation background</label><input id="bgColor" type="color" value="#111827" style="width:100%;height:42px;border:1px solid #d9deea;border-radius:10px;padding:4px;background:#fff"></div>
+  <div class="field"><label for="titleText">Presentation title (optional)</label><input id="titleText" type="text" placeholder="e.g. Our Family Memories" maxlength="80"></div>
+  <label class="check"><input id="loop" type="checkbox" checked> Repeat continuously until stopped</label>
+  <label class="check"><input id="showCaption" type="checkbox"> Show photo file name</label>
+  <div class="actions">
+    <button class="btn primary wide" id="startBtn">▶ Start Presentation</button>
+    <button class="btn dark" id="stopBtn">■ Stop</button>
+    <button class="btn light" id="prevBtn">‹ Previous</button>
+    <button class="btn light" id="nextBtn">Next ›</button>
+    <button class="btn outline wide" id="pptBtn">↓ Download PowerPoint (.pptx)</button>
+    <button class="btn outline" id="copyBtn">▣ Copy Presentation</button>
+    <button class="btn outline" id="shareBtn">↗ Share</button>
+    <button class="btn outline wide" id="emailBtn">✉ Email Presentation</button>
+    <button class="btn outline wide" id="photosBtn">↓ Download All Photos (.zip)</button>
+  </div>
+  <p class="hint">PowerPoint export creates one slide per photo and adds the selected title and timing details in each slide's speaker notes. The browser slideshow applies the selected interval, transition and repeat setting. Email opens your email app; attach the downloaded PPTX manually.</p>
+</aside>
+<section class="workspace">
+ <div class="stage-card">
+  <div class="stage-head"><h2 id="stageTitle">Your presentation preview</h2><div class="counter" id="counter">0 / 0</div></div>
+  <div class="screen" id="screen"><div class="empty" id="empty"><div style="font-size:42px">▧</div><b>Your photos will appear here</b><span>Upload multiple photos to get started.</span></div><img id="slideImage" alt="Current presentation slide"><div class="caption" id="caption"></div></div>
+  <div class="progress"><div id="progressBar"></div></div>
+  <div class="playbar"><button class="btn light" id="backBtn">‹</button><button class="btn primary" id="playPauseBtn">▶ Play</button><button class="btn light" id="forwardBtn">›</button><button class="btn dark" id="fullscreenBtn">⛶ Full Screen</button></div>
+  <div class="thumbs" id="thumbs"></div>
+ </div>
+ <div class="status" id="mainStatus" aria-live="polite">Ready. Upload photos to create your slideshow.</div>
+</section>
+</main>
+<footer>Photo Presentation Studio • Your selected photos are processed locally in this browser.</footer>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(() => {
+ const $ = id => document.getElementById(id);
+ let photos = [], current = 0, timer = null, running = false, startedAt = 0, tick = null;
+ const fileInput=$('fileInput'), screen=$('screen'), slideImage=$('slideImage');
+ const setStatus = msg => $('mainStatus').textContent = msg;
+ const intervalMs = () => Number($('interval').value)*1000;
+ const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function loadFiles(files){
+   const valid=[...files].filter(f=>f.type.startsWith('image/'));
+   valid.forEach(file=>{const url=URL.createObjectURL(file);photos.push({file,url,name:file.name});});
+   renderThumbs(); if(photos.length){showSlide(Math.min(current,photos.length-1));setStatus(`${photos.length} photo(s) ready. Configure your presentation and press Start.`);}
+   $('photoStatus').textContent=`${photos.length} photo(s) selected.`;
+ }
+ function renderThumbs(){
+   $('thumbs').innerHTML='';
+   photos.forEach((p,i)=>{const d=document.createElement('div');d.className='thumb'+(i===current?' active':'');d.innerHTML=`<img src="${p.url}" alt="${esc(p.name)}"><button title="Remove photo" aria-label="Remove ${esc(p.name)}">×</button>`;d.addEventListener('click',e=>{if(e.target.tagName==='BUTTON'){removePhoto(i);return;}stop();showSlide(i);});$('thumbs').appendChild(d);});
+ }
+ function showSlide(i){
+   if(!photos.length){slideImage.style.display='none';$('empty').style.display='block';$('counter').textContent='0 / 0';$('caption').style.display='none';return;}
+   current=(i+photos.length)%photos.length;const p=photos[current];
+   slideImage.src=p.url;slideImage.style.display='block';slideImage.style.objectFit=$('fit').value;
+   $('empty').style.display='none';screen.style.background=$('bgColor').value;
+   $('counter').textContent=`${current+1} / ${photos.length}`;
+   $('caption').textContent=$('showCaption').checked?p.name:'';$('caption').style.display=$('showCaption').checked?'block':'none';
+   $('stageTitle').textContent=$('titleText').value.trim()||'Your presentation preview';
+   [...$('thumbs').children].forEach((el,n)=>el.classList.toggle('active',n===current));
+   $('progressBar').style.width='0%';
+ }
+ function removePhoto(i){const p=photos[i];URL.revokeObjectURL(p.url);photos.splice(i,1);current=Math.max(0,Math.min(current,photos.length-1));renderThumbs();showSlide(current);$('photoStatus').textContent=`${photos.length} photo(s) selected.`;if(!photos.length)stop();}
+ function stop(){clearTimeout(timer);clearInterval(tick);timer=null;tick=null;running=false;$('playPauseBtn').textContent='▶ Play';$('progressBar').style.width='0%';}
+ function advance(){if(!photos.length)return;if(current===photos.length-1&&!$('loop').checked){stop();setStatus('Presentation completed.');return;}showSlide(current+1);schedule();}
+ function schedule(){clearTimeout(timer);clearInterval(tick);if(!running)return;startedAt=Date.now();tick=setInterval(()=>{$('progressBar').style.width=Math.min(100,(Date.now()-startedAt)/intervalMs()*100)+'%';},100);timer=setTimeout(advance,intervalMs());}
+ function start(){if(!photos.length){setStatus('Please upload at least one photo first.');return;}stop();running=true;$('playPauseBtn').textContent='Ⅱ Pause';setStatus('Presentation is playing. It will continue until you stop it or a non-repeating show finishes.');schedule();}
+ function pause(){if(running){stop();setStatus('Presentation paused. Press Play to resume.');}else start();}
+ function move(delta){if(!photos.length)return;stop();showSlide(current+delta);}
+ $('dropZone').addEventListener('click',()=>fileInput.click());$('dropZone').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fileInput.click();}});
+ fileInput.addEventListener('change',e=>loadFiles(e.target.files));
+ ['dragenter','dragover'].forEach(ev=>$('dropZone').addEventListener(ev,e=>{e.preventDefault();$('dropZone').classList.add('drag');}));
+ ['dragleave','drop'].forEach(ev=>$('dropZone').addEventListener(ev,e=>{e.preventDefault();$('dropZone').classList.remove('drag');}));
+ $('dropZone').addEventListener('drop',e=>loadFiles(e.dataTransfer.files));
+ $('interval').addEventListener('input',()=>{$('intervalLabel').textContent=$('interval').value+' seconds';if(running)schedule();});
+ $('fit').addEventListener('change',()=>{slideImage.style.objectFit=$('fit').value;});
+ $('bgColor').addEventListener('input',()=>screen.style.background=$('bgColor').value);
+ $('showCaption').addEventListener('change',()=>showSlide(current));
+ $('titleText').addEventListener('input',()=>{$('stageTitle').textContent=$('titleText').value.trim()||'Your presentation preview';});
+ $('startBtn').onclick=start;$('stopBtn').onclick=()=>{stop();setStatus('Presentation stopped.');};$('playPauseBtn').onclick=pause;
+ $('prevBtn').onclick=()=>move(-1);$('nextBtn').onclick=()=>move(1);$('backBtn').onclick=()=>move(-1);$('forwardBtn').onclick=()=>move(1);
+ async function toggleFullscreen(){
+   try{
+     if(!document.fullscreenElement){
+       if(screen.requestFullscreen) await screen.requestFullscreen();
+       else if(screen.webkitRequestFullscreen) screen.webkitRequestFullscreen();
+       else {setStatus('Full-screen mode is not supported by this browser.');return;}
+     }else{
+       if(document.exitFullscreen) await document.exitFullscreen();
+       else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+     }
+   }catch(err){setStatus('Could not change screen mode: '+err.message);}
+ }
+ $('fullscreenBtn').onclick=toggleFullscreen;
+ function updateFullscreenButton(){
+   const active=!!(document.fullscreenElement||document.webkitFullscreenElement);
+   $('fullscreenBtn').textContent=active?'⤢ Exit Full Screen':'⛶ Full Screen';
+   $('fullscreenBtn').title=active?'Return to normal screen':'Show presentation in full screen';
+ }
+ document.addEventListener('fullscreenchange',updateFullscreenButton);
+ document.addEventListener('webkitfullscreenchange',updateFullscreenButton);
+ function dataURL(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(blob);});}
+ async function imageData(photo){return await dataURL(photo.file);}
+ $('pptBtn').onclick=async()=>{
+   if(!photos.length){setStatus('Upload photos before exporting.');return;}
+   if(!window.PptxGenJS){setStatus('PowerPoint library could not load. Check your internet connection and try again.');return;}
+   const btn=$('pptBtn');btn.disabled=true;btn.textContent='Creating PowerPoint…';setStatus('Preparing PowerPoint slides…');
+   try{
+     const pptx=new PptxGenJS();pptx.layout='LAYOUT_WIDE';pptx.author='Photo Presentation Studio';pptx.subject='Photo slideshow';pptx.title=$('titleText').value.trim()||'Photo Presentation';pptx.company='Photo Presentation Studio';pptx.lang='en-US';
+     const W=13.333,H=7.5,bg=$('bgColor').value.replace('#','');
+     for(let i=0;i<photos.length;i++){
+       const s=pptx.addSlide();s.background={color:bg};
+       const data=await imageData(photos[i]);
+       const isCover=$('fit').value==='cover';
+       if(isCover){
+         // Center-crop to a 16:9 slide while preserving the source image's proportions.
+         const img=await createImageBitmap(photos[i].file);const target=16/9,ratio=img.width/img.height;
+         let sx=0,sy=0,sw=img.width,sh=img.height;if(ratio>target){sw=img.height*target;sx=(img.width-sw)/2;}else{sh=img.width/target;sy=(img.height-sh)/2;}
+         const c=document.createElement('canvas');c.width=1600;c.height=900;c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,1600,900);
+         s.addImage({data:c.toDataURL('image/jpeg',.92),x:0,y:0,w:W,h:H});
+       }else{
+         const img=await createImageBitmap(photos[i].file);const scale=Math.min(W/img.width,H/img.height),w=img.width*scale,h=img.height*scale;
+         s.addImage({data,x:(W-w)/2,y:(H-h)/2,w,h});
+       }
+       if($('showCaption').checked)s.addText(photos[i].name,{x:.35,y:6.95,w:12.6,h:.3,fontFace:'Aptos',fontSize:12,color:'FFFFFF',transparency:5,margin:0,align:'center'});
+       const note=`Slide ${i+1} of ${photos.length}. Browser presentation interval: ${$('interval').value} seconds. Transition: ${$('transition').value}. Repeat continuously: ${$('loop').checked?'Yes':'No'}. Display mode: ${$('fit').value}.`;
+       if(typeof s.addNotes==='function')s.addNotes(note);
+     }
+     await pptx.writeFile({fileName:(($('titleText').value.trim()||'Photo_Presentation').replace(/[^a-z0-9_-]+/gi,'_'))+'.pptx'});
+     setStatus('PowerPoint downloaded. It contains one slide per photo; configured browser timing is documented in slide notes.');
+   }catch(err){console.error(err);setStatus('Could not create PowerPoint: '+err.message);}
+   finally{btn.disabled=false;btn.textContent='↓ Download PowerPoint (.pptx)';}
+ };
+ $('photosBtn').onclick=async()=>{if(!photos.length){setStatus('Upload photos first.');return;}if(!window.JSZip){setStatus('ZIP library could not load. Check your internet connection.');return;}const zip=new JSZip();photos.forEach((p,i)=>zip.file(`${String(i+1).padStart(3,'0')}_${p.name}`,p.file));const blob=await zip.generateAsync({type:'blob'});downloadBlob(blob,'presentation_photos.zip');setStatus('All photos downloaded in a ZIP file.');};
+ function downloadBlob(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1500);}
+ $('emailBtn').onclick=()=>{const title=$('titleText').value.trim()||'Photo Presentation';const body=`Please find my photo presentation attached.\\n\\nPhotos: ${photos.length}\\nSlide interval: ${$('interval').value} seconds\\nTransition: ${$('transition').value}\\nRepeat: ${$('loop').checked?'Yes':'No'}\\n\\nPlease attach the PowerPoint file downloaded from Photo Presentation Studio.`;location.href=`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;};
+ $('shareBtn').onclick=async()=>{if(!photos.length){setStatus('Upload photos first.');return;}try{if(navigator.share){await navigator.share({title:$('titleText').value||'Photo Presentation',text:`Photo presentation with ${photos.length} photos. Download the PowerPoint from this page to share the complete slideshow.`});}else{await navigator.clipboard.writeText(`${$('titleText').value||'Photo Presentation'} — ${photos.length} photos, ${$('interval').value}s per slide.`);setStatus('Presentation details copied.');}}catch(e){if(e.name!=='AbortError')setStatus('Sharing is not available in this browser.');}};
+ $('copyBtn').onclick=async()=>{if(!photos.length){setStatus('Upload photos first.');return;}const title=esc($('titleText').value||'Photo Presentation');let slides='';for(const p of photos){slides+=`<section style="height:100vh;display:grid;place-items:center;background:${$('bgColor').value};page-break-after:always"><img style="max-width:100%;max-height:90vh;object-fit:${$('fit').value}" src="${await imageData(p)}"><p style="color:white">${$('showCaption').checked?esc(p.name):''}</p></section>`;}const html=`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title></head><body style="margin:0">${slides}</body></html>`;try{await navigator.clipboard.writeText(html);setStatus('A self-contained HTML copy of the presentation was copied to your clipboard. Paste it into an HTML file or editor.');}catch(e){downloadBlob(new Blob([html],{type:'text/html'}),'photo_presentation.html');setStatus('Clipboard access was blocked; downloaded a self-contained HTML presentation instead.');}};
+ showSlide(0);
+})();
+</script>
+</body>
+</html>
