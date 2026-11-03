@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartfelt Digital Greeting Card Studio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600&family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Inter:wght@400;500;600;700&family=Pacifico&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <!-- html2canvas for card export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        handwriting: ['Caveat', 'cursive'],
+                        cursive: ['Great Vibes', 'cursive'],
+                        pacifico: ['Pacifico', 'cursive'],
+                        serif: ['Playfair Display', 'serif'],
+                        cinzel: ['Cinzel', 'serif']
+                    },
+                    colors: {
+                        themeRed: '#d92b4b',
+                        themePink: '#fff0f3',
+                        themeGold: '#d4af37',
+                    }
+                }
+            }
+        }
+    </script>
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+    <style>
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f472b6;
+            border-radius: 4px;
+        }
+
+        /* Card Flipbook Engine Styling */
+        .perspective-1000 {
+            perspective: 1200px;
+        }
+        
+        .card-container {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Card Page Themes */
+        .theme-classic-red {
+            background: linear-gradient(135deg, #fff5f6 0%, #ffe3e8 100%);
+            border-color: #f43f5e;
+            color: #881337;
+        }
+        .theme-floral-pastel {
+            background: linear-gradient(135deg, #f0fdf4 0%, #fce7f3 100%);
+            border-color: #f472b6;
+            color: #701a75;
+        }
+        .theme-royal-gold {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-color: #d97706;
+            color: #78350f;
+        }
+        .theme-retro-vibez {
+            background: linear-gradient(135deg, #fefce8 0%, #e0e7ff 100%);
+            border-color: #6366f1;
+            color: #312e81;
+        }
+
+        /* Polaroid Photo Effect */
+        .photo-frame-polaroid {
+            background: white;
+            padding: 8px 8px 24px 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transform: rotate(-2deg);
+            transition: all 0.3s ease;
+        }
+        .photo-frame-polaroid:nth-child(even) {
+            transform: rotate(2deg);
+        }
+        .photo-frame-polaroid:hover {
+            transform: scale(1.05) rotate(0deg);
+            z-index: 10;
+        }
+
+        .photo-frame-tape {
+            position: relative;
+        }
+        .photo-frame-tape::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 30%;
+            width: 40%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px dashed rgba(0,0,0,0.1);
+            transform: rotate(-3deg);
+            z-index: 5;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .photo-frame-gold {
+            border: 6px solid #d4af37;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+            border-radius: 4px;
+        }
+
+        /* Stamp stickers */
+        .stamped-item {
+            position: absolute;
+            cursor: move;
+            user-select: none;
+            touch-action: none;
+            transition: transform 0.1s ease;
+        }
+        .stamped-item:hover {
+            outline: 2px dashed #ec4899;
+            border-radius: 4px;
+        }
+
+        /* Patterned borders */
+        .card-border-ribbon {
+            border: 8px solid transparent;
+            border-image: repeating-linear-gradient(45deg, #f43f5e, #f43f5e 10px, #ffffff 10px, #ffffff 20px) 10;
+        }
+
+        /* Custom Studio Brand Watermark */
+        .custom-brand-watermark {
+            font-family: 'Pacifico', cursive;
+            color: #d92b4b;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+        }
+
+        /* Dedicated Print Stylesheet: Ensures only the 4 card pages print cleanly */
+        @media print {
+            /* Hide UI headers, sidebars, buttons, floating indicators and modals */
+            header, section:first-of-type, .mb-4.flex, #pageIndicatorText, #lightboxModal, #shareModal {
+                display: none !important;
+            }
+
+            body {
+                background: white !important;
+                color: black !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            main {
+                display: block !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            section.lg\:col-span-7 {
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                min-height: 0 !important;
+            }
+
+            .card-container {
+                perspective: none !important;
+                transform: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-shadow: none !important;
+                position: static !important;
+            }
+
+            /* Unhide all card pages for printing */
+            .card-page {
+                display: flex !important;
+                position: relative !important;
+                width: 100% !important;
+                height: 9.5in !important;
+                max-height: 100vh !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                box-sizing: border-box !important;
+                margin-bottom: 0 !important;
+                border-width: 4px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* Force Inside Spread side-by-side layout in print */
+            #page-inside {
+                flex-direction: row !important;
+            }
+
+            #stampedStickersContainer {
+                position: absolute !important;
+                inset: 0 !important;
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col font-sans">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-white border-b border-rose-100 shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent font-pacifico" id="headerStudioName">
+                        Heartfelt Card Studio
+                    </h1>
+                    <p class="text-xs text-slate-400">Craft Custom Nostalgic Greeting Cards</p>
+                </div>
+            </div>
+
+            <!-- Action Toolbar -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <button id="musicToggleBtn" onclick="toggleBackgroundMusic()" class="p-2 rounded-full text-slate-600 hover:bg-rose-50 transition" title="Toggle Ambient Melody">
+                    <i class="fa-solid fa-music text-rose-500" id="musicIcon"></i>
+                </button>
+                <button onclick="previewPrintCard()" class="px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-print"></i>
+                    <span class="hidden sm:inline">Print / View</span>
+                </button>
+                <button onclick="openShareModal()" class="px-4 py-1.5 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 rounded-lg shadow-md transition flex items-center space-x-2">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <span>Share & Export</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Split-Screen -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- LEFT SIDE: Controls & Customization Panel (5 Columns) -->
+        <section class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-6rem)] sticky top-20">
+            
+            <!-- Tab Navigation -->
+            <div class="flex border-b border-slate-100 bg-slate-50/80 p-1 text-xs sm:text-sm font-medium text-slate-600 overflow-x-auto">
+                <button onclick="switchTab('preset')" id="tab-preset" class="tab-btn flex-1 py-2 px-3 rounded-lg text-center whitespace-nowrap bg-white text-rose-600 shadow-sm font-semibold transition">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Theme & Occasion
+                </button>
+                <button onclick="switchTab('text')" id="tab-text" class="tab-btn flex-1 py-2 px-3 rounded-lg text-center whitespace-nowrap hover:text-slate-900 transition">
+                    <i class="fa-solid fa-pen-nib mr-1"></i> Message
+                </button>
+                <button onclick="switchTab('photos')" id="tab-photos" class="tab-btn flex-1 py-2 px-3 rounded-lg text-center whitespace-nowrap hover:text-slate-900 transition">
+                    <i class="fa-solid fa-images mr-1"></i> Gallery
+                </button>
+                <button onclick="switchTab('stickers')" id="tab-stickers" class="tab-btn flex-1 py-2 px-3 rounded-lg text-center whitespace-nowrap hover:text-slate-900 transition">
+                    <i class="fa-solid fa-icons mr-1"></i> Stamps
+                </button>
+            </div>
+
+            <!-- Scrollable Tab Content Container -->
+            <div class="p-4 sm:p-5 overflow-y-auto flex-1 space-y-5" id="controlsContainer">
+
+                <!-- 1. PRESET & THEME TAB -->
+                <div id="panel-preset" class="tab-panel space-y-5">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Select Occasion</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            <button onclick="selectOccasion('birthday')" class="occasion-btn active p-2.5 rounded-xl border text-left flex flex-col items-center justify-center space-y-1 hover:border-rose-300 transition text-slate-700 bg-rose-50/50 border-rose-300">
+                                <span class="text-xl">🎂</span>
+                                <span class="text-xs font-semibold">Birthday</span>
+                            </button>
+                            <button onclick="selectOccasion('wedding')" class="occasion-btn p-2.5 rounded-xl border border-slate-200 text-left flex flex-col items-center justify-center space-y-1 hover:border-rose-300 transition text-slate-700">
+                                <span class="text-xl">💍</span>
+                                <span class="text-xs font-semibold">Wedding</span>
+                            </button>
+                            <button onclick="selectOccasion('anniversary')" class="occasion-btn p-2.5 rounded-xl border border-slate-200 text-left flex flex-col items-center justify-center space-y-1 hover:border-rose-300 transition text-slate-700">
+                                <span class="text-xl">🥂</span>
+                                <span class="text-xs font-semibold">Anniversary</span>
+                            </button>
+                            <button onclick="selectOccasion('farewell')" class="occasion-btn p-2.5 rounded-xl border border-slate-200 text-left flex flex-col items-center justify-center space-y-1 hover:border-rose-300 transition text-slate-700">
+                                <span class="text-xl">✈️</span>
+                                <span class="text-xs font-semibold">Farewell</span>
+                            </button>
+                            <button onclick="selectOccasion('friendship')" class="occasion-btn p-2.5 rounded-xl border border-slate-200 text-left flex flex-col items-center justify-center space-y-1 hover:border-rose-300 transition text-slate-700">
+                                <span class="text-xl">🤝</span>
+                                <span class="text-xs font-semibold">Friendship</span>
+                            </button>
+                            <button onclick="selectOccasion('love')" class="occasion-btn p-2.5 rounded-xl border border-slate-200 text-left flex flex-col items-center justify-center space-y-1 hover:border-rose-300 transition text-slate-700">
+                                <span class="text-xl">💖</span>
+                                <span class="text-xs font-semibold">Love Note</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Design Theme Palette</label>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <button onclick="setTheme('theme-classic-red')" class="p-3 rounded-xl border border-rose-200 bg-gradient-to-r from-rose-100 to-pink-100 text-rose-900 text-left flex items-center space-x-3 hover:shadow-sm transition">
+                                <div class="w-6 h-6 rounded-full bg-rose-500 border-2 border-white shadow-sm"></div>
+                                <div>
+                                    <p class="text-xs font-bold">Classic Romance</p>
+                                    <p class="text-[10px] opacity-75">Warm Reds & Pinks</p>
+                                </div>
+                            </button>
+                            <button onclick="setTheme('theme-floral-pastel')" class="p-3 rounded-xl border border-pink-200 bg-gradient-to-r from-emerald-50 to-pink-50 text-emerald-900 text-left flex items-center space-x-3 hover:shadow-sm transition">
+                                <div class="w-6 h-6 rounded-full bg-pink-400 border-2 border-white shadow-sm"></div>
+                                <div>
+                                    <p class="text-xs font-bold">Floral Pastel</p>
+                                    <p class="text-[10px] opacity-75">Soft Garden Tones</p>
+                                </div>
+                            </button>
+                            <button onclick="setTheme('theme-royal-gold')" class="p-3 rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-100 text-amber-900 text-left flex items-center space-x-3 hover:shadow-sm transition">
+                                <div class="w-6 h-6 rounded-full bg-amber-500 border-2 border-white shadow-sm"></div>
+                                <div>
+                                    <p class="text-xs font-bold">Royal Gold</p>
+                                    <p class="text-[10px] opacity-75">Elegant Champagne</p>
+                                </div>
+                            </button>
+                            <button onclick="setTheme('theme-retro-vibez')" class="p-3 rounded-xl border border-indigo-200 bg-gradient-to-r from-yellow-50 to-indigo-50 text-indigo-900 text-left flex items-center space-x-3 hover:shadow-sm transition">
+                                <div class="w-6 h-6 rounded-full bg-indigo-500 border-2 border-white shadow-sm"></div>
+                                <div>
+                                    <p class="text-xs font-bold">Retro Vibez</p>
+                                    <p class="text-[10px] opacity-75">Funky Pop Nostalgia</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Border Accent Style</label>
+                        <select id="borderStyleSelect" onchange="updateBorderStyle(this.value)" class="w-full text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                            <option value="border-ribbon">Ribbon Stitch Pattern</option>
+                            <option value="border-solid-thin">Delicate Thin Line</option>
+                            <option value="border-double-gold">Double Gold Line</option>
+                            <option value="border-none">Clean Minimal (No Border)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 2. WRITE-UPS & MESSAGES TAB -->
+                <div id="panel-text" class="tab-panel hidden space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Custom Studio / Creator Name</label>
+                        <input type="text" id="brandNameInput" value="Heartfelt Moments Studio" oninput="updateCardText()" placeholder="e.g. Crafted by Alex Studio" class="w-full text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-400 focus:outline-none mb-3 font-semibold text-rose-700">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Recipient & Sender</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="recipientInput" placeholder="To: Bestie / Mom" oninput="updateCardText()" class="text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-400 focus:outline-none">
+                            <input type="text" id="senderInput" placeholder="From: Alex" oninput="updateCardText()" class="text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-400 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Cover Title Headline</label>
+                        <input type="text" id="coverTitleInput" value="Happy Birthday!" oninput="updateCardText()" class="w-full text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-400 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-xs font-semibold uppercase tracking-wider text-slate-500">Poetry / Verse Preset</label>
+                            <button onclick="loadRandomPoem()" class="text-[10px] text-rose-600 hover:underline"><i class="fa-solid fa-rotate mr-1"></i>Shuffle Verse</button>
+                        </div>
+                        <select id="poemSelect" onchange="applySelectedPoem()" class="w-full text-xs p-2 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-400 focus:outline-none mb-2">
+                            <!-- Populated dynamically via JS -->
+                        </select>
+                        <textarea id="cardVerseInput" rows="4" oninput="updateCardText()" class="w-full text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-400 focus:outline-none" placeholder="Write custom poem or heartfelt message..."></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Font Family</label>
+                            <select id="fontFamilySelect" onchange="updateTypography()" class="w-full text-xs p-2 bg-slate-50 rounded-xl border border-slate-200">
+                                <option value="font-cursive">Great Vibes (Classic Script)</option>
+                                <option value="font-handwriting">Caveat (Handwritten)</option>
+                                <option value="font-pacifico">Pacifico (Playful)</option>
+                                <option value="font-serif">Playfair Display (Serif)</option>
+                                <option value="font-cinzel">Cinzel (Royal)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Text Color</label>
+                            <input type="color" id="textColorPicker" value="#881337" onchange="updateTypography()" class="w-full h-8 rounded-xl border border-slate-200 cursor-pointer p-0.5">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. PHOTO GALLERY TAB -->
+                <div id="panel-photos" class="tab-panel hidden space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Upload Memories (Multiple)</label>
+                        <div class="border-2 border-dashed border-rose-200 hover:border-rose-400 bg-rose-50/40 rounded-2xl p-4 text-center cursor-pointer transition" onclick="document.getElementById('photoFileInput').click()">
+                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-rose-400 mb-1"></i>
+                            <p class="text-xs font-semibold text-slate-700">Click or drag photos here</p>
+                            <p class="text-[10px] text-slate-400">PNG, JPG up to 5MB each</p>
+                            <input type="file" id="photoFileInput" multiple accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Photo Frame Style</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setPhotoFrameStyle('polaroid')" class="frame-style-btn p-2 rounded-lg border border-slate-200 text-xs font-medium text-center hover:border-rose-400 active bg-rose-50 text-rose-600">
+                                Polaroid
+                            </button>
+                            <button onclick="setPhotoFrameStyle('tape')" class="frame-style-btn p-2 rounded-lg border border-slate-200 text-xs font-medium text-center hover:border-rose-400">
+                                Washi Tape
+                            </button>
+                            <button onclick="setPhotoFrameStyle('gold')" class="frame-style-btn p-2 rounded-lg border border-slate-200 text-xs font-medium text-center hover:border-rose-400">
+                                Golden Frame
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Uploaded Photos Manager</label>
+                        <div id="uploadedPhotosThumbnails" class="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto p-1">
+                            <p class="text-xs text-slate-400 col-span-3 text-center py-4">No custom photos added yet. Default samples loaded on card.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. STICKERS & DECORATIONS TAB -->
+                <div id="panel-stickers" class="tab-panel hidden space-y-4">
+                    <p class="text-xs text-slate-500">Click any stamp to attach it to the current card page. Drag stamped icons to position them anywhere!</p>
+                    
+                    <div class="grid grid-cols-4 gap-2 text-center">
+                        <button onclick="addSticker('❤️')" class="p-3 text-2xl rounded-xl bg-slate-50 border border-slate-200 hover:bg-rose-100 hover:scale-110 transition">❤️</button>
+                        <button onclick="addSticker('🎈')" class="p-3 text-2xl rounded-xl bg-slate-50 border border-slate-200 hover:bg-rose-100 hover:scale-110 transition">🎈</button>
+                        <button onclick="addSticker('✨')" class="p-3 text-2xl rounded-xl bg-slate-50 border border-slate-200 hover:bg-rose-100 hover:scale-110 transition">✨</button>
+                        <button onclick="addSticker('🎂')" class="p-3 text-2xl rounded-xl bg-slate-50 border border-slate-200 hover:bg-rose-100 hover:scale-110 transition">🎂</button>
+                        <button onclick="addSticker('🌸')" class="p-3 text-2xl rounded-xl bg-slate-50 border border-slate-200 hover:bg-rose-100 hover:scale-110 transition">🌸</button>
+                        <button onclick="addSticker('💍')" class="p-3 text-2xl rounded-xl bg-slate-50 border border-slate-200 hover:bg-rose-100 hover:scale-110 transition">💍</button>
+                        <button onclick="addSticker('🎀')" class="p-3 text-2xl rounded-xl bg-slate-50 border border-slate-200 hover:bg-rose-100 hover:scale-110 transition">🎀</button>
+                        <button onclick="addSticker('⭐')" class="p-3 text-2xl rounded-xl bg-slate-50 border border-slate-200 hover:bg-rose-100 hover:scale-110 transition">⭐</button>
+                        <button onclick="addSticker('🥂')" class="p-3 text-2xl rounded-xl bg-slate-50 border border-slate-200 hover:bg-rose-100 hover:scale-110 transition">🥂</button>
+                        <button onclick="addSticker('🎁')" class="p-3 text-2xl rounded-xl bg-slate-50 border border-slate-200 hover:bg-rose-100 hover:scale-110 transition">🎁</button>
+                        <button onclick="addSticker('💌')" class="p-3 text-2xl rounded-xl bg-slate-50 border border-slate-200 hover:bg-rose-100 hover:scale-110 transition">💌</button>
+                        <button onclick="addSticker('🕊️')" class="p-3 text-2xl rounded-xl bg-slate-50 border border-slate-200 hover:bg-rose-100 hover:scale-110 transition">🕊️</button>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100">
+                        <button onclick="clearStickers()" class="w-full text-xs py-2 text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg font-medium transition">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Clear All Stamped Elements
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- RIGHT SIDE: Interactive 3D Card Studio Display (7 Columns) -->
+        <section class="lg:col-span-7 flex flex-col items-center justify-center min-h-[550px] bg-slate-200/60 rounded-2xl p-4 sm:p-8 relative border border-slate-300/60 shadow-inner">
+            
+            <!-- Page Navigation Controls -->
+            <div class="mb-4 flex items-center space-x-3 bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-sm border border-slate-200 z-10">
+                <button onclick="turnToPage('cover')" id="nav-btn-cover" class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-500 text-white shadow-sm transition">
+                    Cover Page
+                </button>
+                <button onclick="turnToPage('inside')" id="nav-btn-inside" class="px-3 py-1 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">
+                    Inside Pages (Spreads)
+                </button>
+                <button onclick="turnToPage('back')" id="nav-btn-back" class="px-3 py-1 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">
+                    Back Page
+                </button>
+            </div>
+
+            <!-- CARD WORKSPACE CONTAINER -->
+            <div class="w-full flex justify-center items-center perspective-1000 my-auto py-4">
+                
+                <div id="greetingCard" class="card-container w-full max-w-md md:max-w-xl aspect-[1/1.3] relative shadow-2xl rounded-xl transition-all duration-700">
+                    
+                    <!-- ================= PAGE 1: FRONT COVER ================= -->
+                    <div id="page-cover" class="card-page absolute inset-0 theme-classic-red p-6 sm:p-8 rounded-xl border-4 flex flex-col justify-between overflow-hidden shadow-md">
+                        
+                        <!-- Header Ribbon / Ornament -->
+                        <div class="text-center pt-2">
+                            <span class="text-3xl sm:text-4xl text-rose-500 inline-block animate-pulse">✨</span>
+                            <div class="text-xs tracking-widest uppercase font-bold text-rose-400 mt-1" id="coverSubheader">
+                                A Special Greeting For You
+                            </div>
+                        </div>
+
+                        <!-- Main Cover Title -->
+                        <div class="text-center my-auto px-4">
+                            <h2 id="displayCoverTitle" class="text-3xl sm:text-5xl font-cursive font-bold drop-shadow-sm leading-tight text-rose-900">
+                                Happy Birthday!
+                            </h2>
+                            <p id="displayCoverRecipient" class="text-lg sm:text-xl font-handwriting mt-3 text-rose-700 font-semibold">
+                                To Someone Very Special
+                            </p>
+                        </div>
+
+                        <!-- Cover Feature Illustration / Badge -->
+                        <div class="flex justify-center items-center my-2">
+                            <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-white/70 border-2 border-rose-300 p-2 shadow-inner flex items-center justify-center text-5xl sm:text-6xl">
+                                🎁
+                            </div>
+                        </div>
+
+                        <!-- Footer Accent -->
+                        <div class="text-center pb-2">
+                            <p class="text-[11px] uppercase tracking-wider font-semibold opacity-70" id="displayCoverFooterBrand">
+                                • Heartfelt Keepsake Edition •
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ================= PAGE 2 & 3: INSIDE SPREAD (DUAL PAGE VIEW) ================= -->
+                    <div id="page-inside" class="card-page absolute inset-0 hidden flex-col sm:flex-row theme-classic-red rounded-xl border-4 overflow-hidden shadow-md">
+                        
+                        <!-- Inside Left Page: Heartfelt Poem -->
+                        <div class="w-full sm:w-1/2 p-5 sm:p-6 border-b sm:border-b-0 sm:border-r border-rose-200/80 flex flex-col justify-between relative bg-white/40">
+                            <div>
+                                <p class="text-xs font-bold text-rose-400 uppercase tracking-wider mb-2" id="insideToLabel">To My Dearest Friend,</p>
+                                <div id="displayCardVerse" class="font-cursive text-base sm:text-lg leading-relaxed text-rose-950 whitespace-pre-line my-auto">
+                                    May your day be filled with laughter,
+                                    Joy that lasts forever after.
+                                    Wishing you a celebration,
+                                    Full of love and admiration!
+                                </div>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-rose-200/60 mt-2">
+                                <p class="text-xs text-rose-400 uppercase tracking-wider font-medium">With Warmest Wishes,</p>
+                                <p id="displaySenderLabel" class="font-handwriting text-lg text-rose-900 font-bold">From Your Bestie</p>
+                            </div>
+                        </div>
+
+                        <!-- Inside Right Page: Photo Gallery Collage -->
+                        <div class="w-full sm:w-1/2 p-4 sm:p-5 flex flex-col justify-between relative bg-white/20 overflow-y-auto">
+                            <div class="text-center mb-2">
+                                <span class="text-xs uppercase tracking-widest font-bold text-rose-400">Memory Gallery</span>
+                            </div>
+
+                            <!-- Photo Grid Collage -->
+                            <div id="insideGalleryGrid" class="grid grid-cols-2 gap-2 my-auto p-1">
+                                <!-- Default Sample Photos -->
+                                <div class="photo-frame-polaroid photo-frame-tape cursor-pointer" onclick="openLightbox('https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=500&q=80')">
+                                    <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=500&q=80" class="w-full h-20 object-cover rounded-sm" alt="Memory 1">
+                                </div>
+                                <div class="photo-frame-polaroid photo-frame-tape cursor-pointer" onclick="openLightbox('https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=500&q=80')">
+                                    <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=500&q=80" class="w-full h-20 object-cover rounded-sm" alt="Memory 2">
+                                </div>
+                            </div>
+
+                            <p class="text-[10px] text-center text-slate-400 mt-2 italic">Click photo to view full size</p>
+                        </div>
+                    </div>
+
+                    <!-- ================= PAGE 4: BACK COVER ================= -->
+                    <div id="page-back" class="card-page absolute inset-0 hidden theme-classic-red p-8 rounded-xl border-4 flex-col justify-between items-center text-center shadow-md">
+                        <div></div>
+
+                        <!-- Iconic Custom Studio Emblem -->
+                        <div class="space-y-3">
+                            <div class="w-20 h-20 mx-auto rounded-full bg-rose-500 text-white flex items-center justify-center text-3xl shadow-lg border-2 border-white">
+                                <i class="fa-solid fa-heart"></i>
+                            </div>
+                            <h3 id="displayBackBrandWatermark" class="custom-brand-watermark text-3xl sm:text-4xl">
+                                Heartfelt Moments Studio
+                            </h3>
+                            <p class="text-xs uppercase tracking-widest text-rose-500 font-semibold">
+                                The Most Expressive Way to Tell You Care
+                            </p>
+                        </div>
+
+                        <!-- Barcode & Stamp Footer -->
+                        <div class="w-full pt-6 border-t border-rose-200/80 flex flex-col items-center">
+                            <!-- Simulated Barcode -->
+                            <div class="h-8 w-36 bg-slate-800 rounded-xs opacity-80 flex items-center justify-around px-1 mb-1">
+                                <div class="w-1 h-full bg-white"></div>
+                                <div class="w-2 h-full bg-white"></div>
+                                <div class="w-0.5 h-full bg-white"></div>
+                                <div class="w-1.5 h-full bg-white"></div>
+                                <div class="w-1 h-full bg-white"></div>
+                                <div class="w-2.5 h-full bg-white"></div>
+                                <div class="w-1 h-full bg-white"></div>
+                            </div>
+                            <span class="text-[9px] text-slate-400 font-mono" id="displayBackCardSerial">NO. 884-CARD-STUDIO-2026</span>
+                        </div>
+                    </div>
+
+                    <!-- Floating Stamped Stickers Container Layer -->
+                    <div id="stampedStickersContainer" class="absolute inset-0 pointer-events-none z-20"></div>
+
+                </div>
+
+            </div>
+
+            <!-- Page Indicator Footer -->
+            <p class="text-xs text-slate-400 font-medium z-10" id="pageIndicatorText">Showing: Cover Page</p>
+        </section>
+
+    </main>
+
+    <!-- Lightbox Modal for Photo Preview -->
+    <div id="lightboxModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="relative max-w-3xl max-h-[90vh]">
+            <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-2xl hover:text-rose-400">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img id="lightboxImg" src="" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain" alt="Enlarged memory">
+        </div>
+    </div>
+
+    <!-- Export & Share Modal -->
+    <div id="shareModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-800 text-lg flex items-center space-x-2">
+                    <i class="fa-solid fa-heart-circle-check text-rose-500"></i>
+                    <span>Share & Download Card</span>
+                </h3>
+                <button onclick="closeShareModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <!-- Action 1: Download Image -->
+                <button onclick="downloadCardImage()" class="w-full py-3 px-4 bg-rose-500 hover:bg-rose-600 text-white font-semibold rounded-xl transition flex items-center justify-center space-x-2 shadow-sm">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download High-Res Card Image</span>
+                </button>
+
+                <!-- Action 2: Copy Shareable Link -->
+                <button onclick="copyShareLink()" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-link"></i>
+                    <span>Copy Card Link to Clipboard</span>
+                </button>
+
+                <!-- Action 3: Direct Email -->
+                <button onclick="sendCardEmail()" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>Send via Email (mailto)</span>
+                </button>
+            </div>
+
+            <!-- Toast alert message inside modal -->
+            <div id="shareToast" class="hidden text-center text-xs font-semibold py-2 px-3 rounded-lg bg-emerald-100 text-emerald-800">
+                Link copied to clipboard!
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Engine Logic -->
+    <script>
+        /* ================= STATE & DATA MANAGEMENT ================= */
+        const cardState = {
+            currentPage: 'cover', // 'cover', 'inside', 'back'
+            occasion: 'birthday',
+            theme: 'theme-classic-red',
+            borderStyle: 'border-ribbon',
+            brandName: 'Heartfelt Moments Studio',
+            recipient: 'Bestie',
+            sender: 'Alex',
+            coverTitle: 'Happy Birthday!',
+            verse: '',
+            fontFamily: 'font-cursive',
+            textColor: '#881337',
+            frameStyle: 'polaroid',
+            uploadedPhotos: [
+                'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=500&q=80',
+                'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=500&q=80'
+            ],
+            stickers: []
+        };
+
+        // Custom Preset Poems Database
+        const poemsDatabase = {
+            birthday: [
+                "May your day be filled with laughter,\nJoy that lasts forever after.\nWishing you a celebration,\nFull of love and admiration!",
+                "Another year more beautiful,\nAnother year more bright!\nMay all your wishes come true today,\nFrom morning until night!",
+                "Count your life by smiles, not tears.\nCount your age by friends, not years.\nHappy Birthday to someone special!"
+            ],
+            wedding: [
+                "Two hearts joined together,\nTwo lives entwined as one.\nMay your journey be blessed with joy,\nUnderneath the sun!",
+                "Wishing you a lifetime of love and happiness.\nMay the love you share today\nGrow stronger as you grow old together."
+            ],
+            anniversary: [
+                "To the couple who still holds hands,\nAnd understands life's sweet demands.\nHappy Anniversary with love!",
+                "Through all of life's twists and turns,\nYour love continues to shine and burn bright.\nCheers to many more beautiful years!"
+            ],
+            farewell: [
+                "Goodbyes are not the end,\nThey simply mean we'll miss you, friend!\nWishing you bright new horizons ahead!",
+                "May the next chapter of your journey\nBring you endless success and happy memories.\nStay in touch!"
+            ],
+            friendship: [
+                "A true friend is a gift so rare,\nAlways thoughtful, always there.\nThank you for being my sunshine!",
+                "Side by side or miles apart,\nReal friends are always close at heart.\nCheers to our bond!"
+            ],
+            love: [
+                "In a world full of ordinary things,\nYou are my favorite blessing.\nI love you more each day!",
+                "You bring color to my quiet world\nAnd music to my heart.\nForever and always yours."
+            ]
+        };
+
+        /* ================= INITIALIZATION ================= */
+        window.onload = function() {
+            selectOccasion('birthday');
+            renderPhotos();
+        };
+
+        /* ================= TAB SWITCHING ================= */
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-rose-600', 'shadow-sm', 'font-semibold');
+                btn.classList.add('hover:text-slate-900');
+            });
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
+
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            const activePanel = document.getElementById(`panel-${tabName}`);
+
+            if (activeBtn && activePanel) {
+                activeBtn.classList.add('bg-white', 'text-rose-600', 'shadow-sm', 'font-semibold');
+                activePanel.classList.remove('hidden');
+            }
+        }
+
+        /* ================= OCCASION & THEME CONTROLS ================= */
+        function selectOccasion(occasionKey) {
+            cardState.occasion = occasionKey;
+
+            // Highlight occasion button
+            document.querySelectorAll('.occasion-btn').forEach(btn => {
+                btn.classList.remove('bg-rose-50/50', 'border-rose-300');
+                btn.classList.add('border-slate-200');
+            });
+            event?.currentTarget?.classList?.add('bg-rose-50/50', 'border-rose-300');
+
+            // Populate poem selector dropdown
+            const poemSelect = document.getElementById('poemSelect');
+            poemSelect.innerHTML = '';
+            const list = poemsDatabase[occasionKey] || [];
+            
+            list.forEach((poem, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.textContent = `Verse #${index + 1}: ${poem.substring(0, 30)}...`;
+                poemSelect.appendChild(opt);
+            });
+
+            // Set default title
+            const titles = {
+                birthday: "Happy Birthday!",
+                wedding: "Happy Wedding Day!",
+                anniversary: "Happy Anniversary!",
+                farewell: "Wishing You The Best!",
+                friendship: "To My Dearest Friend",
+                love: "With All My Love"
+            };
+            cardState.coverTitle = titles[occasionKey] || "Greetings!";
+            document.getElementById('coverTitleInput').value = cardState.coverTitle;
+
+            applySelectedPoem();
+        }
+
+        function applySelectedPoem() {
+            const poemIndex = document.getElementById('poemSelect').value || 0;
+            const list = poemsDatabase[cardState.occasion] || [];
+            cardState.verse = list[poemIndex] || "Wishing you warmth, happiness, and love!";
+            document.getElementById('cardVerseInput').value = cardState.verse;
+            updateCardText();
+        }
+
+        function loadRandomPoem() {
+            const list = poemsDatabase[cardState.occasion] || [];
+            if (list.length === 0) return;
+            const randomIndex = Math.floor(Math.random() * list.length);
+            document.getElementById('poemSelect').value = randomIndex;
+            applySelectedPoem();
+        }
+
+        function setTheme(themeClass) {
+            cardState.theme = themeClass;
+            const pages = document.querySelectorAll('.card-page');
+            pages.forEach(p => {
+                p.className = p.className.replace(/theme-[a-z-]+/g, themeClass);
+            });
+        }
+
+        function updateBorderStyle(styleKey) {
+            cardState.borderStyle = styleKey;
+            const pages = document.querySelectorAll('.card-page');
+            pages.forEach(p => {
+                p.classList.remove('card-border-ribbon', 'border-double', 'border-rose-400');
+                if (styleKey === 'border-ribbon') {
+                    p.classList.add('card-border-ribbon');
+                } else if (styleKey === 'border-double-gold') {
+                    p.classList.add('border-8', 'border-double', 'border-amber-400');
+                } else if (styleKey === 'border-solid-thin') {
+                    p.classList.add('border-2', 'border-rose-300');
+                }
+            });
+        }
+
+        /* ================= TEXT & TYPOGRAPHY ================= */
+        function updateCardText() {
+            cardState.brandName = document.getElementById('brandNameInput').value.trim() || 'Heartfelt Moments Studio';
+            cardState.recipient = document.getElementById('recipientInput').value || 'Someone Special';
+            cardState.sender = document.getElementById('senderInput').value || 'A Dear Friend';
+            cardState.coverTitle = document.getElementById('coverTitleInput').value || 'Greetings!';
+            cardState.verse = document.getElementById('cardVerseInput').value || '';
+
+            // Update DOM Elements & Brand Labels
+            document.getElementById('headerStudioName').textContent = cardState.brandName;
+            document.getElementById('displayCoverTitle').textContent = cardState.coverTitle;
+            document.getElementById('displayCoverRecipient').textContent = `To ${cardState.recipient}`;
+            document.getElementById('displayCoverFooterBrand').textContent = `• ${cardState.brandName} Keepsake •`;
+            document.getElementById('insideToLabel').textContent = `To My Dearest ${cardState.recipient},`;
+            document.getElementById('displayCardVerse').textContent = cardState.verse;
+            document.getElementById('displaySenderLabel').textContent = `From ${cardState.sender}`;
+            document.getElementById('displayBackBrandWatermark').textContent = cardState.brandName;
+        }
+
+        function updateTypography() {
+            cardState.fontFamily = document.getElementById('fontFamilySelect').value;
+            cardState.textColor = document.getElementById('textColorPicker').value;
+
+            const verseElem = document.getElementById('displayCardVerse');
+            const titleElem = document.getElementById('displayCoverTitle');
+
+            // Reset fonts
+            verseElem.className = `font-cursive text-base sm:text-lg leading-relaxed whitespace-pre-line my-auto ${cardState.fontFamily}`;
+            verseElem.style.color = cardState.textColor;
+            titleElem.style.color = cardState.textColor;
+        }
+
+        /* ================= PAGE TURN SIMULATION ================= */
+        function turnToPage(pageKey) {
+            cardState.currentPage = pageKey;
+
+            const cover = document.getElementById('page-cover');
+            const inside = document.getElementById('page-inside');
+            const back = document.getElementById('page-back');
+
+            // Hide all
+            cover.classList.add('hidden');
+            inside.classList.add('hidden');
+            back.classList.add('hidden');
+
+            // Reset nav button styles
+            document.querySelectorAll('[id^="nav-btn-"]').forEach(btn => {
+                btn.className = "px-3 py-1 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-100 transition";
+            });
+
+            if (pageKey === 'cover') {
+                cover.classList.remove('hidden');
+                document.getElementById('nav-btn-cover').className = "px-3 py-1 rounded-full text-xs font-semibold bg-rose-500 text-white shadow-sm transition";
+                document.getElementById('pageIndicatorText').textContent = "Showing: Front Cover";
+            } else if (pageKey === 'inside') {
+                inside.classList.remove('hidden');
+                inside.classList.add('flex');
+                document.getElementById('nav-btn-inside').className = "px-3 py-1 rounded-full text-xs font-semibold bg-rose-500 text-white shadow-sm transition";
+                document.getElementById('pageIndicatorText').textContent = "Showing: Inside Left & Right Spread";
+            } else if (pageKey === 'back') {
+                back.classList.remove('hidden');
+                back.classList.add('flex');
+                document.getElementById('nav-btn-back').className = "px-3 py-1 rounded-full text-xs font-semibold bg-rose-500 text-white shadow-sm transition";
+                document.getElementById('pageIndicatorText').textContent = "Showing: Back Cover";
+            }
+        }
+
+        /* ================= PHOTO GALLERY MANAGER ================= */
+        function handlePhotoUpload(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    cardState.uploadedPhotos.push(e.target.result);
+                    renderPhotos();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function setPhotoFrameStyle(styleKey) {
+            cardState.frameStyle = styleKey;
+            
+            // Highlight frame style buttons
+            document.querySelectorAll('.frame-style-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-rose-50', 'text-rose-600');
+            });
+            event?.currentTarget?.classList?.add('active', 'bg-rose-50', 'text-rose-600');
+
+            renderPhotos();
+        }
+
+        function renderPhotos() {
+            const galleryGrid = document.getElementById('insideGalleryGrid');
+            const thumbsContainer = document.getElementById('uploadedPhotosThumbnails');
+
+            galleryGrid.innerHTML = '';
+            thumbsContainer.innerHTML = '';
+
+            if (cardState.uploadedPhotos.length === 0) {
+                thumbsContainer.innerHTML = '<p class="text-xs text-slate-400 col-span-3 text-center py-4">No custom photos added.</p>';
+                return;
+            }
+
+            cardState.uploadedPhotos.forEach((imgSrc, index) => {
+                // Card Photo Collage Item
+                const photoCard = document.createElement('div');
+                let frameClass = 'photo-frame-polaroid';
+                if (cardState.frameStyle === 'tape') frameClass = 'photo-frame-polaroid photo-frame-tape';
+                if (cardState.frameStyle === 'gold') frameClass = 'photo-frame-gold';
+
+                photoCard.className = `${frameClass} cursor-pointer transition`;
+                photoCard.onclick = () => openLightbox(imgSrc);
+
+                photoCard.innerHTML = `<img src="${imgSrc}" class="w-full h-20 sm:h-24 object-cover rounded-sm" alt="Memory ${index + 1}">`;
+                galleryGrid.appendChild(photoCard);
+
+                // Thumbnail Manager Item
+                const thumb = document.createElement('div');
+                thumb.className = "relative group rounded-lg overflow-hidden border border-slate-200 aspect-square";
+                thumb.innerHTML = `
+                    <img src="${imgSrc}" class="w-full h-full object-cover">
+                    <button onclick="removePhoto(${index})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] opacity-90 hover:opacity-100">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                `;
+                thumbsContainer.appendChild(thumb);
+            });
+        }
+
+        function removePhoto(index) {
+            cardState.uploadedPhotos.splice(index, 1);
+            renderPhotos();
+        }
+
+        function openLightbox(src) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightboxModal').classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.add('hidden');
+        }
+
+        /* ================= STICKERS & STAMPS ================= */
+        function addSticker(emoji) {
+            const container = document.getElementById('stampedStickersContainer');
+            const sticker = document.createElement('div');
+            
+            // Random default placement inside card container
+            const top = Math.floor(Math.random() * 60) + 20;
+            const left = Math.floor(Math.random() * 60) + 20;
+
+            sticker.className = "stamped-item text-3xl pointer-events-auto cursor-grab";
+            sticker.style.top = `${top}%`;
+            sticker.style.left = `${left}%`;
+            sticker.innerHTML = emoji;
+
+            makeDraggable(sticker);
+            container.appendChild(sticker);
+        }
+
+        function clearStickers() {
+            document.getElementById('stampedStickersContainer').innerHTML = '';
+        }
+
+        function makeDraggable(element) {
+            let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
+
+            element.onmousedown = dragMouseDown;
+            element.ontouchstart = dragTouchStart;
+
+            function dragMouseDown(e) {
+                e.preventDefault();
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function dragTouchStart(e) {
+                const touch = e.touches[0];
+                mouseX = touch.clientX;
+                mouseY = touch.clientY;
+                document.ontouchend = closeDragElement;
+                document.ontouchmove = elementTouchMove;
+            }
+
+            function elementDrag(e) {
+                e.preventDefault();
+                posX = mouseX - e.clientX;
+                posY = mouseY - e.clientY;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                element.style.top = (element.offsetTop - posY) + "px";
+                element.style.left = (element.offsetLeft - posX) + "px";
+            }
+
+            function elementTouchMove(e) {
+                const touch = e.touches[0];
+                posX = mouseX - touch.clientX;
+                posY = mouseY - touch.clientY;
+                mouseX = touch.clientX;
+                mouseY = touch.clientY;
+                element.style.top = (element.offsetTop - posY) + "px";
+                element.style.left = (element.offsetLeft - posX) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+                document.ontouchend = null;
+                document.ontouchmove = null;
+            }
+        }
+
+        /* ================= AUDIO AMBIANCE SYNTH ================= */
+        let audioCtx = null;
+        let isPlayingMusic = false;
+        let musicInterval = null;
+
+        function toggleBackgroundMusic() {
+            const icon = document.getElementById('musicIcon');
+            if (isPlayingMusic) {
+                clearInterval(musicInterval);
+                isPlayingMusic = false;
+                icon.className = "fa-solid fa-music text-rose-500";
+            } else {
+                isPlayingMusic = true;
+                icon.className = "fa-solid fa-volume-high text-rose-600 animate-bounce";
+                playSoftChimes();
+            }
+        }
+
+        function playSoftChimes() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            const notes = [261.63, 329.63, 392.00, 523.25, 440.00]; // Gentle C Major Arpeggio
+
+            let step = 0;
+            musicInterval = setInterval(() => {
+                if (!isPlayingMusic) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(notes[step % notes.length], audioCtx.currentTime);
+                
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1.2);
+
+                step++;
+            }, 800);
+        }
+
+        /* ================= EXPORT & SHARING ================= */
+        function openShareModal() {
+            document.getElementById('shareModal').classList.remove('hidden');
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.add('hidden');
+            document.getElementById('shareToast').classList.add('hidden');
+        }
+
+        function previewPrintCard() {
+            // Temporarily unhide all pages for browser print dialog renderer
+            const cover = document.getElementById('page-cover');
+            const inside = document.getElementById('page-inside');
+            const back = document.getElementById('page-back');
+
+            const currentActivePage = cardState.currentPage;
+
+            cover.classList.remove('hidden');
+            inside.classList.remove('hidden');
+            inside.classList.add('flex');
+            back.classList.remove('hidden');
+            back.classList.add('flex');
+
+            window.print();
+
+            // Restore current interactive preview view after print dialog closes
+            setTimeout(() => {
+                turnToPage(currentActivePage);
+            }, 500);
+        }
+
+        function downloadCardImage() {
+            const cardElem = document.getElementById('greetingCard');
+            showToast('Generating Card Render...');
+
+            html2canvas(cardElem, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement('a');
+                const cleanBrandName = cardState.brandName.replace(/[^a-zA-Z0-9]/g, '-');
+                link.download = `Greeting-Card-${cleanBrandName}-${cardState.occasion}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast('Card Downloaded Successfully!');
+            }).catch(err => {
+                showToast('Export failed. Please try again.');
+            });
+        }
+
+        function copyShareLink() {
+            const textToCopy = `I created a digital greeting card for you using ${cardState.brandName}! "${cardState.coverTitle}" - To ${cardState.recipient}`;
+            
+            // Clipboard fallback logic
+            const tempInput = document.createElement('textarea');
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            showToast('Greeting message & link copied to clipboard!');
+        }
+
+        function sendCardEmail() {
+            const subject = encodeURIComponent(`A Special Greeting For You: ${cardState.coverTitle}`);
+            const body = encodeURIComponent(`To ${cardState.recipient},\n\n${cardState.verse}\n\nWith Love,\n${cardState.sender}\n\n(Created with ${cardState.brandName})`);
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('shareToast');
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
