@@ -1,0 +1,701 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floating Photo Presentation Studio</title>
+<meta name="description" content="Create beautiful floating photo presentations online. Upload multiple photos, configure slide intervals, and enjoy fullscreen presentations.">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+<style>
+:root {
+    --primary: #6558e8;
+    --secondary: #9b55dc;
+    --dark: #17172b;
+    --panel: #ffffff;
+    --background: #f2f3fb;
+    --text: #25243b;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: var(--text);
+    background: linear-gradient(135deg,#edf0ff,#f9efff);
+    min-height: 100vh;
+}
+header {
+    text-align: center;
+    padding: 25px 15px;
+    color: white;
+    background: linear-gradient(120deg,#5146c8,#a34fce);
+}
+header h1 { margin: 0 0 8px; font-size: 29px; }
+header p { margin: 0; opacity: .9; }
+.container {
+    width: min(1200px,94%);
+    margin: 24px auto;
+}
+.panel {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 28px #302b6415;
+    margin-bottom: 20px;
+}
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: end;
+}
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+label { font-size: 13px; font-weight: bold; }
+input[type="number"], select {
+    padding: 11px;
+    border: 1px solid #d8d7e8;
+    border-radius: 8px;
+    min-width: 120px;
+    font-size: 14px;
+}
+.upload-area {
+    border: 2px dashed #9b91e8;
+    background: #f7f5ff;
+    border-radius: 12px;
+    padding: 22px;
+    text-align: center;
+    margin-bottom: 18px;
+}
+.upload-area strong {
+    display: block;
+    margin-bottom: 8px;
+}
+.upload-area input {
+    display: block;
+    max-width: 100%;
+    margin: 12px auto 0;
+}
+button {
+    border: none;
+    border-radius: 9px;
+    padding: 12px 17px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    background: var(--primary);
+    font-size: 14px;
+    transition: .2s;
+}
+button:hover { transform: translateY(-2px); filter: brightness(1.08); }
+button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+.btn-purple { background: #8151cb; }
+.btn-green { background: #159b71; }
+.btn-orange { background: #e18a2c; }
+.btn-red { background: #d94d61; }
+.btn-dark { background: #29283e; }
+.btn-light { background: #e9e8f7; color: #33304d; }
+#photoCount { color: #6255c7; font-weight: bold; margin-top: 10px; }
+.thumbnail-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+.thumbnail {
+    width: 85px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 3px solid transparent;
+    cursor: pointer;
+}
+.thumbnail.active { border-color: var(--primary); }
+.stage {
+    position: relative;
+    min-height: 530px;
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(circle at 20% 20%,#7667cf 0,transparent 35%),
+      radial-gradient(circle at 80% 80%,#b95bcb 0,transparent 35%),
+      linear-gradient(135deg,#19182e,#34305d);
+    padding: 35px;
+}
+.stage::before, .stage::after {
+    content: "";
+    position: absolute;
+    border: 1px solid #ffffff20;
+    border-radius: 50%;
+    width: 430px;
+    height: 430px;
+    animation: orbit 18s linear infinite;
+}
+.stage::after {
+    width: 600px;
+    height: 600px;
+    animation-direction: reverse;
+}
+@keyframes orbit {
+    from { transform: rotate(0deg) scale(1); }
+    to { transform: rotate(360deg) scale(1.1); }
+}
+.photo-card {
+    position: relative;
+    z-index: 2;
+    max-width: min(750px,90%);
+    max-height: 430px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 13px;
+    box-shadow: 0 25px 70px #0008;
+    transform: rotate(-2deg);
+    animation: floatPhoto 4s ease-in-out infinite;
+}
+.photo-card img {
+    display: block;
+    max-width: 100%;
+    max-height: 390px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 6px;
+}
+@keyframes floatPhoto {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-13px) rotate(1deg); }
+}
+.photo-caption {
+    text-align: center;
+    font-size: 13px;
+    color: #555;
+    padding: 8px 3px 2px;
+}
+.stage-title {
+    position: absolute;
+    top: 20px;
+    left: 15px;
+    right: 15px;
+    text-align: center;
+    color: white;
+    font-size: 19px;
+    font-weight: bold;
+    z-index: 3;
+}
+.stage-counter {
+    position: absolute;
+    bottom: 18px;
+    right: 20px;
+    color: white;
+    background: #0007;
+    border-radius: 20px;
+    padding: 8px 14px;
+    z-index: 3;
+}
+.stage-empty {
+    position: relative;
+    z-index: 3;
+    color: white;
+    text-align: center;
+}
+.stage-empty .symbol { font-size: 65px; }
+.status {
+    text-align: center;
+    margin-top: 12px;
+    font-weight: bold;
+    color: #6558c9;
+}
+.progress-track {
+    height: 5px;
+    background: #e4e1f5;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+.progress-bar {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg,#6558e8,#c05bd4);
+    transition: width .2s linear;
+}
+.fullscreen .stage {
+    min-height: 100vh;
+    border-radius: 0;
+}
+.fullscreen .photo-card {
+    max-width: 88vw;
+    max-height: 80vh;
+}
+.fullscreen .photo-card img {
+    max-height: 72vh;
+}
+.fullscreen header,
+.fullscreen .settings-panel,
+.fullscreen .thumbnail-panel,
+.fullscreen .status,
+.fullscreen .progress-track,
+.fullscreen .stage-controls {
+    display: none !important;
+}
+.fullscreen .container {
+    width: 100%;
+    margin: 0;
+}
+.fullscreen .panel {
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+footer {
+    text-align: center;
+    padding: 22px;
+    color: #777;
+    font-size: 13px;
+}
+@media(max-width:650px) {
+    header h1 { font-size: 23px; }
+    .stage { min-height: 400px; padding: 15px; }
+    .photo-card { max-width: 94%; }
+    .controls button { flex: 1 1 42%; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>📸 Floating Photo Presentation Studio</h1>
+    <p>Turn your favourite photographs into a beautiful floating slideshow</p>
+</header>
+
+<div class="container">
+
+    <section class="panel settings-panel">
+        <h2>1. Upload Your Photographs</h2>
+
+        <div class="upload-area" id="uploadArea">
+            <strong>Choose multiple photographs at once</strong>
+            <div>Select photos from your computer. You can select all photos using Ctrl + A.</div>
+            <input
+                type="file"
+                id="photoInput"
+                accept="image/*"
+                multiple
+                aria-label="Select multiple photographs">
+            <div id="photoCount">No photographs selected</div>
+        </div>
+
+        <div class="controls">
+            <div class="field">
+                <label for="interval">Slide interval</label>
+                <input type="number" id="interval" value="5" min="1" max="300">
+            </div>
+
+            <div class="field">
+                <label for="transition">Photo animation</label>
+                <select id="transition">
+                    <option value="float">Floating</option>
+                    <option value="zoom">Zoom</option>
+                    <option value="rotate">Rotate</option>
+                    <option value="none">No animation</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="captionMode">Photo caption</label>
+                <select id="captionMode">
+                    <option value="filename">Show filename</option>
+                    <option value="none">Hide caption</option>
+                </select>
+            </div>
+
+            <button onclick="startPresentation()" class="btn-green">▶ Start Presentation</button>
+            <button onclick="pausePresentation()" class="btn-orange">⏸ Pause</button>
+            <button onclick="stopPresentation()" class="btn-red">■ Stop</button>
+        </div>
+    </section>
+
+    <section class="panel thumbnail-panel">
+        <h2>2. Uploaded Photographs</h2>
+        <div id="thumbnailList" class="thumbnail-list">
+            <span>No photographs uploaded yet.</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>3. Presentation Screen</h2>
+
+        <div class="stage" id="stage">
+            <div class="stage-title" id="stageTitle">My Photo Presentation</div>
+            <div class="stage-empty" id="emptyMessage">
+                <div class="symbol">🖼️</div>
+                <h2>Your presentation will appear here</h2>
+                <p>Upload multiple photos and click Start Presentation.</p>
+            </div>
+            <div class="photo-card" id="photoCard" hidden>
+                <img id="slideImage" alt="Presentation photograph">
+                <div class="photo-caption" id="photoCaption"></div>
+            </div>
+            <div class="stage-counter" id="counter">0 / 0</div>
+        </div>
+
+        <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="status" id="status">Ready to create your presentation.</div>
+
+        <div class="controls stage-controls" style="justify-content:center;margin-top:18px">
+            <button class="btn-light" onclick="previousPhoto()">❮ Previous</button>
+            <button class="btn-purple" onclick="nextPhoto()">Next ❯</button>
+            <button class="btn-dark" onclick="toggleFullscreen()">⛶ Full Screen</button>
+        </div>
+    </section>
+
+    <section class="panel settings-panel">
+        <h2>4. Presentation Controls</h2>
+        <div class="controls">
+            <button class="btn-green" onclick="startPresentation()">▶ Play</button>
+            <button class="btn-orange" onclick="pausePresentation()">⏸ Pause</button>
+            <button class="btn-red" onclick="stopPresentation()">■ Stop</button>
+            <button class="btn-light" onclick="previousPhoto()">❮ Previous Photo</button>
+            <button class="btn-light" onclick="nextPhoto()">Next Photo ❯</button>
+            <button class="btn-dark" onclick="toggleFullscreen()">⛶ Full Screen</button>
+        </div>
+        <p style="font-size:13px;color:#777;margin-top:15px">
+            Keyboard shortcuts: Space = Pause/Play, Left Arrow = Previous,
+            Right Arrow = Next, Escape = Exit Full Screen.
+        </p>
+    </section>
+
+</div>
+
+<footer>
+    Floating Photo Presentation Studio | Your photographs stay in your browser.
+</footer>
+
+<script>
+const photoInput = document.getElementById("photoInput");
+const thumbnailList = document.getElementById("thumbnailList");
+const photoCount = document.getElementById("photoCount");
+const stage = document.getElementById("stage");
+const slideImage = document.getElementById("slideImage");
+const photoCard = document.getElementById("photoCard");
+const photoCaption = document.getElementById("photoCaption");
+const counter = document.getElementById("counter");
+const statusText = document.getElementById("status");
+const progressBar = document.getElementById("progressBar");
+const emptyMessage = document.getElementById("emptyMessage");
+
+let photos = [];
+let currentIndex = 0;
+let timer = null;
+let progressTimer = null;
+let running = false;
+let paused = false;
+let elapsed = 0;
+let slideStartedAt = 0;
+
+function clearTimers() {
+    clearTimeout(timer);
+    clearInterval(progressTimer);
+    timer = null;
+    progressTimer = null;
+}
+
+function getInterval() {
+    const seconds = Number(document.getElementById("interval").value);
+    return Math.max(1, Math.min(300, seconds || 5)) * 1000;
+}
+
+/* Handle multiple photo selection */
+photoInput.addEventListener("change", function(event) {
+    const selectedFiles = Array.from(event.target.files || []);
+
+    if (!selectedFiles.length) return;
+
+    const imageFiles = selectedFiles.filter(file =>
+        file.type && file.type.startsWith("image/")
+    );
+
+    if (!imageFiles.length) {
+        alert("Please select valid image files.");
+        return;
+    }
+
+    stopPresentation();
+
+    photos.forEach(photo => URL.revokeObjectURL(photo.url));
+
+    photos = imageFiles.map(file => ({
+        name: file.name,
+        url: URL.createObjectURL(file)
+    }));
+
+    currentIndex = 0;
+    renderThumbnails();
+    showPhoto(0);
+
+    photoCount.textContent =
+        photos.length + " photograph(s) uploaded successfully.";
+
+    statusText.textContent = "Your photographs are ready.";
+
+    // Allow the same files to be selected again later.
+    photoInput.value = "";
+});
+
+function renderThumbnails() {
+    thumbnailList.innerHTML = "";
+
+    photos.forEach((photo, index) => {
+        const img = document.createElement("img");
+        img.src = photo.url;
+        img.alt = photo.name;
+        img.title = photo.name;
+        img.className = "thumbnail";
+        img.addEventListener("click", () => {
+            stopPresentation();
+            showPhoto(index);
+        });
+        thumbnailList.appendChild(img);
+    });
+}
+
+function updateThumbnails() {
+    document.querySelectorAll(".thumbnail").forEach((img, index) => {
+        img.classList.toggle("active", index === currentIndex);
+    });
+}
+
+function showPhoto(index) {
+    if (!photos.length) return;
+
+    currentIndex = (index + photos.length) % photos.length;
+
+    const photo = photos[currentIndex];
+
+    slideImage.src = photo.url;
+    slideImage.alt = photo.name;
+
+    photoCaption.textContent =
+        document.getElementById("captionMode").value === "filename"
+        ? photo.name : "";
+
+    photoCaption.style.display =
+        document.getElementById("captionMode").value === "filename"
+        ? "block" : "none";
+
+    photoCard.hidden = false;
+    emptyMessage.style.display = "none";
+
+    counter.textContent =
+        (currentIndex + 1) + " / " + photos.length;
+
+    updateThumbnails();
+    applyAnimation();
+    progressBar.style.width = "0%";
+}
+
+function applyAnimation() {
+    const mode = document.getElementById("transition").value;
+
+    photoCard.style.animation = "none";
+    photoCard.style.transform = "none";
+
+    if (mode === "float") {
+        photoCard.style.animation = "floatPhoto 4s ease-in-out infinite";
+    } else if (mode === "zoom") {
+        photoCard.style.animation = "zoomPhoto 4s ease-in-out infinite";
+    } else if (mode === "rotate") {
+        photoCard.style.animation = "rotatePhoto 6s ease-in-out infinite";
+    }
+}
+
+function nextPhoto() {
+    if (!photos.length) {
+        alert("Please upload photographs first.");
+        return;
+    }
+    showPhoto(currentIndex + 1);
+    if (running && !paused) scheduleNext();
+}
+
+function previousPhoto() {
+    if (!photos.length) {
+        alert("Please upload photographs first.");
+        return;
+    }
+    showPhoto(currentIndex - 1);
+    if (running && !paused) scheduleNext();
+}
+
+function scheduleNext() {
+    clearTimers();
+
+    const duration = getInterval();
+    elapsed = 0;
+    slideStartedAt = Date.now();
+
+    progressTimer = setInterval(() => {
+        const passed = Date.now() - slideStartedAt;
+        const percentage = Math.min(100, (passed / duration) * 100);
+        progressBar.style.width = percentage + "%";
+    }, 100);
+
+    timer = setTimeout(() => {
+        showPhoto(currentIndex + 1);
+        if (running && !paused) scheduleNext();
+    }, duration);
+}
+
+function startPresentation() {
+    if (!photos.length) {
+        alert("Please upload multiple photographs first.");
+        return;
+    }
+
+    clearTimers();
+    running = true;
+    paused = false;
+
+    showPhoto(currentIndex);
+    statusText.textContent = "▶ Presentation is running.";
+
+    scheduleNext();
+}
+
+function pausePresentation() {
+    if (!running || paused) return;
+
+    elapsed += Date.now() - slideStartedAt;
+    clearTimers();
+    paused = true;
+
+    statusText.textContent = "⏸ Presentation paused.";
+}
+
+function stopPresentation() {
+    clearTimers();
+    running = false;
+    paused = false;
+    elapsed = 0;
+    progressBar.style.width = "0%";
+
+    if (photos.length) {
+        statusText.textContent = "Presentation stopped.";
+    }
+}
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        stage.requestFullscreen?.().catch(() => {
+            alert("Fullscreen is not supported by this browser.");
+        });
+    } else {
+        document.exitFullscreen?.();
+    }
+}
+
+document.addEventListener("fullscreenchange", () => {
+    document.body.classList.toggle(
+        "fullscreen",
+        Boolean(document.fullscreenElement)
+    );
+});
+
+document.addEventListener("keydown", event => {
+    if (event.code === "Escape") {
+        if (document.fullscreenElement) document.exitFullscreen();
+        return;
+    }
+
+    if (event.target.matches("input, select")) return;
+
+    if (event.code === "Space") {
+        event.preventDefault();
+        if (!running || paused) startPresentation();
+        else pausePresentation();
+    }
+
+    if (event.code === "ArrowRight") nextPhoto();
+    if (event.code === "ArrowLeft") previousPhoto();
+});
+
+/* Keep the slideshow interval accurate when changed before starting */
+document.getElementById("transition").addEventListener("change", applyAnimation);
+
+/* Drag and drop photo support */
+const uploadArea = document.getElementById("uploadArea");
+
+uploadArea.addEventListener("dragover", event => {
+    event.preventDefault();
+    uploadArea.style.background = "#ece8ff";
+});
+
+uploadArea.addEventListener("dragleave", () => {
+    uploadArea.style.background = "#f7f5ff";
+});
+
+uploadArea.addEventListener("drop", event => {
+    event.preventDefault();
+    uploadArea.style.background = "#f7f5ff";
+
+    const files = Array.from(event.dataTransfer.files)
+        .filter(file => file.type.startsWith("image/"));
+
+    if (!files.length) {
+        alert("Please drop image files here.");
+        return;
+    }
+
+    stopPresentation();
+    photos.forEach(photo => URL.revokeObjectURL(photo.url));
+
+    photos = files.map(file => ({
+        name: file.name,
+        url: URL.createObjectURL(file)
+    }));
+
+    currentIndex = 0;
+    renderThumbnails();
+    showPhoto(0);
+
+    photoCount.textContent =
+        photos.length + " photograph(s) uploaded successfully.";
+
+    statusText.textContent = "Your photographs are ready.";
+});
+</script>
+
+<style>
+@keyframes zoomPhoto {
+    0%,100% { transform: scale(.94); }
+    50% { transform: scale(1.03); }
+}
+@keyframes rotatePhoto {
+    0%,100% { transform: rotate(-4deg) translateY(0); }
+    50% { transform: rotate(4deg) translateY(-10px); }
+}
+</style>
+
+</body>
+</html>
