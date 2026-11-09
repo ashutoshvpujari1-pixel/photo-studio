@@ -1,0 +1,940 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo to White Background Studio</title>
+<meta name="description" content="Free online AI photo background remover. Convert any photo into a white background passport or custom size photograph.">
+<meta name="theme-color" content="#1746a2">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+<style>
+:root {
+    --primary:#2457d6;
+    --dark:#172b50;
+    --bg:#f3f6fc;
+    --border:#dce4f1;
+    --green:#16864d;
+}
+* {box-sizing:border-box}
+body {
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:var(--bg);
+    color:#19243b;
+}
+header {
+    background:linear-gradient(120deg,#142b55,#3266e2);
+    color:white;
+    text-align:center;
+    padding:32px 15px;
+}
+header h1 {margin:0 0 10px;font-size:28px}
+header p {margin:0;color:#e0eaff;font-size:14px}
+.container {max-width:1150px;margin:25px auto;padding:0 16px}
+.panel {
+    background:white;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:23px;
+    margin-bottom:20px;
+    box-shadow:0 5px 20px #152d5010;
+}
+h2 {font-size:19px;margin:0 0 20px}
+.upload {
+    border:2px dashed #91a9d7;
+    background:#f7f9ff;
+    border-radius:12px;
+    text-align:center;
+    padding:35px 15px;
+    cursor:pointer;
+}
+.upload:hover,.upload.dragover {
+    border-color:var(--primary);
+    background:#edf3ff;
+}
+.upload .symbol {font-size:40px;margin-bottom:10px}
+.upload strong {display:block;font-size:18px;margin-bottom:8px}
+.upload p {font-size:13px;color:#718096;margin:0}
+.controls {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:16px;
+    margin-top:22px;
+}
+.field label {
+    display:block;
+    font-weight:bold;
+    font-size:13px;
+    margin-bottom:8px;
+}
+.field select,.field input {
+    width:100%;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:white;
+    font-size:14px;
+}
+button {
+    border:0;
+    border-radius:8px;
+    padding:12px 18px;
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+    background:var(--primary);
+    color:white;
+}
+button:hover {filter:brightness(.93)}
+button:disabled {opacity:.5;cursor:not-allowed}
+.generate {width:100%;margin-top:22px;padding:16px;font-size:16px}
+.secondary {background:#e9efff;color:#2449aa}
+.green {background:var(--green)}
+.dark {background:#263750}
+.status {
+    display:none;
+    margin-top:15px;
+    padding:13px;
+    border-radius:8px;
+    font-size:13px;
+    line-height:1.6;
+    overflow-wrap:anywhere;
+    background:#edf3ff;
+    color:#23489b;
+}
+.status.error {background:#fff0f0;color:#b42318}
+.status.success {background:#eaf9f0;color:#13713e}
+.progress {
+    display:none;
+    height:7px;
+    margin-top:13px;
+    background:#e6ebf3;
+    border-radius:10px;
+    overflow:hidden;
+}
+.progress-bar {
+    height:100%;
+    width:0;
+    background:var(--primary);
+    transition:width .3s;
+}
+.preview-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:20px;
+}
+.preview-card {
+    background:#f7f9fd;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px;
+    text-align:center;
+    min-width:0;
+}
+.preview-card h3 {font-size:15px;margin:0 0 15px}
+.preview-card img {
+    max-width:100%;
+    max-height:380px;
+    object-fit:contain;
+    background:white;
+    border:1px solid #ddd;
+}
+.placeholder {
+    min-height:250px;
+    display:grid;
+    place-items:center;
+    padding:15px;
+    color:#8794a8;
+    background:white;
+    border:1px dashed #ccd5e4;
+    border-radius:8px;
+}
+#resultSection {display:none}
+.actions {display:flex;flex-wrap:wrap;gap:10px}
+.actions button {flex:1 1 160px}
+.note,.file-info {
+    color:#718096;
+    font-size:12px;
+    line-height:1.7;
+    margin-top:15px;
+}
+footer {
+    text-align:center;
+    padding:25px;
+    font-size:12px;
+    color:#718096;
+}
+@media(max-width:650px) {
+    header h1 {font-size:23px}
+    .panel {padding:16px}
+    .preview-grid {grid-template-columns:1fr}
+    .actions button {flex:1 1 40%}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Photo to White Background Studio</h1>
+    <p>Convert any photograph into a professional white background photo</p>
+</header>
+
+<main class="container">
+
+<section class="panel">
+    <h2>1. Upload Your Photograph</h2>
+
+    <div class="upload" id="uploadArea">
+        <div class="symbol">📷</div>
+        <strong>Click here or drag and drop your photograph</strong>
+        <p>JPG, JPEG, PNG and WebP supported | Maximum 25 MB</p>
+        <input type="file" id="photoInput"
+               accept="image/jpeg,image/png,image/webp"
+               hidden>
+    </div>
+
+    <div class="file-info" id="fileInfo"></div>
+
+    <div class="controls">
+
+        <div class="field">
+            <label for="sizeMode">Output Photo Size</label>
+            <select id="sizeMode">
+                <option value="original">Original Photo Size</option>
+                <option value="passport">Passport Size (35 × 45 mm)</option>
+                <option value="square">Square Photo (2 × 2 inches)</option>
+                <option value="custom">Custom Size</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="dpi">Print Resolution</label>
+            <select id="dpi">
+                <option value="150">150 DPI</option>
+                <option value="300" selected>300 DPI</option>
+                <option value="600">600 DPI</option>
+            </select>
+        </div>
+
+        <div class="field" id="customWidthBox" style="display:none">
+            <label for="customWidth">Width (mm)</label>
+            <input type="number" id="customWidth"
+                   min="5" max="500" value="35">
+        </div>
+
+        <div class="field" id="customHeightBox" style="display:none">
+            <label for="customHeight">Height (mm)</label>
+            <input type="number" id="customHeight"
+                   min="5" max="500" value="45">
+        </div>
+
+        <div class="field">
+            <label for="fileFormat">Download Format</label>
+            <select id="fileFormat">
+                <option value="image/jpeg">JPG</option>
+                <option value="image/png">PNG</option>
+            </select>
+        </div>
+
+    </div>
+
+    <button class="generate" id="generateBtn" disabled>
+        ✨ Generate White Background Photo
+    </button>
+
+    <div class="progress" id="progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <p class="note">
+        AI background removal is performed in your browser.
+        The AI library and model must be downloaded from the internet
+        before first use. Your photograph is processed locally.
+    </p>
+</section>
+
+
+<section class="panel">
+    <h2>2. Photograph Preview</h2>
+
+    <div class="preview-grid">
+
+        <div class="preview-card">
+            <h3>Original Photograph</h3>
+
+            <div class="placeholder" id="originalPlaceholder">
+                Upload a photograph to preview
+            </div>
+
+            <img id="originalPreview"
+                 alt="Original photograph"
+                 style="display:none">
+        </div>
+
+        <div class="preview-card">
+            <h3>White Background Photograph</h3>
+
+            <div class="placeholder" id="resultPlaceholder">
+                Generated photograph will appear here
+            </div>
+
+            <img id="resultPreview"
+                 alt="White background photograph"
+                 style="display:none">
+        </div>
+
+    </div>
+</section>
+
+
+<section class="panel" id="resultSection">
+    <h2>3. Download, Print, Share or Email</h2>
+
+    <div class="actions">
+        <button id="downloadBtn">⬇ Download Photo</button>
+        <button class="secondary" id="printBtn">🖨 Print Photo</button>
+        <button class="green" id="shareBtn">↗ Share Photo</button>
+        <button class="dark" id="emailBtn">✉ Email Photo</button>
+    </div>
+
+    <div class="file-info" id="outputInfo"></div>
+
+    <p class="note">
+        Email opens your default email application. Attach the
+        downloaded photo manually. Direct file sharing depends on
+        your browser and device.
+    </p>
+</section>
+
+</main>
+
+<footer>
+    Photo to White Background Studio | Online Photo Utility
+</footer>
+
+
+<script type="module">
+
+// =====================================================
+// ELEMENTS AND APPLICATION STATE
+// =====================================================
+
+const $ = id => document.getElementById(id);
+
+const photoInput = $("photoInput");
+const uploadArea = $("uploadArea");
+const generateBtn = $("generateBtn");
+
+let originalFile = null;
+let originalURL = null;
+let resultBlob = null;
+let resultURL = null;
+let isGenerating = false;
+
+
+// =====================================================
+// STATUS
+// =====================================================
+
+function showStatus(message, type = "normal") {
+    const el = $("status");
+    el.textContent = message;
+    el.style.display = "block";
+    el.className = "status";
+
+    if (type === "error") el.classList.add("error");
+    if (type === "success") el.classList.add("success");
+}
+
+function setProgress(value) {
+    $("progress").style.display = "block";
+    $("progressBar").style.width = value + "%";
+}
+
+
+// =====================================================
+// UPLOAD - INDEPENDENT OF AI LIBRARY
+// =====================================================
+
+uploadArea.addEventListener("click", () => {
+    photoInput.click();
+});
+
+uploadArea.addEventListener("dragover", event => {
+    event.preventDefault();
+    uploadArea.classList.add("dragover");
+});
+
+uploadArea.addEventListener("dragleave", () => {
+    uploadArea.classList.remove("dragover");
+});
+
+uploadArea.addEventListener("drop", event => {
+    event.preventDefault();
+    uploadArea.classList.remove("dragover");
+
+    const file = event.dataTransfer.files[0];
+    if (file) processUpload(file);
+});
+
+photoInput.addEventListener("change", event => {
+    const file = event.target.files[0];
+    if (file) processUpload(file);
+});
+
+function processUpload(file) {
+
+    const allowed = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (!allowed.includes(file.type)) {
+        showStatus("Please upload a JPG, PNG or WebP photograph.", "error");
+        return;
+    }
+
+    if (file.size > 25 * 1024 * 1024) {
+        showStatus("Maximum allowed photo size is 25 MB.", "error");
+        return;
+    }
+
+    if (originalURL) URL.revokeObjectURL(originalURL);
+    if (resultURL) URL.revokeObjectURL(resultURL);
+
+    originalFile = file;
+    originalURL = URL.createObjectURL(file);
+
+    resultBlob = null;
+    resultURL = null;
+
+    const preview = $("originalPreview");
+
+    preview.onload = () => {
+        $("fileInfo").textContent =
+            "Selected: " + file.name +
+            " | " + preview.naturalWidth +
+            " × " + preview.naturalHeight + " pixels";
+    };
+
+    preview.onerror = () => {
+        showStatus("Unable to display this image.", "error");
+    };
+
+    preview.src = originalURL;
+    preview.style.display = "inline-block";
+
+    $("originalPlaceholder").style.display = "none";
+
+    $("resultPreview").style.display = "none";
+    $("resultPlaceholder").style.display = "grid";
+
+    $("resultSection").style.display = "none";
+
+    $("progress").style.display = "none";
+
+    generateBtn.disabled = false;
+
+    showStatus("Photo uploaded successfully. Ready to generate.", "success");
+}
+
+
+// =====================================================
+// CUSTOM SIZE CONTROLS
+// =====================================================
+
+$("sizeMode").addEventListener("change", function() {
+
+    const custom = this.value === "custom";
+
+    $("customWidthBox").style.display = custom ? "block" : "none";
+    $("customHeightBox").style.display = custom ? "block" : "none";
+
+});
+
+
+// =====================================================
+// DIMENSIONS
+// =====================================================
+
+function getDimensions(sourceWidth, sourceHeight) {
+
+    const mode = $("sizeMode").value;
+    const dpi = Number($("dpi").value);
+
+    let width = sourceWidth;
+    let height = sourceHeight;
+
+    if (mode === "passport") {
+        width = Math.round(35 * dpi / 25.4);
+        height = Math.round(45 * dpi / 25.4);
+    }
+
+    if (mode === "square") {
+        width = Math.round(50.8 * dpi / 25.4);
+        height = width;
+    }
+
+    if (mode === "custom") {
+
+        const w = Number($("customWidth").value);
+        const h = Number($("customHeight").value);
+
+        if (
+            !Number.isFinite(w) ||
+            !Number.isFinite(h) ||
+            w < 5 || w > 500 ||
+            h < 5 || h > 500
+        ) {
+            throw new Error(
+                "Custom dimensions must be between 5 and 500 mm."
+            );
+        }
+
+        width = Math.round(w * dpi / 25.4);
+        height = Math.round(h * dpi / 25.4);
+    }
+
+    if (width * height > 30000000) {
+        throw new Error("Image is too large. Please select a lower DPI.");
+    }
+
+    return { width, height };
+}
+
+
+// =====================================================
+// IMAGE LOADING
+// =====================================================
+
+function loadImage(url) {
+    return new Promise((resolve, reject) => {
+
+        const img = new Image();
+
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(
+            new Error("Unable to load processed image.")
+        );
+
+        img.src = url;
+    });
+}
+
+
+// =====================================================
+// ROBUST AI LIBRARY LOADER
+// =====================================================
+
+async function loadBackgroundRemovalLibrary() {
+
+    const cdnURLs = [
+        "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm",
+        "https://esm.sh/@imgly/background-removal@1.7.0?bundle"
+    ];
+
+    const errors = [];
+
+    for (const url of cdnURLs) {
+
+        try {
+
+            showStatus("Loading AI library from: " +
+                new URL(url).hostname + "...");
+
+            const module = await import(url);
+
+            console.log("Loaded AI module:", module);
+            console.log("Available exports:", Object.keys(module));
+
+            // Different bundlers may expose different export structures.
+            const candidates = [
+                module.removeBackground,
+                module.default,
+                module.default?.removeBackground,
+                module.default?.default
+            ];
+
+            const removeBackground = candidates.find(
+                candidate => typeof candidate === "function"
+            );
+
+            if (removeBackground) {
+                console.log("Background removal function initialized.");
+                return removeBackground;
+            }
+
+            errors.push(
+                "No usable function exported by " +
+                new URL(url).hostname +
+                ". Exports: " + Object.keys(module).join(", ")
+            );
+
+        } catch (error) {
+
+            console.error("CDN loading error:", url, error);
+
+            errors.push(
+                new URL(url).hostname + ": " + error.message
+            );
+
+        }
+    }
+
+    throw new Error(
+        "Could not load AI background removal library. " +
+        errors.join(" | ")
+    );
+}
+
+
+// =====================================================
+// GENERATE WHITE BACKGROUND PHOTO
+// =====================================================
+
+generateBtn.addEventListener("click", async () => {
+
+    if (isGenerating) return;
+
+    if (!originalFile) {
+        showStatus("Please upload a photograph first.", "error");
+        return;
+    }
+
+    isGenerating = true;
+    generateBtn.disabled = true;
+
+    setProgress(5);
+
+    let transparentURL = null;
+
+    try {
+
+        // Load AI function on demand.
+        const removeBackground =
+            await loadBackgroundRemovalLibrary();
+
+        setProgress(15);
+
+        showStatus(
+            "AI library loaded. Downloading and initializing the model. " +
+            "First use may take several minutes..."
+        );
+
+        // Supported model names: small, medium, large.
+        const transparentBlob = await removeBackground(originalFile, {
+            model: "medium",
+            output: {
+                format: "image/png",
+                quality: 0.95
+            },
+            debug: true
+        });
+
+        if (!(transparentBlob instanceof Blob)) {
+            throw new Error("AI library did not return a valid image.");
+        }
+
+        setProgress(70);
+
+        showStatus("AI background removed. Preparing white background...");
+
+        transparentURL = URL.createObjectURL(transparentBlob);
+
+        const foreground = await loadImage(transparentURL);
+
+        const dimensions = getDimensions(
+            foreground.naturalWidth,
+            foreground.naturalHeight
+        );
+
+        // Create output canvas.
+        const canvas = document.createElement("canvas");
+
+        canvas.width = dimensions.width;
+        canvas.height = dimensions.height;
+
+        const ctx = canvas.getContext("2d", { alpha: false });
+
+        if (!ctx) {
+            throw new Error("Unable to initialize image canvas.");
+        }
+
+        // White background.
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Maintain proportions without cropping or stretching.
+        const scale = Math.min(
+            canvas.width / foreground.naturalWidth,
+            canvas.height / foreground.naturalHeight
+        );
+
+        const drawWidth = foreground.naturalWidth * scale;
+        const drawHeight = foreground.naturalHeight * scale;
+
+        const x = (canvas.width - drawWidth) / 2;
+        const y = (canvas.height - drawHeight) / 2;
+
+        ctx.drawImage(
+            foreground,
+            x, y,
+            drawWidth, drawHeight
+        );
+
+        setProgress(90);
+
+        const format = $("fileFormat").value;
+
+        resultBlob = await new Promise((resolve, reject) => {
+
+            canvas.toBlob(blob => {
+                if (blob) resolve(blob);
+                else reject(new Error("Could not create output image."));
+            }, format, 0.95);
+
+        });
+
+        if (resultURL) URL.revokeObjectURL(resultURL);
+
+        resultURL = URL.createObjectURL(resultBlob);
+
+        const preview = $("resultPreview");
+
+        preview.src = resultURL;
+        preview.style.display = "inline-block";
+
+        $("resultPlaceholder").style.display = "none";
+        $("resultSection").style.display = "block";
+
+        $("outputInfo").textContent =
+            "Output dimensions: " +
+            canvas.width + " × " + canvas.height +
+            " pixels | Format: " +
+            (format === "image/png" ? "PNG" : "JPG");
+
+        setProgress(100);
+
+        showStatus(
+            "Success! White background photograph generated.",
+            "success"
+        );
+
+        $("resultSection").scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
+
+    } catch (error) {
+
+        console.error("Photo generation error:", error);
+
+        showStatus(
+            "Generation failed: " + error.message +
+            " Please check your internet connection, CDN access, " +
+            "and browser console.",
+            "error"
+        );
+
+    } finally {
+
+        if (transparentURL) {
+            URL.revokeObjectURL(transparentURL);
+        }
+
+        generateBtn.disabled = false;
+        isGenerating = false;
+    }
+
+});
+
+
+// =====================================================
+// FILE NAME
+// =====================================================
+
+function getFileName() {
+
+    const extension =
+        $("fileFormat").value === "image/png" ? "png" : "jpg";
+
+    return "White_Background_Photo." + extension;
+}
+
+
+// =====================================================
+// DOWNLOAD
+// =====================================================
+
+$("downloadBtn").addEventListener("click", () => {
+
+    if (!resultBlob || !resultURL) return;
+
+    const link = document.createElement("a");
+
+    link.href = resultURL;
+    link.download = getFileName();
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+});
+
+
+// =====================================================
+// PRINT
+// =====================================================
+
+$("printBtn").addEventListener("click", () => {
+
+    if (!resultURL) return;
+
+    const win = window.open("", "_blank");
+
+    if (!win) {
+        alert("Please allow pop-ups to print the photograph.");
+        return;
+    }
+
+    win.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Print Photograph</title>
+            <style>
+                @page { margin:0; }
+                body {
+                    margin:0;
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    min-height:100vh;
+                    background:white;
+                }
+                img {
+                    max-width:100%;
+                    max-height:100vh;
+                    object-fit:contain;
+                }
+            </style>
+        </head>
+        <body>
+            <img id="photo" src="${resultURL}">
+            <script>
+                document.getElementById("photo").onload = function() {
+                    window.print();
+                };
+            <\/script>
+        </body>
+        </html>
+    `);
+
+    win.document.close();
+
+});
+
+
+// =====================================================
+// SHARE
+// =====================================================
+
+$("shareBtn").addEventListener("click", async () => {
+
+    if (!resultBlob) return;
+
+    const file = new File(
+        [resultBlob],
+        getFileName(),
+        { type: resultBlob.type }
+    );
+
+    try {
+
+        if (
+            navigator.canShare &&
+            navigator.canShare({ files: [file] })
+        ) {
+
+            await navigator.share({
+                title: "White Background Photograph",
+                text: "My white background photograph",
+                files: [file]
+            });
+
+        } else {
+
+            alert(
+                "File sharing is not supported by this browser. " +
+                "Please download and share manually."
+            );
+
+        }
+
+    } catch (error) {
+
+        if (error.name !== "AbortError") {
+            alert("Sharing failed: " + error.message);
+        }
+
+    }
+
+});
+
+
+// =====================================================
+// EMAIL
+// =====================================================
+
+$("emailBtn").addEventListener("click", () => {
+
+    const subject = encodeURIComponent(
+        "White Background Photograph"
+    );
+
+    const body = encodeURIComponent(
+        "Hello,\n\n" +
+        "I am sharing my white background photograph.\n\n" +
+        "Please attach the downloaded file: " +
+        getFileName() +
+        "\n\nRegards"
+    );
+
+    window.location.href =
+        "mailto:?subject=" + subject + "&body=" + body;
+
+    alert(
+        "Please attach the downloaded photograph to your email."
+    );
+
+});
+
+
+// =====================================================
+// INITIALIZATION
+// =====================================================
+
+generateBtn.disabled = true;
+
+console.log("Photo to White Background Studio initialized.");
+
+</script>
+
+</body>
+</html>

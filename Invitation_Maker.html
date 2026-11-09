@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Create beautiful invitations online. Customize event details, preview, download, print, email and share your invitation.">
+<meta property="og:title" content="Invitation Maker – Create & Share Invitations">
+<meta property="og:description" content="Design a personalized invitation in minutes.">
+<title>Invitation Maker | Create & Share</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+<style>
+:root{--ink:#253047;--muted:#667085;--accent:#9b6b42;--line:#e7e9ee;--bg:#f4f6fa}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Segoe UI,Arial,sans-serif}
+header{background:linear-gradient(120deg,#18253c,#344b68);color:#fff;padding:25px max(22px,calc((100% - 1200px)/2))}
+header h1{margin:0 0 6px;font-size:clamp(24px,3vw,34px)}header p{margin:0;color:#d9e1eb}
+main{max-width:1200px;margin:26px auto;padding:0 18px;display:grid;grid-template-columns:minmax(300px,420px) minmax(320px,1fr);gap:22px;align-items:start}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:21px;box-shadow:0 8px 28px #26354b0a}
+.panel h2{font-size:19px;margin:0 0 16px}.field{margin-bottom:13px}.field label{display:block;font-size:13px;font-weight:650;margin-bottom:6px;color:#3e4a5e}
+input,select,textarea{width:100%;border:1px solid #d7dce5;border-radius:9px;padding:10px 11px;font:inherit;font-size:14px;color:var(--ink);background:#fff}
+textarea{min-height:78px;resize:vertical}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+button{border:0;border-radius:9px;padding:11px 15px;font-weight:650;cursor:pointer;font-size:13px}
+.primary{background:#263d5b;color:#fff}.secondary{background:#edf1f6;color:#27364c}.accent{background:#9b6b42;color:#fff}
+button:hover{filter:brightness(.96)}.hint{font-size:12px;color:var(--muted);line-height:1.5;margin:10px 0 0}
+.preview-wrap{position:sticky;top:18px}.preview-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.preview-head h2{margin:0;font-size:19px}
+#invitation{--paper:#fffaf2;--ornament:#9b6b42;position:relative;overflow:hidden;background:var(--paper);color:#40352e;min-height:570px;padding:54px 42px;text-align:center;border:9px double var(--ornament);box-shadow:0 15px 40px #17253a18;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#invitation:before,#invitation:after{content:"✦  ✧  ✦";position:absolute;color:var(--ornament);font-size:20px;letter-spacing:13px;opacity:.7}
+#invitation:before{top:19px}#invitation:after{bottom:19px}
+#invitation .logo{max-width:90px;max-height:70px;object-fit:contain;margin-bottom:13px}
+#invitation .eyebrow{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--ornament);font-weight:700}
+#invitation h1{font-family:Georgia,serif;font-size:clamp(34px,5vw,52px);font-weight:500;line-height:1.08;margin:15px 0;color:var(--ornament)}
+#invitation .intro{font-family:Georgia,serif;font-style:italic;font-size:19px;margin:3px 0 14px}
+#invitation .guest{font-family:Georgia,serif;font-size:27px;margin:7px 0 13px;overflow-wrap:anywhere}
+#invitation .message{max-width:520px;font-family:Georgia,serif;font-size:17px;line-height:1.65;white-space:pre-line}
+#invitation .event-details{margin:19px 0 14px;font-size:15px;line-height:1.9}
+#invitation .venue{font-weight:700}
+#invitation .rsvp{font-size:13px;line-height:1.7;margin-top:12px}
+#invitation .footer{font-family:Georgia,serif;font-style:italic;margin-top:18px;font-size:17px}
+#invitation .photo{max-width:100%;max-height:145px;object-fit:cover;border-radius:8px;margin:10px 0}
+.theme-classic{--paper:#fffaf2;--ornament:#9b6b42}
+.theme-modern{--paper:#f5f8fc;--ornament:#345a78}
+.theme-floral{--paper:#fff6f8;--ornament:#a64f70}
+.theme-dark{--paper:#202a38;--ornament:#e4c27a;color:#f8f1df!important}
+.theme-dark h1{color:#e4c27a!important}
+footer{text-align:center;color:#778196;font-size:12px;padding:8px 15px 24px}
+@media(max-width:850px){main{grid-template-columns:1fr}.preview-wrap{position:static}#invitation{min-height:530px;padding:48px 24px}}
+@media print{body{background:#fff}header,.editor,.preview-head,footer{display:none!important}main{display:block;margin:0;padding:0;max-width:none}.panel{border:0;box-shadow:none;padding:0}.preview-wrap{position:static}#invitation{width:100%;min-height:95vh;box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+<header><h1>Invitation Maker</h1><p>Create a personalized invitation for celebrations, ceremonies, business events and special occasions.</p></header>
+<main>
+<section class="panel editor">
+<h2>Invitation details</h2>
+<div class="field"><label for="type">Invitation type</label><select id="type"><option>Special Occasion</option><option>Birthday Celebration</option><option>Wedding Invitation</option><option>Engagement Ceremony</option><option>Anniversary Celebration</option><option>Housewarming Ceremony</option><option>Baby Shower</option><option>Festival Celebration</option><option>Corporate Event</option><option>Conference / Seminar</option><option>Graduation Ceremony</option><option>Farewell Party</option><option>Other Event</option></select></div>
+<div class="field"><label for="title">Event title</label><input id="title" value="You Are Invited"></div>
+<div class="field"><label for="host">Hosted by / Organization</label><input id="host" placeholder="e.g. The Sharma Family"></div>
+<div class="field"><label for="guest">Guest name (optional)</label><input id="guest" placeholder="e.g. Dear Friends & Family"></div>
+<div class="field"><label for="message">Invitation message</label><textarea id="message">We warmly invite you to join us for a memorable celebration. Your presence will make the occasion even more special.</textarea></div>
+<div class="two">
+<div class="field"><label for="date">Event date</label><input id="date" type="date"></div>
+<div class="field"><label for="time">Event time</label><input id="time" type="time"></div>
+</div>
+<div class="field"><label for="venue">Venue / Address</label><input id="venue" placeholder="Venue name and address"></div>
+<div class="field"><label for="rsvp">RSVP / Contact details</label><input id="rsvp" placeholder="Name, phone number or email"></div>
+<div class="field"><label for="closing">Closing line</label><input id="closing" value="We look forward to celebrating with you!"></div>
+<div class="two">
+<div class="field"><label for="theme">Design theme</label><select id="theme"><option value="classic">Classic Gold</option><option value="modern">Modern Blue</option><option value="floral">Floral Rose</option><option value="dark">Midnight Gold</option></select></div>
+<div class="field"><label for="logo">Logo (optional)</label><input id="logo" type="file" accept="image/*"></div>
+</div>
+<div class="field"><label for="photo">Event image (optional)</label><input id="photo" type="file" accept="image/*"></div>
+<div class="actions">
+<button class="primary" id="download">Download invitation (PNG)</button>
+<button class="secondary" id="print">Print</button>
+<button class="secondary" id="email">Email</button>
+<button class="accent" id="share">Share</button>
+</div>
+<p class="hint">Your invitation is created in this browser. Download saves a PNG image. Email opens your email app with the invitation details; attach the downloaded PNG before sending. Share uses your device's sharing options when supported.</p>
+</section>
+<section class="panel preview-wrap">
+<div class="preview-head"><h2>Live preview</h2><span style="font-size:12px;color:#778196">Updates as you type</span></div>
+<article id="invitation" class="theme-classic">
+<img class="logo" id="previewLogo" alt="Organization logo" hidden>
+<div class="eyebrow" id="previewHost">A SPECIAL INVITATION</div>
+<h1 id="previewTitle">You Are Invited</h1>
+<div class="intro" id="previewType">Special Occasion</div>
+<div class="guest" id="previewGuest">Dear Friends &amp; Family</div>
+<img class="photo" id="previewPhoto" alt="Event image" hidden>
+<div class="message" id="previewMessage">We warmly invite you to join us for a memorable celebration. Your presence will make the occasion even more special.</div>
+<div class="event-details"><div id="previewDate"></div><div id="previewTime"></div><div class="venue" id="previewVenue"></div></div>
+<div class="rsvp" id="previewRsvp"></div>
+<div class="footer" id="previewClosing">We look forward to celebrating with you!</div>
+</article>
+</section>
+</main>
+<footer>Invitation Maker · Create, download and share your special moments</footer>
+<script>
+const $=id=>document.getElementById(id);
+const fields=['type','title','host','guest','message','date','time','venue','rsvp','closing','theme'];
+function prettyDate(value){if(!value)return '';const d=new Date(value+'T00:00:00');return d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
+function prettyTime(value){if(!value)return '';const [h,m]=value.split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);return d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});}
+function update(){
+$('previewHost').textContent=$('host').value.trim()||'YOU ARE CORDIALLY INVITED';
+$('previewTitle').textContent=$('title').value.trim()||'You Are Invited';
+$('previewType').textContent=$('type').value;
+$('previewGuest').textContent=$('guest').value.trim()||'Dear Friends & Family';
+$('previewGuest').style.display=$('guest').value.trim()?'block':'none';
+$('previewMessage').textContent=$('message').value;
+$('previewDate').textContent=prettyDate($('date').value);
+$('previewTime').textContent=prettyTime($('time').value);
+$('previewVenue').textContent=$('venue').value.trim();
+$('previewRsvp').textContent=$('rsvp').value.trim()?'Invitation From:  '+$('rsvp').value.trim():'';
+$('previewClosing').textContent=$('closing').value.trim();
+$('invitation').className='theme-'+$('theme').value;
+}
+fields.forEach(id=>$(id).addEventListener('input',update));
+function loadImage(input,target){const file=input.files&&input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{target.src=e.target.result;target.hidden=false;};reader.readAsDataURL(file);}
+$('logo').addEventListener('change',()=>loadImage($('logo'),$('previewLogo')));
+$('photo').addEventListener('change',()=>loadImage($('photo'),$('previewPhoto')));
+function detailsText(){return [
+$('title').value,$('type').value,
+$('host').value?'Hosted by: '+$('host').value:'',
+$('guest').value?'For: '+$('guest').value:'',
+$('message').value,
+$('date').value?'Date: '+prettyDate($('date').value):'',
+$('time').value?'Time: '+prettyTime($('time').value):'',
+$('venue').value?'Venue: '+$('venue').value:'',
+$('rsvp').value?'RSVP: '+$('rsvp').value:'',
+$('closing').value
+].filter(Boolean).join('\n\n');}
+$('download').addEventListener('click',async()=>{
+ if(!window.html2canvas){alert('The image export library could not be loaded. Check your internet connection and try again.');return;}
+ const btn=$('download');btn.disabled=true;btn.textContent='Preparing image…';
+ try{const canvas=await html2canvas($('invitation'),{scale:2,backgroundColor:null,useCORS:true});const link=document.createElement('a');link.download='invitation.png';link.href=canvas.toDataURL('image/png');link.click();}
+ catch(e){alert('Could not create the image. Please try again or use Print.');}
+ finally{btn.disabled=false;btn.textContent='Download invitation (PNG)';}
+});
+$('print').addEventListener('click',()=>window.print());
+$('email').addEventListener('click',()=>{const subject=encodeURIComponent('Invitation: '+$('title').value);const body=encodeURIComponent(detailsText()+'\n\nPlease find the invitation image attached.');window.location.href='mailto:?subject='+subject+'&body='+body;});
+$('share').addEventListener('click',async()=>{
+ const text=detailsText();
+ try{
+  if(navigator.share){await navigator.share({title:$('title').value||'Invitation',text});}
+  else if(navigator.clipboard){await navigator.clipboard.writeText(text);alert('Invitation details copied. You can paste them into your preferred app.');}
+  else{alert('Sharing is not supported in this browser. Please download the invitation and share it manually.');}
+ }catch(e){if(e.name!=='AbortError')alert('Sharing was not completed. You can download the invitation and share it manually.');}
+});
+update();
+</script>
+</body>
+</html>

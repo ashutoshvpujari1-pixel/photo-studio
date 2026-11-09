@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Create professional certificates online. Add your organization logo, recipient name, purpose, signatures, then download, print, email or share.">
+<meta name="theme-color" content="#14243a">
+<title>Certificate Generator | Create & Download Certificates</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+<style>
+:root{--navy:#14243a;--blue:#244d75;--gold:#c39a45;--paper:#fffdf7;--ink:#263445;--muted:#657386}
+*{box-sizing:border-box}body{margin:0;background:#eef2f7;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+header{background:linear-gradient(120deg,#14243a,#244d75);color:white;padding:24px 5%;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+header h1{font-size:clamp(22px,3vw,30px);margin:0}header p{margin:6px 0 0;color:#dbe6f2;font-size:14px}
+main{max-width:1440px;margin:24px auto;padding:0 20px;display:grid;grid-template-columns:minmax(290px,390px) minmax(0,1fr);gap:22px;align-items:start}
+.panel{background:white;border:1px solid #dce3ec;border-radius:14px;padding:20px;box-shadow:0 8px 25px #14243a0b}
+.panel h2{font-size:18px;margin:0 0 16px;color:var(--navy)}.field{margin-bottom:13px}
+label{display:block;font-size:13px;font-weight:700;margin-bottom:6px;color:#34465b}
+input,textarea,select{width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:10px 11px;font:14px Arial;color:#263445;background:#fff}
+textarea{min-height:75px;resize:vertical}input:focus,textarea:focus,select:focus{outline:2px solid #b9d2ed;border-color:#5688bb}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hint{font-size:11px;color:var(--muted);margin-top:5px}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:17px}
+button{border:0;border-radius:8px;padding:11px 14px;font-weight:700;cursor:pointer;font-size:13px}
+.primary{background:#1e5b91;color:white}.secondary{background:#e8eef5;color:#1c3854}.gold{background:#b68a32;color:white}
+button:hover{filter:brightness(.96)}.preview-wrap{min-width:0}.preview-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 12px;flex-wrap:wrap}
+.preview-heading h2{margin:0;color:var(--navy);font-size:18px}
+.stage{background:#dfe6ee;border-radius:14px;padding:clamp(10px,2vw,26px);overflow:auto}
+.certificate{position:relative;width:100%;max-width:1000px;min-width:560px;aspect-ratio:1.414/1;margin:0 auto;background:var(--paper);color:var(--ink);padding:4.3% 6%;text-align:center;box-shadow:0 8px 28px #182b411c;overflow:hidden;display:flex;flex-direction:column;align-items:center}
+.certificate:before{content:"";position:absolute;inset:2.1%;border:2px solid var(--gold);pointer-events:none}
+.certificate:after{content:"";position:absolute;inset:3%;border:1px solid #d8c28e;pointer-events:none}
+.corner{position:absolute;width:42px;height:42px;border-color:var(--gold);border-style:solid;z-index:1}.tl{top:3.2%;left:3.2%;border-width:3px 0 0 3px}.tr{top:3.2%;right:3.2%;border-width:3px 3px 0 0}.bl{bottom:3.2%;left:3.2%;border-width:0 0 3px 3px}.br{bottom:3.2%;right:3.2%;border-width:0 3px 3px 0}
+.logo{width:76px;height:76px;object-fit:contain;margin:0 0 8px;display:none;z-index:2}.org{font-size:clamp(17px,2.5vw,27px);font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--navy);z-index:2;max-width:90%;overflow-wrap:anywhere}
+.kicker{font-size:clamp(10px,1.3vw,14px);letter-spacing:4px;text-transform:uppercase;color:#9a742a;margin-top:2.3%;z-index:2}
+.cert-title{font-family:Georgia,serif;font-size:clamp(34px,5.5vw,62px);font-weight:400;letter-spacing:2px;color:var(--navy);margin:1.5% 0 .5%;z-index:2}
+.presented{font-family:Georgia,serif;font-style:italic;font-size:clamp(13px,1.6vw,18px);color:#566273;z-index:2}
+.candidate{font-family:Georgia,serif;font-size:clamp(25px,4vw,44px);font-weight:700;color:#9a742a;border-bottom:1px solid #c7a96a;padding:0 18px 7px;margin:1.2% 0;max-width:90%;overflow-wrap:anywhere;z-index:2}
+.purpose{font-family:Georgia,serif;font-size:clamp(13px,1.55vw,18px);line-height:1.5;max-width:78%;white-space:pre-wrap;z-index:2}
+.date-line{font-size:clamp(10px,1.2vw,13px);margin-top:1.8%;color:#536174;z-index:2}
+.signatures{display:flex;justify-content:space-around;align-items:end;width:86%;gap:7%;margin-top:auto;padding-top:2.5%;z-index:2}
+.signature{width:42%;font-family:Georgia,serif;font-style:italic;font-size:clamp(17px,2.2vw,24px);color:#27384d;min-height:25px}
+.sig-rule{border-top:1px solid #6e7885;margin-top:3px;padding-top:6px;font-family:Arial,sans-serif;font-style:normal;font-size:clamp(9px,1.1vw,12px);line-height:1.4}
+.sig-role{color:#687587}
+.cert-id{position:absolute;bottom:4.5%;left:0;right:0;font-size:9px;color:#7c8795;z-index:2}
+.notice{font-size:12px;color:#5c6c7e;line-height:1.5;margin:12px 2px 0}
+@media(max-width:900px){main{grid-template-columns:1fr}.certificate{min-width:560px}.stage{padding:10px}}
+@media print{
+ @page{size:A4 landscape;margin:0}
+ body{background:white}.no-print,header,.panel,.preview-heading,.notice{display:none!important}
+ main{display:block;margin:0;padding:0}.preview-wrap{width:100%}.stage{padding:0;background:white;overflow:visible}
+ .certificate{width:297mm;height:210mm;max-width:none;min-width:0;aspect-ratio:auto;box-shadow:none;margin:0;page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header class="no-print">
+ <div><h1>Certificate Generator</h1><p>Create a professional certificate in a few minutes</p></div>
+ <div style="font-size:13px;color:#e2ebf5">Design · Preview · Download · Print · Share</div>
+</header>
+<main>
+ <section class="panel no-print">
+  <h2>Certificate details</h2>
+  <div class="field"><label for="org">Organization / Company name *</label><input id="org" value="YOUR ORGANIZATION NAME" placeholder="Enter organization name"></div>
+  <div class="field"><label for="logoInput">Organization logo</label><input id="logoInput" type="file" accept="image/*"><div class="hint">PNG or JPG recommended. The logo is embedded in the downloaded image.</div></div>
+  <div class="field"><label for="candidate">Candidate / Recipient name *</label><input id="candidate" value="Candidate Name" placeholder="Enter recipient's full name"></div>
+  <div class="field"><label for="purpose">Purpose / Achievement *</label><textarea id="purpose">has successfully completed the required program and demonstrated commitment, knowledge and skill.</textarea></div>
+  <div class="two">
+   <div class="field"><label for="date">Date</label><input id="date" type="date"></div>
+   <div class="field"><label for="certId">Certificate ID</label><input id="certId" placeholder="e.g. CERT-2026-001"></div>
+  </div>
+  <div class="two">
+   <div class="field"><label for="sign1">First signatory name</label><input id="sign1" value="Authorized Signatory"></div>
+   <div class="field"><label for="role1">Designation</label><input id="role1" value="Program Director"></div>
+  </div>
+  <div class="two">
+   <div class="field"><label for="sign2">Second signatory name</label><input id="sign2" value="Organization Head"></div>
+   <div class="field"><label for="role2">Designation</label><input id="role2" value="Head of Organization"></div>
+  </div>
+  <div class="field"><label for="theme">Certificate accent</label><select id="theme"><option value="#c39a45">Classic Gold</option><option value="#527b9d">Professional Blue</option><option value="#63856d">Elegant Green</option><option value="#8c668f">Royal Purple</option></select></div>
+  <div class="actions">
+   <button class="primary" id="downloadBtn">Download PNG</button>
+   <button class="gold" id="pdfBtn">Download / Print PDF</button>
+   <button class="secondary" id="emailBtn">Email</button>
+   <button class="secondary" id="shareBtn">Share</button>
+   <button class="secondary" id="resetBtn">Reset</button>
+  </div>
+  <p class="notice">PDF: choose “Save as PDF” in your browser's print dialog. Email opens your default email application; attach the downloaded certificate file. Share uses your device's share menu when supported.</p>
+ </section>
+ <section class="preview-wrap">
+  <div class="preview-heading"><h2>Live certificate preview</h2><span class="hint no-print">Updates as you type</span></div>
+  <div class="stage">
+   <article class="certificate" id="certificate">
+    <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+    <img class="logo" id="logoPreview" alt="Organization logo">
+    <div class="org" id="outOrg">YOUR ORGANIZATION NAME</div>
+    <div class="kicker">Proudly Presents</div>
+    <div class="cert-title">Certificate</div>
+    <div class="presented">This certificate is presented to</div>
+    <div class="candidate" id="outCandidate">Candidate Name</div>
+    <div class="purpose" id="outPurpose">has successfully completed the required program and demonstrated commitment, knowledge and skill.</div>
+    <div class="date-line">Awarded on <span id="outDate"></span></div>
+    <div class="signatures">
+     <div class="signature"><span id="outSign1">Authorized Signatory</span><div class="sig-rule"><span id="outRole1">Program Director</span></div></div>
+     <div class="signature"><span id="outSign2">Organization Head</span><div class="sig-rule"><span id="outRole2">Head of Organization</span></div></div>
+    </div>
+    <div class="cert-id" id="outId"></div>
+   </article>
+  </div>
+  <p class="notice no-print">Tip: For best print quality, use landscape orientation, A4 paper, and enable background graphics in the print dialog.</p>
+ </section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const fields=['org','candidate','purpose','date','certId','sign1','role1','sign2','role2'];
+const outputs={org:'outOrg',candidate:'outCandidate',purpose:'outPurpose',sign1:'outSign1',role1:'outRole1',sign2:'outSign2',role2:'outRole2'};
+function update(){
+ Object.entries(outputs).forEach(([input,out])=>$(out).textContent=$(input).value.trim()||' ');
+ const rawDate=$('date').value;
+ $('outDate').textContent=rawDate?new Date(rawDate+'T00:00:00').toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'}):'________________';
+ $('outId').textContent=$('certId').value.trim()?'Certificate ID: '+$('certId').value.trim():'';
+ document.querySelector('.certificate').style.setProperty('--gold',$('theme').value);
+ document.querySelector('.certificate').style.setProperty('--accent',$('theme').value);
+ document.querySelector('.certificate').style.setProperty('--unused',$('theme').value);
+ document.querySelector('.certificate').style.setProperty('border-color',$('theme').value);
+ document.querySelectorAll('.certificate:before,.certificate:after').forEach(()=>{});
+ document.querySelector('.certificate').style.setProperty('--gold',$('theme').value);
+}
+fields.forEach(id=>$(id).addEventListener('input',update));
+$('theme').addEventListener('change',()=>{update();document.querySelector('.certificate').style.setProperty('--gold',$('theme').value);});
+$('date').value=new Date().toISOString().slice(0,10);
+$('logoInput').addEventListener('change',e=>{
+ const file=e.target.files[0];if(!file)return;
+ if(!file.type.startsWith('image/')){alert('Please select an image file.');return;}
+ const reader=new FileReader();reader.onload=()=>{$('logoPreview').src=reader.result;$('logoPreview').style.display='block';};reader.readAsDataURL(file);
+});
+function validate(){
+ if(!$('org').value.trim()||!$('candidate').value.trim()||!$('purpose').value.trim()){
+  alert('Please enter the organization name, candidate name and certificate purpose.');return false;
+ }return true;
+}
+$('downloadBtn').addEventListener('click',async()=>{
+ if(!validate())return;
+ if(!window.html2canvas){alert('Image download library could not load. Please use Print / Save as PDF instead.');return;}
+ const btn=$('downloadBtn');btn.disabled=true;btn.textContent='Preparing...';
+ try{
+  const canvas=await html2canvas($('certificate'),{scale:2,backgroundColor:'#fffdf7',useCORS:true});
+  const link=document.createElement('a');link.download='Certificate-'+$('candidate').value.trim().replace(/[^a-z0-9_-]+/gi,'-')+'.png';link.href=canvas.toDataURL('image/png');link.click();
+ }catch(err){alert('Could not create the image. Please try Print / Save as PDF.');}
+ finally{btn.disabled=false;btn.textContent='Download PNG';}
+});
+$('pdfBtn').addEventListener('click',()=>{if(validate())window.print();});
+$('emailBtn').addEventListener('click',()=>{
+ if(!validate())return;
+ const subject=encodeURIComponent('Certificate - '+$('candidate').value.trim());
+ const body=encodeURIComponent('Please find the certificate details below.\nOrganization: '+$('org').value+'\nRecipient: '+$('candidate').value+'\nPurpose: '+$('purpose').value+'\nDate: '+$('outDate').textContent+'\n\nPlease attach the downloaded certificate file before sending.');
+ window.location.href='mailto:?subject='+subject+'&body='+body;
+});
+$('shareBtn').addEventListener('click',async()=>{
+ if(!validate())return;
+ const text='Certificate for '+$('candidate').value.trim()+' | '+$('org').value.trim()+' | '+$('purpose').value.trim();
+ try{
+  if(navigator.share)await navigator.share({title:'Certificate',text});
+  else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(text);alert('Certificate details copied. You can paste them into your preferred app.');}
+  else{prompt('Copy these certificate details:',text);}
+ }catch(err){if(err.name!=='AbortError')alert('Sharing is not available in this browser.');}
+});
+$('resetBtn').addEventListener('click',()=>{
+ if(!confirm('Reset all certificate fields?'))return;
+ fields.forEach(id=>$(id).value='');$('date').value=new Date().toISOString().slice(0,10);
+ $('logoInput').value='';$('logoPreview').removeAttribute('src');$('logoPreview').style.display='none';
+ $('theme').value='#c39a45';update();
+});
+update();
+</script>
+</body>
+</html>
