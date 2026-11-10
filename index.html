@@ -36,7 +36,7 @@ body {
 header {
     background: linear-gradient(120deg,#5125a8,#2869d8);
     color: white;
-    padding: 18px 7%;
+    padding: 10px 4%;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -45,8 +45,9 @@ header {
 }
 
 .logo {
-    font-size: 27px;
+    font-size: 21px;
     font-weight: bold;
+    white-space: nowrap;
 }
 
 .logo span {
@@ -56,14 +57,16 @@ header {
 nav {
     display: flex;
     flex-wrap: wrap;
-    gap: 22px;
+    gap: 10px 15px;
+    align-items: center;
 }
 
 nav a {
     color: white;
     text-decoration: none;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 12px;
+    white-space: nowrap;
 }
 
 nav a:hover {
@@ -214,6 +217,35 @@ footer a {
     text-decoration: none;
 }
 
+.other-websites {
+    margin: 18px auto 0;
+    max-width: 900px;
+}
+
+.other-websites strong {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.other-websites .website-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+}
+
+.other-websites .website-links a {
+    font-size: 13px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.other-websites .website-links a:hover {
+    color: #ffffff;
+}
+
 .no-results {
     display: none;
     text-align: center;
@@ -279,6 +311,10 @@ footer a {
         <a href="#tools">Photo Tools</a>
         <a href="#about">About Us</a>
         <a href="#contact">Contact</a>
+        <a href="https://www.ashutoshpujari.com" target="_blank" rel="noopener noreferrer">www.ashutoshpujari.com</a>
+        <a href="https://www.jsonxmlformatter.com" target="_blank" rel="noopener noreferrer">www.jsonxmlformatter.com</a>
+        <a href="https://www.generatesourcecode.co.in" target="_blank" rel="noopener noreferrer">www.generatesourcecode.co.in</a>
+        <a href="https://www.software-utilities.com" target="_blank" rel="noopener noreferrer">www.software-utilities.com</a>
     </nav>
 </header>
 
@@ -473,6 +509,16 @@ footer a {
         <a href="#tools">Photo Tools</a> |
         <a href="#about">About Us</a>
     </p>
+
+    <div class="other-websites">
+        <strong>Visit our other website URL's:</strong>
+        <div class="website-links">
+            <a href="https://www.ashutoshpujari.com" target="_blank" rel="noopener noreferrer">www.ashutoshpujari.com</a>
+            <a href="https://www.jsonxmlformatter.com" target="_blank" rel="noopener noreferrer">www.jsonxmlformatter.com</a>
+            <a href="https://www.generatesourcecode.co.in" target="_blank" rel="noopener noreferrer">www.generatesourcecode.co.in</a>
+            <a href="https://www.software-utilities.com" target="_blank" rel="noopener noreferrer">www.software-utilities.com</a>
+        </div>
+    </div>
 </footer>
 
 <script>
