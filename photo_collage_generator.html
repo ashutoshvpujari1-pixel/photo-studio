@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Collage Studio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsPDF CDN for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas CDN for rendering collage to image/PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+</head>
+<body class="bg-slate-50 min-h-screen font-sans text-slate-800">
+
+    <div class="max-w-5xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-slate-900 tracking-tight mb-2">
+                <i class="fa-solid fa-photo-film text-indigo-600 mr-2"></i> Photo Collage Studio
+            </h1>
+            <p class="text-slate-600">Upload your photos, generate a stylish uncropped collage, and export or share instantly.</p>
+        </header>
+
+        <!-- Main Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 mb-8">
+            
+            <!-- Upload Section -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Select Photos (Multiple)</label>
+                <div class="flex items-center justify-center w-full">
+                    <label class="flex flex-col items-center justify-center w-full h-36 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-indigo-500 mb-2"></i>
+                            <p class="mb-2 text-sm text-slate-600"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                            <p class="text-xs text-slate-500">PNG, JPG, WEBP (Multiple allowed)</p>
+                        </div>
+                        <input type="file" id="imageUpload" multiple accept="image/*" class="hidden" />
+                    </label>
+                </div>
+            </div>
+
+            <!-- Uploaded Thumbnails Preview -->
+            <div id="previewContainer" class="hidden mb-6">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-sm font-semibold text-slate-700">Uploaded Images (<span id="imageCount">0</span>)</span>
+                    <button id="clearAllBtn" class="text-xs text-rose-600 hover:text-rose-800 font-medium">Clear All</button>
+                </div>
+                <div id="thumbnailsList" class="flex gap-3 overflow-x-auto pb-2"></div>
+            </div>
+
+            <!-- Generate Button -->
+            <button id="generateBtn" disabled class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl shadow transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Collage
+            </button>
+        </div>
+
+        <!-- Collage Output Section -->
+        <div id="outputSection" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-images text-indigo-600"></i> Your Collage Result
+            </h2>
+
+            <!-- Collage Canvas Wrapper (Designed to show original images fully without cropping) -->
+            <div id="collageWrapper" class="bg-slate-100 p-4 rounded-xl border border-slate-200 mb-6 flex items-center justify-center overflow-hidden">
+                <div id="collageContainer" class="grid gap-2 w-full max-w-3xl bg-white p-4 rounded-lg shadow-inner">
+                    <!-- Dynamic Grid Items will be injected here -->
+                </div>
+            </div>
+
+            <!-- Action Toolbar -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <button id="downloadImgBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-download"></i> Download Image
+                </button>
+                <button id="downloadPdfBtn" class="bg-rose-600 hover:bg-rose-700 text-white font-medium py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-file-pdf"></i> Download PDF
+                </button>
+                <button id="copyBtn" class="bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-copy"></i> Copy to Clipboard
+                </button>
+                <button id="shareBtn" class="bg-sky-600 hover:bg-sky-700 text-white font-medium py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-share-nodes"></i> Share / Email
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let uploadedFiles = [];
+
+        const imageUpload = document.getElementById('imageUpload');
+        const previewContainer = document.getElementById('previewContainer');
+        const thumbnailsList = document.getElementById('thumbnailsList');
+        const imageCount = document.getElementById('imageCount');
+        const generateBtn = document.getElementById('generateBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const outputSection = document.getElementById('outputSection');
+        const collageContainer = document.getElementById('collageContainer');
+        
+        const downloadImgBtn = document.getElementById('downloadImgBtn');
+        const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const shareBtn = document.getElementById('shareBtn');
+
+        // Handle File Selection
+        imageUpload.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    uploadedFiles.push(file);
+                }
+            });
+            updateUI();
+            imageUpload.value = ''; // Reset input
+        });
+
+        clearAllBtn.addEventListener('click', () => {
+            uploadedFiles = [];
+            updateUI();
+            outputSection.classList.add('hidden');
+        });
+
+        function updateUI() {
+            if (uploadedFiles.length > 0) {
+                previewContainer.classList.remove('hidden');
+                generateBtn.disabled = false;
+                imageCount.textContent = uploadedFiles.length;
+                
+                thumbnailsList.innerHTML = '';
+                uploadedFiles.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const div = document.createElement('div');
+                        div.className = 'relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border border-slate-200 group';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" class="w-full h-full object-cover">
+                            <button onclick="removeImage(${index})" class="absolute top-1 right-1 bg-rose-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">
+                                <i class="fa-solid fa-xmark"></i>
+                            5</button>
+                        `;
+                        thumbnailsList.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                previewContainer.classList.add('hidden');
+                generateBtn.disabled = true;
+            }
+        }
+
+        window.removeImage = function(index) {
+            uploadedFiles.splice(index, 1);
+            updateUI();
+            if(uploadedFiles.length === 0) {
+                outputSection.classList.add('hidden');
+            }
+        };
+
+        // Generate Collage with fully visible original images (object-fit: contain)
+        generateBtn.addEventListener('click', () => {
+            if (uploadedFiles.length === 0) return;
+
+            collageContainer.innerHTML = '';
+            
+            // Determine stylish grid columns based on count
+            let cols = 'grid-cols-1';
+            if (uploadedFiles.length === 2) cols = 'grid-cols-2';
+            else if (uploadedFiles.length === 3) cols = 'grid-cols-3';
+            else if (uploadedFiles.length >= 4) cols = 'grid-cols-2 sm:grid-cols-3';
+
+            collageContainer.className = `grid ${cols} gap-3 w-full bg-white p-4 rounded-lg shadow-inner items-center justify-center`;
+
+            uploadedFiles.forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'bg-slate-900 rounded-lg overflow-hidden flex items-center justify-center p-1 shadow-sm aspect-square';
+                    itemDiv.innerHTML = `
+                        <img src="${e.target.result}" class="w-full h-full object-contain rounded">
+                    `;
+                    collageContainer.appendChild(itemDiv);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            outputSection.classList.remove('hidden');
+            outputSection.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Download as Image (PNG)
+        downloadImgBtn.addEventListener('click', () => {
+            html2canvas(collageContainer, { scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'photo-collage.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+
+        // Download as PDF
+        downloadPdfBtn.addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            html2canvas(collageContainer, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({
+                    orientation: canvas.width > canvas.height ? 'l' : 'p',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                
+                const imgWidth = pageWidth - 20;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, Math.min(imgHeight, pageHeight - 20));
+                pdf.save('photo-collage.pdf');
+            });
+        });
+
+        // Copy to Clipboard
+        copyBtn.addEventListener('click', () => {
+            html2canvas(collageContainer, { scale: 2 }).then(canvas => {
+                canvas.toBlob(blob => {
+                    try {
+                        navigator.clipboard.write([
+                            new ClipboardItem({ 'image/png': blob })
+                        ]);
+                        alert('Collage copied to clipboard!');
+                    } catch (err) {
+                        alert('Clipboard copy not supported in your browser.');
+                    }
+                });
+            });
+        });
+
+        // Share or Email
+        shareBtn.addEventListener('click', async () => {
+            html2canvas(collageContainer, { scale: 2 }).then(async canvas => {
+                canvas.toBlob(async blob => {
+                    const file = new File([blob], 'collage.png', { type: 'image/png' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                title: 'My Photo Collage',
+                                text: 'Check out this photo collage I created!',
+                                files: [file]
+                            });
+                        } catch (err) {
+                            if (err.name !== 'AbortError') console.log(err);
+                        }
+                    } else {
+                        // Fallback to Email client mailto
+                        const emailBody = encodeURIComponent('Check out my photo collage! (Download the image from the app to attach it).');
+                        window.location.href = `mailto:?subject=My Photo Collage&body=${emailBody}`;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
