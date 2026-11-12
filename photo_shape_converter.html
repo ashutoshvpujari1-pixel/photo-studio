@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Shape Converter</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col items-center py-10 px-4">
+
+    <div class="max-w-xl w-full bg-white shadow-xl rounded-2xl p-6 sm:p-8 space-y-6">
+        <header class="text-center space-y-2">
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Photo Shape Converter</h1>
+            <p class="text-sm text-slate-500">Upload a photo, choose your target shape, and transform it instantly.</p>
+        </header>
+
+        <!-- Upload Section -->
+        <div class="space-y-2">
+            <label class="block text-sm font-medium text-slate-700">1. Upload Photo</label>
+            <input type="file" id="imageInput" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+        </div>
+
+        <!-- Shape Selection -->
+        <div class="space-y-2">
+            <label for="shapeSelect" class="block text-sm font-medium text-slate-700">2. Select Target Shape</label>
+            <select id="shapeSelect" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <option value="circle">Circle</option>
+                <option value="semircle">Semi-Circle</option>
+                <option value="square">Square</option>
+                <option value="rectangle">Rectangle (Standard)</option>
+                <option value="rounded">Rounded Rectangle</option>
+            </select>
+        </div>
+
+        <!-- Convert Button -->
+        <button id="convertBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition duration-200 shadow-lg shadow-indigo-100 disabled:opacity-55 disabled:cursor-not-allowed" disabled>
+            Convert Photo
+        </button>
+
+        <!-- Preview Section -->
+        <div id="previewContainer" class="hidden space-y-4 pt-4 border-t border-slate-100">
+            <h2 class="text-sm font-medium text-slate-700 text-center">Result Preview</h2>
+            <div class="flex justify-center bg-slate-100 rounded-2xl p-4 overflow-hidden border border-slate-200">
+                <canvas id="outputCanvas" class="max-w-full h-auto shadow-sm"></canvas>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
+                <button id="downloadBtn" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold py-2.5 px-3 rounded-xl transition">
+                    Download
+                </button>
+                <button id="copyBtn" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold py-2.5 px-3 rounded-xl transition">
+                    Copy Image
+                </button>
+                <button id="emailBtn" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold py-2.5 px-3 rounded-xl transition">
+                    Email
+                </button>
+                <button id="shareBtn" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold py-2.5 px-3 rounded-xl transition">
+                    Share
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const shapeSelect = document.getElementById('shapeSelect');
+        const convertBtn = document.getElementById('convertBtn');
+        const previewContainer = document.getElementById('previewContainer');
+        const outputCanvas = document.getElementById('outputCanvas');
+        const ctx = outputCanvas.getContext('2d');
+
+        let uploadedImage = null;
+
+        // Load uploaded image into memory
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    uploadedImage = img;
+                    convertBtn.disabled = false;
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Convert and clip image based on shape
+        convertBtn.addEventListener('click', () => {
+            if (!uploadedImage) return;
+
+            const shape = shapeSelect.value;
+            let width = uploadedImage.width;
+            let height = uploadedImage.height;
+
+            // Determine canvas dimensions based on chosen shape
+            if (shape === 'circle') {
+                const size = Math.min(width, height);
+                outputCanvas.width = size;
+                outputCanvas.height = size;
+            } else if (shape === 'square') {
+                const size = Math.min(width, height);
+                outputCanvas.width = size;
+                outputCanvas.height = size;
+            } else if (shape === 'semircle') {
+                outputCanvas.width = width;
+                outputCanvas.height = width / 2;
+            } else if (shape === 'rectangle') {
+                outputCanvas.width = width;
+                outputCanvas.height = height;
+            } else if (shape === 'rounded') {
+                outputCanvas.width = width;
+                outputCanvas.height = height;
+            }
+
+            // Clear canvas
+            ctx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+            ctx.save();
+
+            // Create Clipping Paths
+            ctx.beginPath();
+            if (shape === 'circle') {
+                const radius = outputCanvas.width / 2;
+                ctx.arc(radius, radius, radius, 0, Math.PI * 2);
+            } else if (shape === 'semircle') {
+                const w = outputCanvas.width;
+                const h = outputCanvas.height;
+                ctx.arc(w / 2, h, w / 2, Math.PI, 0, false);
+            } else if (shape === 'rounded') {
+                const w = outputCanvas.width;
+                const h = outputCanvas.height;
+                const r = Math.min(w, h) * 0.1; // 10% corner radius
+                ctx.roundRect(0, 0, w, h, r);
+            } else {
+                // Square or Rectangle
+                ctx.rect(0, 0, outputCanvas.width, outputCanvas.height);
+            }
+            
+            ctx.clip();
+
+            // Draw image centered and scaled to cover the canvas area
+            let srcX = 0, srcY = 0, srcW = width, srcH = height;
+            if (shape === 'circle' || shape === 'square') {
+                const size = Math.min(width, height);
+                srcX = (width - size) / 2;
+                srcY = (height - size) / 2;
+                srcW = size;
+                srcH = size;
+            }
+
+            ctx.drawImage(uploadedImage, srcX, srcY, srcW, srcH, 0, 0, outputCanvas.width, outputCanvas.height);
+            ctx.restore();
+
+            // Show preview box
+            previewContainer.classList.remove('hidden');
+        });
+
+        // Download Action
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = `shaped-image-${shapeSelect.value}.png`;
+            link.href = outputCanvas.toDataURL('image/png');
+            link.click();
+        });
+
+        // Copy Image Action
+        document.getElementById('copyBtn').addEventListener('click', async () => {
+            try {
+                outputCanvas.toBlob(async (blob) => {
+                    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                    alert('Image copied to clipboard!');
+                });
+            } catch (err) {
+                alert('Copying images is not supported in this browser.');
+            }
+        });
+
+        // Email Action
+        document.getElementById('emailBtn').addEventListener('click', () => {
+            const subject = encodeURIComponent('Check out my shaped photo');
+            const body = encodeURIComponent('I created this custom shaped photo using the Photo Shape Converter.');
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        });
+
+        // Native Share Action
+        document.getElementById('shareBtn').addEventListener('click', async () => {
+            if (navigator.canShare) {
+                outputCanvas.toBlob(async (blob) => {
+                    const file = new File([blob], 'shaped-photo.png', { type: 'image/png' });
+                    try {
+                        await navigator.share({
+                            title: 'Shaped Photo',
+                            text: 'Check out my custom shaped photo!',
+                            files: [file]
+                        });
+                    } catch (err) {
+                        console.log('Share canceled or failed', err);
+                    }
+                });
+            } else {
+                alert('Web Share API is not supported on this browser/device.');
+            }
+        });
+    </script>
+</body>
+</html>
