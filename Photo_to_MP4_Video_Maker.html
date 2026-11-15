@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Create MP4 slideshow videos from multiple photos with optional background music.">
+<meta name="keywords" content="photo to video, MP4 video maker, slideshow maker with music">
+<meta property="og:title" content="Photo to MP4 Video Maker">
+<meta property="og:description" content="Create a photo slideshow video with music.">
+<title>Photo to MP4 Video Maker</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+<style>
+:root{--navy:#152b55;--blue:#2463eb;--ink:#1f2937;--muted:#64748b;--bg:#f3f6fb;--line:#dbe3ef}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+header{background:linear-gradient(120deg,#12264b,#2457a6);color:white;padding:30px 18px;text-align:center}
+header h1{margin:0 0 9px;font-size:clamp(25px,4vw,36px)}header p{margin:0;color:#e1eaff;font-size:15px}
+main{max-width:1120px;margin:24px auto;padding:0 16px 40px}.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 8px 25px #1e3a5f0c}
+h2{font-size:20px;margin:0 0 16px;color:var(--navy)}.drop{display:block;border:2px dashed #9bb5df;border-radius:13px;padding:28px 15px;text-align:center;background:#f8fbff;cursor:pointer}.drop:hover{border-color:var(--blue);background:#f1f6ff}.drop strong{display:block;font-size:17px;margin-bottom:7px}
+.muted{color:var(--muted);font-size:13px;line-height:1.5}input[type=file]{display:none}
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-top:17px}.field{display:flex;flex-direction:column;gap:7px;min-width:160px;flex:1}.field label{font-size:13px;font-weight:bold;color:#334155}.field input,.field select{border:1px solid #cbd5e1;border-radius:9px;padding:11px;font-size:14px;background:white;color:var(--ink)}
+button,.file-label{border:0;border-radius:9px;padding:11px 16px;font-weight:bold;font-size:14px;cursor:pointer}.primary{background:var(--blue);color:white}.primary:hover{background:#174fc7}.secondary,.file-label{background:#e8efff;color:#214a9b}.danger{background:#fff0f0;color:#b42318}.btnrow{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.file-label{display:inline-block}
+#photoList{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px;margin-top:17px}.photo{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:#fff;min-width:0}.photo img{width:100%;height:125px;object-fit:contain;display:block;background:#edf2f7}.photo .meta{padding:8px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.photo .actions{display:flex;gap:5px;padding:0 8px 8px}.photo button{padding:7px 8px;font-size:12px;flex:1}
+.status{display:none;padding:12px 14px;border-radius:9px;background:#eff6ff;color:#1d4ed8;font-size:14px;margin-top:14px;line-height:1.5}.status.show{display:block}.progress{height:9px;background:#e2e8f0;border-radius:20px;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),#06b6d4);transition:width .2s}
+.preview-wrap{background:#101827;border-radius:13px;padding:12px;text-align:center}canvas{max-width:100%;height:auto;max-height:440px;background:#0b1220;border-radius:7px}.videoout{width:100%;max-height:480px;background:#0b1220;border-radius:12px;margin-top:14px}.notice{background:#fff8e7;border:1px solid #f2d28c;color:#76500b;padding:13px;border-radius:10px;font-size:13px;line-height:1.55}.small{font-size:12px;color:var(--muted)}footer{text-align:center;padding:20px;color:var(--muted);font-size:12px}
+button:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:600px){.panel{padding:16px}.toolbar{display:grid;grid-template-columns:1fr 1fr}.field{min-width:0}.toolbar .field:first-child{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<header><h1>Photo to MP4 Video Maker</h1><p>Turn your favourite photos into a video with background music</p></header>
+<main>
+<section class="panel">
+<h2>1. Add your photos</h2>
+<label class="drop" for="photos"><strong>📷 Select or drop photos here</strong><span class="muted">Upload one or multiple JPG, PNG, WEBP images. Photos are processed in your browser.</span></label>
+<input id="photos" type="file" accept="image/*" multiple>
+<div class="toolbar">
+ <div class="field"><label for="duration">Seconds per photo</label><input id="duration" type="number" min="1" max="20" value="3"></div>
+ <div class="field"><label for="resolution">Video resolution</label><select id="resolution"><option value="1280x720">HD 720p (16:9)</option><option value="1920x1080">Full HD 1080p</option><option value="1080x1080">Square 1080 × 1080</option><option value="1080x1920">Portrait 1080 × 1920</option></select></div>
+ <div class="field"><label for="fit">Photo display</label><select id="fit"><option value="contain">Fit entire photo (no crop)</option><option value="cover">Fill frame (may crop edges)</option></select></div>
+</div>
+<p id="photoCount" class="muted" aria-live="polite">No photos selected.</p>
+<div id="photoList"></div>
+<div class="btnrow"><button class="secondary" id="clearPhotos" type="button">Clear all photos</button></div>
+</section>
+<section class="panel">
+<h2>2. Add background music (optional)</h2>
+<label class="file-label" for="music">🎵 Choose music file</label><input id="music" type="file" accept="audio/*">
+<span id="musicName" class="muted">No music selected</span>
+<div class="toolbar">
+ <div class="field"><label for="volume">Music volume: <span id="volumeText">60%</span></label><input id="volume" type="range" min="0" max="100" value="60"></div>
+ <div class="field"><label for="musicMode">Music playback</label><select id="musicMode"><option value="loop">Loop music until video ends</option><option value="once">Play once (then silence)</option></select></div>
+</div>
+<p class="small">Use music that you own or have permission to use.</p>
+</section>
+<section class="panel">
+<h2>3. Preview and generate</h2>
+<div class="preview-wrap"><canvas id="preview" width="1280" height="720"></canvas></div>
+<div class="btnrow">
+ <button class="secondary" id="previewBtn" type="button">▶ Preview slideshow</button>
+ <button class="primary" id="generateBtn" type="button">🎬 Generate MP4 Video</button>
+</div>
+<div id="status" class="status" role="status" aria-live="polite"><div id="statusText">Ready.</div><div class="progress"><span id="progressBar"></span></div></div>
+<div id="resultArea" hidden>
+ <h2 style="margin-top:22px">Your generated video</h2>
+ <video id="resultVideo" class="videoout" controls playsinline></video>
+ <div class="btnrow">
+  <button class="primary" id="downloadBtn" type="button">⬇ Download MP4</button>
+  <button class="secondary" id="shareBtn" type="button">↗ Share video</button>
+  <button class="secondary" id="copyBtn" type="button">▣ Copy video</button>
+  <button class="secondary" id="emailBtn" type="button">✉ Email video</button>
+ </div>
+ <p class="small">Email opens your email application with a suggested message. Download the MP4 and attach it manually. Copying and file sharing depend on browser support.</p>
+</div>
+<div class="notice" style="margin-top:18px"><b>MP4 export:</b> Photo upload, thumbnails and preview work without loading the video encoder. When you click Generate MP4, the page loads FFmpeg WebAssembly from the internet to convert the browser recording into MP4. Keep this tab open during conversion. Very large videos may require significant memory.</div>
+</section>
+</main>
+<footer>Photo to MP4 Video Maker · No account required</footer>
+
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+let photos=[],musicFile=null,generatedBlob=null,generatedUrl=null,previewTimer=null,ffmpegInstance=null;
+const canvas=$('preview'),ctx=canvas.getContext('2d');
+function setStatus(message,percent){$('status').classList.add('show');$('statusText').textContent=message;if(percent!==undefined)$('progressBar').style.width=Math.max(0,Math.min(100,percent))+'%';}
+function resetResult(){generatedBlob=null;if(generatedUrl){URL.revokeObjectURL(generatedUrl);generatedUrl=null;}$('resultVideo').removeAttribute('src');$('resultVideo').load();$('resultArea').hidden=true;}
+function dimensions(){const a=$('resolution').value.split('x');return {w:Number(a[0]),h:Number(a[1])};}
+function drawBlank(){const d=dimensions();canvas.width=d.w;canvas.height=d.h;ctx.fillStyle='#101827';ctx.fillRect(0,0,d.w,d.h);ctx.fillStyle='#dbeafe';ctx.textAlign='center';ctx.font='bold '+Math.max(22,d.w/35)+'px Arial';ctx.fillText('Your photo slideshow preview',d.w/2,d.h/2-12);ctx.font=Math.max(14,d.w/65)+'px Arial';ctx.fillText('Upload photos to get started',d.w/2,d.h/2+30);}
+function loadImage(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Could not read one of the selected photos.'));im.src=src;});}
+function paintImage(img,targetCtx,w,h,fit){targetCtx.fillStyle='#101827';targetCtx.fillRect(0,0,w,h);const scale=fit==='cover'?Math.max(w/img.width,h/img.height):Math.min(w/img.width,h/img.height);const dw=img.width*scale,dh=img.height*scale;targetCtx.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);}
+async function drawPhoto(index){if(!photos.length){drawBlank();return;}const d=dimensions();canvas.width=d.w;canvas.height=d.h;try{const img=await loadImage(photos[index%photos.length].url);paintImage(img,ctx,d.w,d.h,$('fit').value);}catch(e){drawBlank();setStatus(e.message,0);}}
+function renderList(){
+ const list=$('photoList');list.replaceChildren();
+ $('photoCount').textContent=photos.length+' photo'+(photos.length===1?'':'s')+' selected.';
+ photos.forEach((p,i)=>{
+  const card=document.createElement('div');card.className='photo';
+  const img=document.createElement('img');img.src=p.url;img.alt=p.file.name;
+  const meta=document.createElement('div');meta.className='meta';meta.textContent=(i+1)+'. '+p.file.name;meta.title=p.file.name;
+  const actions=document.createElement('div');actions.className='actions';
+  const up=document.createElement('button');up.type='button';up.className='secondary';up.textContent='↑';up.title='Move up';up.disabled=i===0;up.onclick=()=>movePhoto(i,-1);
+  const down=document.createElement('button');down.type='button';down.className='secondary';down.textContent='↓';down.title='Move down';down.disabled=i===photos.length-1;down.onclick=()=>movePhoto(i,1);
+  const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='✕';del.title='Remove photo';del.onclick=()=>removePhoto(i);
+  actions.append(up,down,del);card.append(img,meta,actions);list.append(card);
+ });
+}
+function movePhoto(i,delta){const j=i+delta;if(j<0||j>=photos.length)return;[photos[i],photos[j]]=[photos[j],photos[i]];renderList();resetResult();drawPhoto(0);}
+function removePhoto(i){URL.revokeObjectURL(photos[i].url);photos.splice(i,1);renderList();resetResult();drawPhoto(0);}
+$('photos').addEventListener('change',function(e){
+ const files=Array.from(e.target.files||[]);
+ let added=0;
+ files.forEach(file=>{if(file.type&&file.type.startsWith('image/')){photos.push({file,url:URL.createObjectURL(file)});added++;}});
+ e.target.value='';
+ if(added===0&&files.length){setStatus('No supported image files were selected. Please choose JPG, PNG or WEBP photos.',0);}
+ else if(added){resetResult();renderList();drawPhoto(0);setStatus(added+' photo'+(added===1?'':'s')+' added successfully.',0);}
+});
+$('clearPhotos').addEventListener('click',()=>{photos.forEach(p=>URL.revokeObjectURL(p.url));photos=[];renderList();resetResult();drawBlank();});
+$('music').addEventListener('change',e=>{musicFile=e.target.files&&e.target.files[0]||null;$('musicName').textContent=musicFile?musicFile.name:'No music selected';resetResult();});
+$('volume').addEventListener('input',e=>$('volumeText').textContent=e.target.value+'%');
+$('resolution').addEventListener('change',()=>drawPhoto(0));
+$('fit').addEventListener('change',()=>drawPhoto(0));
+$('previewBtn').addEventListener('click',()=>{
+ if(!photos.length){setStatus('Please select at least one photo first.',0);return;}
+ if(previewTimer){clearInterval(previewTimer);previewTimer=null;$('previewBtn').textContent='▶ Preview slideshow';return;}
+ let i=0;drawPhoto(i);$('previewBtn').textContent='■ Stop preview';
+ previewTimer=setInterval(()=>{i=(i+1)%photos.length;drawPhoto(i);},Math.max(1,Math.min(20,Number($('duration').value)||3))*1000);
+});
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+async function recordSlideshow(){
+ const seconds=Math.max(1,Math.min(20,Number($('duration').value)||3));
+ const d=dimensions();canvas.width=d.w;canvas.height=d.h;
+ if(!canvas.captureStream)throw new Error('Canvas video recording is not supported in this browser. Please use a recent version of Chrome or Edge.');
+ const stream=canvas.captureStream(30);let audioCtx=null,audioElement=null,audioDest=null;
+ if(musicFile){
+  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+  if(!AudioContextClass)throw new Error('Audio recording is not supported by this browser.');
+  audioCtx=new AudioContextClass();audioDest=audioCtx.createMediaStreamDestination();
+  const gain=audioCtx.createGain();gain.gain.value=Number($('volume').value)/100;
+  audioElement=new Audio();audioElement.src=URL.createObjectURL(musicFile);audioElement.loop=$('musicMode').value==='loop';audioElement.preload='auto';
+  const source=audioCtx.createMediaElementSource(audioElement);source.connect(gain);gain.connect(audioDest);audioDest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
+ }
+ const types=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+ const mime=types.find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported(t));
+ if(!window.MediaRecorder||!mime)throw new Error('This browser cannot record slideshow video. Please use the latest Chrome or Edge.');
+ const recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:6000000}),chunks=[];
+ recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
+ const stopped=new Promise((resolve,reject)=>{recorder.onstop=()=>resolve(new Blob(chunks,{type:mime}));recorder.onerror=()=>reject(new Error('Browser recording failed.'));});
+ recorder.start(500);
+ try{
+  if(audioCtx){await audioCtx.resume();try{await audioElement.play();}catch(e){throw new Error('Could not start the selected music. Try another audio file or remove the music.');}}
+  const total=photos.length*seconds,started=Date.now();
+  for(let i=0;i<photos.length;i++){
+   const img=await loadImage(photos[i].url);paintImage(img,ctx,d.w,d.h,$('fit').value);
+   const until=Date.now()+seconds*1000;
+   while(Date.now()<until){setStatus('Recording photo '+(i+1)+' of '+photos.length+'…',((Date.now()-started)/1000)/total*100);await wait(100);}
+  }
+  recorder.stop();const blob=await stopped;
+  return {blob,stream,audioCtx,audioElement};
+ }catch(err){if(recorder.state!=='inactive')recorder.stop();stream.getTracks().forEach(t=>t.stop());if(audioCtx)await audioCtx.close().catch(()=>{});throw err;}
+}
+async function loadFFmpeg(){
+ if(ffmpegInstance&&ffmpegInstance.loaded)return ffmpegInstance;
+ setStatus('Loading MP4 encoder. First use requires internet…',5);
+ const {FFmpeg}=await import('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js');
+ const {toBlobURL}=await import('https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js');
+ ffmpegInstance=new FFmpeg();
+ ffmpegInstance.on('progress',({progress})=>setStatus('Converting recording to MP4…',60+Math.round((progress||0)*39)));
+ const base='https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';
+ await ffmpegInstance.load({coreURL:await toBlobURL(base+'/ffmpeg-core.js','text/javascript'),wasmURL:await toBlobURL(base+'/ffmpeg-core.wasm','application/wasm')});
+ return ffmpegInstance;
+}
+$('generateBtn').addEventListener('click',async()=>{
+ if(!photos.length){setStatus('Please select at least one photo before generating the video.',0);return;}
+ if(previewTimer){clearInterval(previewTimer);previewTimer=null;$('previewBtn').textContent='▶ Preview slideshow';}
+ $('generateBtn').disabled=true;$('previewBtn').disabled=true;resetResult();let recording=null;
+ try{
+  setStatus('Preparing your slideshow…',1);
+  recording=await recordSlideshow();
+  setStatus('Loading MP4 converter…',55);
+  const enc=await loadFFmpeg();
+  const input='slideshow_recording.webm',output='photo_slideshow.mp4';
+  await enc.writeFile(input,new Uint8Array(await recording.blob.arrayBuffer()));
+  const args=['-i',input,'-c:v','libx264','-preset','ultrafast','-pix_fmt','yuv420p'];
+  if(musicFile)args.push('-c:a','aac','-b:a','192k');
+  else args.push('-an');
+  args.push('-movflags','+faststart',output);
+  setStatus('Creating MP4 file. Please keep this tab open…',60);
+  await enc.exec(args);
+  const data=await enc.readFile(output);
+  generatedBlob=new Blob([data],{type:'video/mp4'});generatedUrl=URL.createObjectURL(generatedBlob);
+  $('resultVideo').src=generatedUrl;$('resultArea').hidden=false;setStatus('MP4 video created successfully.',100);
+ }catch(err){
+  console.error(err);
+  let message=err&&err.message?err.message:String(err);
+  if(message.includes('Failed to fetch')||message.includes('Importing a module'))message='Could not load the online MP4 encoder. Check your internet connection and open this page using Chrome or Edge.';
+  setStatus('Video generation failed: '+message,0);
+ }finally{
+  if(recording){recording.stream.getTracks().forEach(t=>t.stop());if(recording.audioElement){recording.audioElement.pause();URL.revokeObjectURL(recording.audioElement.src);}if(recording.audioCtx)await recording.audioCtx.close().catch(()=>{});}
+  $('generateBtn').disabled=false;$('previewBtn').disabled=false;
+ }
+});
+$('downloadBtn').addEventListener('click',()=>{if(!generatedBlob)return;const a=document.createElement('a');a.href=generatedUrl;a.download='my-photo-slideshow.mp4';document.body.append(a);a.click();a.remove();});
+$('shareBtn').addEventListener('click',async()=>{
+ if(!generatedBlob)return;const file=new File([generatedBlob],'my-photo-slideshow.mp4',{type:'video/mp4'});
+ try{if(navigator.canShare&&navigator.canShare({files:[file]}))await navigator.share({files:[file],title:'My photo slideshow',text:'Photo slideshow video'});else alert('File sharing is not supported in this browser. Download the MP4 and share it from your device.');}
+ catch(e){if(e.name!=='AbortError')alert('Sharing could not be completed. Please download the video.');}
+});
+$('copyBtn').addEventListener('click',async()=>{
+ if(!generatedBlob)return;
+ try{if(navigator.clipboard&&window.ClipboardItem){await navigator.clipboard.write([new ClipboardItem({'video/mp4':generatedBlob})]);alert('Video copied to clipboard.');}else alert('This browser does not support copying MP4 files. Please use Download or Share.');}
+ catch(e){alert('The browser or operating system does not allow copying this video file. Please use Download or Share.');}
+});
+$('emailBtn').addEventListener('click',()=>{
+ if(!generatedBlob)return;const subject=encodeURIComponent('My photo slideshow video');
+ const body=encodeURIComponent('Hi,\n\nI have created a photo slideshow video. Please find the MP4 attached.\n\nPlease download the MP4 from the video maker and attach it to this email before sending.');
+ window.location.href='mailto:?subject='+subject+'&body='+body;
+});
+drawBlank();
+})();
+</script>
+</body>
+</html>
