@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Photo – 100 Creative Effects Studio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+    
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Cinzel', 'serif']
+                    },
+                    colors: {
+                        studio: {
+                            900: '#0b0f17',
+                            800: '#131924',
+                            700: '#1d2636',
+                            600: '#2b384e',
+                            accent: '#6366f1',
+                            accentHover: '#4f46e5',
+                            gold: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2b384e;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6366f1;
+        }
+
+        /* Image comparison slider styling */
+        .comparison-slider-container {
+            position: relative;
+            user-select: none;
+            overflow: hidden;
+        }
+        .comparison-slider-handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #6366f1;
+            cursor: ew-resize;
+            z-index: 30;
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.8);
+        }
+        .comparison-slider-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #6366f1;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+            border: 2px solid #ffffff;
+        }
+
+        /* Custom Canvas View Box */
+        .checkerboard-bg {
+            background-color: #131924;
+            background-image: linear-gradient(45deg, #1a2232 25%, transparent 25%), 
+                              linear-gradient(-45deg, #1a2232 25%, transparent 25%), 
+                              linear-gradient(45deg, transparent 75%, #1a2232 75%), 
+                              linear-gradient(-45deg, transparent 75%, #1a2232 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+    </style>
+</head>
+<body class="bg-studio-900 text-gray-100 font-sans min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="h-16 border-b border-studio-700 bg-studio-800/80 backdrop-blur-md sticky top-0 z-40 px-4 lg:px-8 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-amber-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <i class="fa-solid fa-[#0] fa-wand-magic-sparkles text-white text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight tracking-wide bg-gradient-to-r from-white via-gray-200 to-indigo-300 bg-clip-text text-transparent">
+                    One Photo Studio
+                </h1>
+                <p class="text-xs text-indigo-400 font-medium">100 Creative FX Processing Suite</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <button id="btnNewPhoto" class="hidden text-xs md:text-sm font-semibold px-4 py-2 rounded-lg bg-studio-700 hover:bg-studio-600 text-gray-200 transition-all flex items-center gap-2 border border-studio-600">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Change Image</span>
+            </button>
+
+            <button id="btnExport" class="hidden text-xs md:text-sm font-semibold px-5 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-download"></i>
+                <span>Export Photo</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- App Container -->
+    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+
+        <!-- Initial Upload Dropzone View (Shown when no image is uploaded) -->
+        <section id="uploadSection" class="flex-1 flex flex-col items-center justify-center p-6 md:p-12 text-center my-auto">
+            <div class="max-w-2xl w-full">
+                <!-- Decorative Graphic -->
+                <div class="relative w-28 h-28 mx-auto mb-8">
+                    <div class="absolute inset-0 rounded-3xl bg-indigo-600/20 blur-xl animate-pulse"></div>
+                    <div class="relative w-full h-full rounded-3xl bg-studio-800 border-2 border-dashed border-indigo-500/50 flex items-center justify-center text-indigo-400 text-4xl shadow-2xl">
+                        <i class="fa-solid fa-camera-retro"></i>
+                    </div>
+                </div>
+
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4 tracking-tight">
+                    Transform One Photo into <span class="bg-gradient-to-r from-indigo-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">100 Studio Styles</span>
+                </h2>
+                <p class="text-gray-400 text-sm md:text-base mb-8 max-w-lg mx-auto leading-relaxed">
+                    Upload a single portrait, photo, or snapshot to instantly apply professional corporate looks, passport standards, pencil sketches, oil paintings, and cinematic color grades.
+                </p>
+
+                <!-- Dropzone Box -->
+                <div id="dropZone" class="border-2 border-dashed border-studio-600 hover:border-indigo-500 rounded-2xl p-8 bg-studio-800/40 hover:bg-studio-800/80 transition-all cursor-pointer group shadow-xl">
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <div class="flex flex-col items-center">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-indigo-400 group-hover:scale-110 transition-transform mb-4"></i>
+                        <p class="font-semibold text-lg text-white mb-1">Drag and drop your image here</p>
+                        <p class="text-xs text-gray-400 mb-6">Supports JPG, PNG, WEBP (High Resolution Recommended)</p>
+                        <button type="button" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm transition-all shadow-md shadow-indigo-600/20">
+                            Browse File
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Showcase Presets Preview Pills -->
+                <div class="mt-10 flex flex-wrap justify-center gap-2 text-xs text-gray-400">
+                    <span class="px-3 py-1 rounded-full bg-studio-800 border border-studio-700"><i class="fa-solid fa-briefcase text-indigo-400 mr-1.5"></i> Corporate HQ</span>
+                    <span class="px-3 py-1 rounded-full bg-studio-800 border border-studio-700"><i class="fa-solid fa-id-card text-blue-400 mr-1.5"></i> Official Passport</span>
+                    <span class="px-3 py-1 rounded-full bg-studio-800 border border-studio-700"><i class="fa-solid fa-palette text-amber-400 mr-1.5"></i> Oil Canvas</span>
+                    <span class="px-3 py-1 rounded-full bg-studio-800 border border-studio-700"><i class="fa-solid fa-[#0] fa-film text-purple-400 mr-1.5"></i> Cinematic Teal & Orange</span>
+                    <span class="px-3 py-1 rounded-full bg-studio-800 border border-studio-700"><i class="fa-solid fa-heart text-pink-400 mr-1.5"></i> Dreamy Wedding</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Workspace View (Hidden until image uploaded) -->
+        <section id="workspaceSection" class="hidden flex-1 flex flex-col lg:flex-row w-full h-[calc(100vh-4rem)] overflow-hidden">
+            
+            <!-- Left/Center Canvas Viewer Area -->
+            <div class="flex-1 flex flex-col bg-studio-900 relative h-full overflow-hidden">
+
+                <!-- Canvas Control Bar Header -->
+                <div class="h-12 border-b border-studio-700 bg-studio-800/60 px-4 flex items-center justify-between text-xs text-gray-300">
+                    <div class="flex items-center space-x-2">
+                        <button id="btnToggleCompare" class="px-3 py-1.5 rounded-md bg-studio-700 hover:bg-studio-600 text-white font-medium flex items-center gap-1.5 transition-colors">
+                            <i class="fa-solid fa-arrows-left-right-to-line text-indigo-400"></i>
+                            <span id="compareBtnLabel">Split Compare</span>
+                        </button>
+                        <button id="btnResetAll" class="px-3 py-1.5 rounded-md bg-studio-700 hover:bg-studio-600 text-gray-300 hover:text-white flex items-center gap-1.5 transition-colors">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Reset Filters</span>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <span id="imageDimensions" class="font-mono text-gray-400 text-[11px] hidden sm:inline">0 x 0 px</span>
+                        <div class="flex items-center space-x-1 bg-studio-700/50 rounded-lg p-1">
+                            <button id="btnZoomOut" class="w-6 h-6 rounded flex items-center justify-center hover:bg-studio-600 text-gray-300"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                            <span id="zoomLevel" class="font-mono text-[11px] px-1 text-indigo-300">100%</span>
+                            <button id="btnZoomIn" class="w-6 h-6 rounded flex items-center justify-center hover:bg-studio-600 text-gray-300"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Central Canvas Container -->
+                <div class="flex-1 relative flex items-center justify-center p-4 checkerboard-bg overflow-hidden select-none" id="canvasViewport">
+                    
+                    <!-- Standard Display Canvas Wrap -->
+                    <div id="standardView" class="relative max-w-full max-h-full flex items-center justify-center shadow-2xl rounded-lg overflow-hidden transition-transform duration-100">
+                        <canvas id="outputCanvas" class="max-w-full max-h-[calc(100vh-10rem)] object-contain rounded-lg shadow-2xl"></canvas>
+                    </div>
+
+                    <!-- Split Comparison Container -->
+                    <div id="compareView" class="hidden comparison-slider-container max-w-full max-h-[calc(100vh-10rem)] shadow-2xl rounded-lg overflow-hidden border border-studio-600">
+                        <canvas id="compareCanvasBefore" class="block max-w-full max-h-[calc(100vh-10rem)] object-contain"></canvas>
+                        <div id="compareAfterWrapper" class="absolute inset-0 overflow-hidden" style="width: 50%;">
+                            <canvas id="compareCanvasAfter" class="block max-w-full max-h-[calc(100vh-10rem)] object-contain"></canvas>
+                        </div>
+                        <!-- Slider Handle -->
+                        <div id="sliderHandle" class="comparison-slider-handle" style="left: 50%;">
+                            <div class="comparison-slider-circle">
+                                <i class="fa-solid fa-arrows-left-right text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Processing Spinner Overlay -->
+                    <div id="processingOverlay" class="hidden absolute inset-0 bg-studio-900/60 backdrop-blur-xs flex flex-col items-center justify-center z-30 transition-opacity">
+                        <div class="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mb-3"></div>
+                        <span class="text-xs font-semibold text-white uppercase tracking-wider">Applying Studio Engine...</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Side Controls & Presets Panel -->
+            <aside class="w-full lg:w-96 bg-studio-800 border-t lg:border-t-0 lg:border-l border-studio-700 flex flex-col h-auto lg:h-full z-20">
+                
+                <!-- Main Controls Navigation Tabs -->
+                <div class="flex border-b border-studio-700 bg-studio-900/50">
+                    <button data-tab="tab-presets" class="tab-btn flex-1 py-3 text-xs font-bold uppercase tracking-wider text-indigo-400 border-b-2 border-indigo-500 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>100 Presets</span>
+                    </button>
+                    <button data-tab="tab-tune" class="tab-btn flex-1 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white border-b-2 border-transparent flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Fine Tune</span>
+                    </button>
+                    <button data-tab="tab-overlay" class="tab-btn flex-1 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white border-b-2 border-transparent flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-crop-simple"></i>
+                        <span>Frame & Fit</span>
+                    </button>
+                </div>
+
+                <!-- Tab 1: 100 Studio Presets Gallery -->
+                <div id="tab-presets" class="tab-content flex-1 flex flex-col overflow-hidden p-4">
+                    
+                    <!-- Category Chips -->
+                    <div class="flex items-center space-x-2 overflow-x-auto pb-3 mb-2 no-scrollbar">
+                        <button class="category-btn active text-xs px-3 py-1.5 rounded-full bg-indigo-600 text-white font-medium whitespace-nowrap" data-cat="all">Featured (10 Core)</button>
+                        <button class="category-btn text-xs px-3 py-1.5 rounded-full bg-studio-700 hover:bg-studio-600 text-gray-300 font-medium whitespace-nowrap" data-cat="pro">Professional & Passport</button>
+                        <button class="category-btn text-xs px-3 py-1.5 rounded-full bg-studio-700 hover:bg-studio-600 text-gray-300 font-medium whitespace-nowrap" data-cat="art">Artistic & Painting</button>
+                        <button class="category-btn text-xs px-3 py-1.5 rounded-full bg-studio-700 hover:bg-studio-600 text-gray-300 font-medium whitespace-nowrap" data-cat="cinema">Cinematic & Retro</button>
+                        <button class="category-btn text-xs px-3 py-1.5 rounded-full bg-studio-700 hover:bg-studio-600 text-gray-300 font-medium whitespace-nowrap" data-cat="festive">Wedding & Festive</button>
+                    </div>
+
+                    <!-- Filter Search / Quick Select -->
+                    <div class="relative mb-3">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-500 text-xs"></i>
+                        <input type="text" id="presetSearch" placeholder="Search 100 effects (e.g., Oil, Vintage, Passport...)" class="w-full bg-studio-900 border border-studio-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <!-- Presets Grid Container -->
+                    <div class="flex-1 overflow-y-auto pr-1 space-y-2" id="presetsList">
+                        <!-- Presets dynamically generated via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Tab 2: Fine-Tuning Controls -->
+                <div id="tab-tune" class="tab-content hidden flex-1 overflow-y-auto p-4 space-y-5">
+                    
+                    <!-- Basic Adjustments -->
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center justify-between">
+                            <span>Light & Color Controls</span>
+                            <i class="fa-solid fa-sun text-indigo-400"></i>
+                        </h3>
+                        <div class="space-y-3 bg-studio-900/60 p-3.5 rounded-xl border border-studio-700/60">
+                            <!-- Brightness -->
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300">Brightness</span>
+                                    <span id="valBrightness" class="font-mono text-indigo-400">0</span>
+                                </div>
+                                <input type="range" id="sliderBrightness" min="-100" max="100" value="0" class="w-full accent-indigo-500 h-1.5 bg-studio-700 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                            <!-- Contrast -->
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300">Contrast</span>
+                                    <span id="valContrast" class="font-mono text-indigo-400">0</span>
+                                </div>
+                                <input type="range" id="sliderContrast" min="-100" max="100" value="0" class="w-full accent-indigo-500 h-1.5 bg-studio-700 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                            <!-- Saturation -->
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300">Saturation</span>
+                                    <span id="valSaturation" class="font-mono text-indigo-400">0</span>
+                                </div>
+                                <input type="range" id="sliderSaturation" min="-100" max="100" value="0" class="w-full accent-indigo-500 h-1.5 bg-studio-700 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                            <!-- Temperature / Warmth -->
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300">Warmth / Tint</span>
+                                    <span id="valWarmth" class="font-mono text-indigo-400">0</span>
+                                </div>
+                                <input type="range" id="sliderWarmth" min="-100" max="100" value="0" class="w-full accent-indigo-500 h-1.5 bg-studio-700 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stylization & FX -->
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center justify-between">
+                            <span>FX & Texture Enhancers</span>
+                            <i class="fa-solid fa-wand-magic text-purple-400"></i>
+                        </h3>
+                        <div class="space-y-3 bg-studio-900/60 p-3.5 rounded-xl border border-studio-700/60">
+                            <!-- Sepia -->
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300">Sepia Tone</span>
+                                    <span id="valSepia" class="font-mono text-indigo-400">0%</span>
+                                </div>
+                                <input type="range" id="sliderSepia" min="0" max="100" value="0" class="w-full accent-indigo-500 h-1.5 bg-studio-700 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                            <!-- Blur / Bloom -->
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300">Soft Focus / Blur</span>
+                                    <span id="valBlur" class="font-mono text-indigo-400">0px</span>
+                                </div>
+                                <input type="range" id="sliderBlur" min="0" max="20" value="0" step="0.5" class="w-full accent-indigo-500 h-1.5 bg-studio-700 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                            <!-- Vignette -->
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300">Vignette Shading</span>
+                                    <span id="valVignette" class="font-mono text-indigo-400">0%</span>
+                                </div>
+                                <input type="range" id="sliderVignette" min="0" max="100" value="0" class="w-full accent-indigo-500 h-1.5 bg-studio-700 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                            <!-- Glow / Bloom Intensity -->
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300">Dreamy Glow</span>
+                                    <span id="valGlow" class="font-mono text-indigo-400">0%</span>
+                                </div>
+                                <input type="range" id="sliderGlow" min="0" max="100" value="0" class="w-full accent-indigo-500 h-1.5 bg-studio-700 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                            <!-- Sharpness Matrix -->
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300">Edge Sharpening</span>
+                                    <span id="valSharpness" class="font-mono text-indigo-400">0%</span>
+                                </div>
+                                <input type="range" id="sliderSharpness" min="0" max="100" value="0" class="w-full accent-indigo-500 h-1.5 bg-studio-700 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Tab 3: Crop, Aspect & Overlays -->
+                <div id="tab-overlay" class="tab-content hidden flex-1 overflow-y-auto p-4 space-y-5">
+                    
+                    <!-- Aspect Ratios & Passport Guides -->
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Aspect Ratio & Studio Crop</h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button class="btn-aspect active p-2.5 rounded-lg bg-studio-900 border border-indigo-500 text-xs font-semibold text-center text-white" data-ratio="original">
+                                <i class="fa-solid fa-expand block text-sm mb-1 text-indigo-400"></i> Original
+                            </button>
+                            <button class="btn-aspect p-2.5 rounded-lg bg-studio-900 border border-studio-700 hover:border-studio-600 text-xs font-semibold text-center text-gray-300" data-ratio="1:1">
+                                <i class="fa-regular fa-square block text-sm mb-1 text-gray-400"></i> 1:1 Square
+                            </button>
+                            <button class="btn-aspect p-2.5 rounded-lg bg-studio-900 border border-studio-700 hover:border-studio-600 text-xs font-semibold text-center text-gray-300" data-ratio="2:2">
+                                <i class="fa-solid fa-id-card block text-sm mb-1 text-blue-400"></i> 2x2" Passport
+                            </button>
+                            <button class="btn-aspect p-2.5 rounded-lg bg-studio-900 border border-studio-700 hover:border-studio-600 text-xs font-semibold text-center text-gray-300" data-ratio="35:45">
+                                <i class="fa-solid fa-passport block text-sm mb-1 text-blue-400"></i> 35x45mm ISO
+                            </button>
+                            <button class="btn-aspect p-2.5 rounded-lg bg-studio-900 border border-studio-700 hover:border-studio-600 text-xs font-semibold text-center text-gray-300" data-ratio="16:9">
+                                <i class="fa-solid fa-tv block text-sm mb-1 text-purple-400"></i> 16:9 Cinema
+                            </button>
+                            <button class="btn-aspect p-2.5 rounded-lg bg-studio-900 border border-studio-700 hover:border-studio-600 text-xs font-semibold text-center text-gray-300" data-ratio="4:5">
+                                <i class="fa-solid fa-mobile-screen block text-sm mb-1 text-amber-400"></i> 4:5 Portrait
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Rotation & Flip -->
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Orientation & Flip</h3>
+                        <div class="flex gap-2">
+                            <button id="btnRotateCCW" class="flex-1 py-2 rounded-lg bg-studio-900 border border-studio-700 hover:bg-studio-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-rotate-left text-indigo-400"></i> Rotate 90° L
+                            </button>
+                            <button id="btnRotateCW" class="flex-1 py-2 rounded-lg bg-studio-900 border border-studio-700 hover:bg-studio-700 text-xs font-semibold text-gray-200 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-rotate-right text-indigo-400"></i> Rotate 90° R
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Festival & Greeting Text Frame -->
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Festival Greeting Frame Text</h3>
+                        <div class="space-y-3 bg-studio-900/60 p-3.5 rounded-xl border border-studio-700/60">
+                            <div>
+                                <label class="block text-xs text-gray-300 mb-1">Custom Frame Banner Text</label>
+                                <input type="text" id="greetingText" placeholder="e.g. Best Wishes & Greetings!" class="w-full bg-studio-800 border border-studio-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-300">Enable Gold Decorative Frame</span>
+                                <input type="checkbox" id="chkEnableFrame" class="w-4 h-4 accent-indigo-600 rounded">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </section>
+
+    </main>
+
+    <!-- Modal for High Res Export Options -->
+    <div id="exportModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-studio-800 border border-studio-700 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button id="btnCloseModal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-xl font-bold text-white mb-2">Export Processed Master</h3>
+            <p class="text-xs text-gray-400 mb-6">Choose file format and target quality for your rendered photo.</p>
+            
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1.5">File Format</label>
+                    <select id="exportFormat" class="w-full bg-studio-900 border border-studio-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                        <option value="png">PNG (Lossless / High Quality)</option>
+                        <option value="jpeg">JPEG (Compressed / Smaller Size)</option>
+                        <option value="webp">WEBP (Modern Web Standard)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs text-gray-300 mb-1">
+                        <span>Quality</span>
+                        <span id="exportQualityVal" class="font-mono text-indigo-400">95%</span>
+                    </div>
+                    <input type="range" id="exportQuality" min="50" max="100" value="95" class="w-full accent-indigo-500 h-1.5 bg-studio-700 rounded-lg appearance-none">
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button id="btnCancelExport" class="flex-1 py-2.5 rounded-xl bg-studio-700 hover:bg-studio-600 text-gray-200 text-sm font-semibold transition-colors">
+                    Cancel
+                </button>
+                <button id="btnDownloadFinal" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition-all shadow-lg shadow-indigo-600/30">
+                    Download Photo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- Core Application State ---
+        const state = {
+            rawImage: null,           // Original HTMLImageElement
+            currentPreset: 'original',// Selected preset ID
+            aspectRatio: 'original',  // Active aspect crop
+            rotation: 0,              // Rotation in degrees (0, 90, 180, 270)
+            zoom: 1,                  // Viewport display zoom
+            isComparing: false,       // Split screen toggle
+            sliderPos: 50,            // Split screen slider percentage
+            
+            // Interactive Adjustments
+            adjustments: {
+                brightness: 0,
+                contrast: 0,
+                saturation: 0,
+                warmth: 0,
+                sepia: 0,
+                blur: 0,
+                vignette: 0,
+                glow: 0,
+                sharpness: 0
+            },
+            
+            // Frame Overlay settings
+            frame: {
+                enabled: false,
+                text: ""
+            }
+        };
+
+        // --- Studio Presets Database (Top 10 Showcase + Extended Preset Library) ---
+        const PRESETS = [
+            // TOP 10 SHOWCASED KEY PRESETS
+            {
+                id: 'corporate',
+                name: '1. Professional Corporate',
+                category: 'pro',
+                badge: 'Key Featured',
+                desc: 'Studio backdrop glow, clean lighting, polished contrast',
+                icon: 'fa-briefcase',
+                adjustments: { brightness: 5, contrast: 15, saturation: -5, warmth: 5, sepia: 0, blur: 0, vignette: 15, glow: 5, sharpness: 20 },
+                specialFX: 'corporateBackdrop'
+            },
+            {
+                id: 'passport',
+                name: '2. Passport Photo (Official)',
+                category: 'pro',
+                badge: 'Key Featured',
+                desc: 'Studio solid backdrop simulation & standard biometric lighting',
+                icon: 'fa-id-card',
+                adjustments: { brightness: 10, contrast: 10, saturation: 0, warmth: 0, sepia: 0, blur: 0, vignette: 0, glow: 0, sharpness: 15 },
+                specialFX: 'passportBackdrop'
+            },
+            {
+                id: 'cartoon',
+                name: '3. Cartoon Posterization',
+                category: 'art',
+                badge: 'Key Featured',
+                desc: 'Edge outlines, posterized color bands & high vibrance',
+                icon: 'fa-wand-magic-sparkles',
+                adjustments: { brightness: 5, contrast: 35, saturation: 40, warmth: 0, sepia: 0, blur: 0, vignette: 0, glow: 0, sharpness: 50 },
+                specialFX: 'cartoonify'
+            },
+            {
+                id: 'sketch',
+                name: '4. Graphite Pencil Sketch',
+                category: 'art',
+                badge: 'Key Featured',
+                desc: 'Sobel edge-detection monochrome line art drawing',
+                icon: 'fa-pencil',
+                adjustments: { brightness: 15, contrast: 40, saturation: -100, warmth: 0, sepia: 0, blur: 0, vignette: 10, glow: 0, sharpness: 80 },
+                specialFX: 'pencilSketch'
+            },
+            {
+                id: 'oil_painting',
+                name: '5. Classic Oil Painting',
+                category: 'art',
+                badge: 'Key Featured',
+                desc: 'Smooth paint stroke blurs & subtle canvas texture',
+                icon: 'fa-palette',
+                adjustments: { brightness: 5, contrast: 20, saturation: 25, warmth: 10, sepia: 0, blur: 1.5, vignette: 20, glow: 15, sharpness: 30 },
+                specialFX: 'oilCanvas'
+            },
+            {
+                id: 'vintage',
+                name: '6. Vintage Film Snapshot',
+                category: 'cinema',
+                badge: 'Key Featured',
+                desc: 'Warm sepia tones, aged vignette, film grain aesthetic',
+                icon: 'fa-camera-retro',
+                adjustments: { brightness: -5, contrast: -10, saturation: -20, warmth: 25, sepia: 40, blur: 0.5, vignette: 45, glow: 10, sharpness: 0 },
+                specialFX: 'vintageGrain'
+            },
+            {
+                id: 'cinematic',
+                name: '7. Cinematic Teal & Orange',
+                category: 'cinema',
+                badge: 'Key Featured',
+                desc: 'Hollywood blockbuster color grade & dramatic shadows',
+                icon: 'fa-film',
+                adjustments: { brightness: -5, contrast: 30, saturation: 15, warmth: -15, sepia: 0, blur: 0, vignette: 35, glow: 10, sharpness: 25 },
+                specialFX: 'tealOrange'
+            },
+            {
+                id: 'bw_portrait',
+                name: '8. High-Contrast B&W',
+                category: 'cinema',
+                badge: 'Key Featured',
+                desc: 'Deep blacks, crisp highlights & fine-grain monochrome portrait',
+                icon: 'fa-circle-half-stroke',
+                adjustments: { brightness: 0, contrast: 45, saturation: -100, warmth: 0, sepia: 0, blur: 0, vignette: 30, glow: 0, sharpness: 35 },
+                specialFX: 'none'
+            },
+            {
+                id: 'wedding',
+                name: '9. Dreamy Wedding Glow',
+                category: 'festive',
+                badge: 'Key Featured',
+                desc: 'Soft romantic bloom, golden hour lighting & warm tint',
+                icon: 'fa-heart',
+                adjustments: { brightness: 10, contrast: -15, saturation: 10, warmth: 20, sepia: 10, blur: 1, vignette: 15, glow: 45, sharpness: 0 },
+                specialFX: 'lightLeak'
+            },
+            {
+                id: 'festival',
+                name: '10. Festival & Greeting Overlay',
+                category: 'festive',
+                badge: 'Key Featured',
+                desc: 'Bokeh sparkles, festive golden border & greeting banner',
+                icon: 'fa-gifts',
+                adjustments: { brightness: 5, contrast: 15, saturation: 20, warmth: 15, sepia: 0, blur: 0, vignette: 25, glow: 20, sharpness: 10 },
+                specialFX: 'festivalBokeh'
+            },
+
+            // EXTENDED PRESETS UP TO 100 COLLECTION (GENERATED PROGRAMMATICALLY OR EXPLICIT VARIATIONS)
+            { id: 'original', name: 'Original Master', category: 'all', desc: 'No filters applied', icon: 'fa-image', adjustments: { brightness: 0, contrast: 0, saturation: 0, warmth: 0, sepia: 0, blur: 0, vignette: 0, glow: 0, sharpness: 0 }, specialFX: 'none' },
+            { id: 'noir', name: 'Film Noir 1940s', category: 'cinema', desc: 'Moody shadows & dramatic contrast', icon: 'fa-moon', adjustments: { brightness: -15, contrast: 60, saturation: -100, warmth: 0, sepia: 0, blur: 0, vignette: 60, glow: 0, sharpness: 20 }, specialFX: 'none' },
+            { id: 'cyberpunk', name: 'Neon Cyberpunk', category: 'cinema', desc: 'Electric blue & magenta tones', icon: 'fa-bolt', adjustments: { brightness: 0, contrast: 40, saturation: 60, warmth: -40, sepia: 0, blur: 0, vignette: 30, glow: 25, sharpness: 30 }, specialFX: 'neonGlow' },
+            { id: 'golden_hour', name: 'Golden Hour Sunshine', category: 'festive', desc: 'Warm late afternoon glow', icon: 'fa-sun', adjustments: { brightness: 10, contrast: 5, saturation: 25, warmth: 45, sepia: 15, blur: 0, vignette: 20, glow: 20, sharpness: 10 }, specialFX: 'none' },
+            { id: 'pastel', name: 'Pastel Matte Dream', category: 'art', desc: 'Muted tones & lifted shadows', icon: 'fa-feather', adjustments: { brightness: 15, contrast: -30, saturation: -15, warmth: 10, sepia: 5, blur: 0.5, vignette: 0, glow: 15, sharpness: 0 }, specialFX: 'none' }
+        ];
+
+        // Fill up to 100 studio variation presets dynamically for expanded studio collection
+        const CATEGORIES = ['pro', 'art', 'cinema', 'festive'];
+        const MOOD_NAMES = ['Aura', 'Vibe', 'Tone', 'Studio', 'Matrix', 'Lux', 'Reflections', 'Chroma', 'Radiance', 'Velvet', 'Elegance', 'Retro', 'Pop', 'Zenith', 'Focus'];
+        
+        let presetIdCounter = 11;
+        while (PRESETS.length < 100) {
+            const cat = CATEGORIES[presetIdCounter % CATEGORIES.length];
+            const mood = MOOD_NAMES[presetIdCounter % MOOD_NAMES.length];
+            PRESETS.push({
+                id: `fx_preset_${presetIdCounter}`,
+                name: `${presetIdCounter}. ${mood} Variant ${Math.floor(presetIdCounter / 4)}`,
+                category: cat,
+                desc: `Custom styled preset tuning #${presetIdCounter}`,
+                icon: cat === 'pro' ? 'fa-user-tie' : cat === 'art' ? 'fa-paint-brush' : cat === 'cinema' ? 'fa-clapperboard' : 'fa-sparkles',
+                adjustments: {
+                    brightness: (presetIdCounter * 3) % 40 - 20,
+                    contrast: (presetIdCounter * 5) % 50 - 10,
+                    saturation: (presetIdCounter * 7) % 60 - 20,
+                    warmth: (presetIdCounter * 9) % 50 - 25,
+                    sepia: presetIdCounter % 3 === 0 ? (presetIdCounter * 2) % 40 : 0,
+                    blur: presetIdCounter % 7 === 0 ? 1 : 0,
+                    vignette: (presetIdCounter * 4) % 40,
+                    glow: (presetIdCounter * 6) % 30,
+                    sharpness: (presetIdCounter * 8) % 40
+                },
+                specialFX: 'none'
+            });
+            presetIdCounter++;
+        }
+
+        // --- DOM Elements ---
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const uploadSection = document.getElementById('uploadSection');
+        const workspaceSection = document.getElementById('workspaceSection');
+        const btnNewPhoto = document.getElementById('btnNewPhoto');
+        const btnExport = document.getElementById('btnExport');
+
+        const outputCanvas = document.getElementById('outputCanvas');
+        const ctx = outputCanvas.getContext('2d', { willReadFrequently: true });
+        
+        const compareCanvasBefore = document.getElementById('compareCanvasBefore');
+        const compareCanvasAfter = document.getElementById('compareCanvasAfter');
+        const ctxBefore = compareCanvasBefore.getContext('2d');
+        const ctxAfter = compareCanvasAfter.getContext('2d');
+
+        const standardView = document.getElementById('standardView');
+        const compareView = document.getElementById('compareView');
+        const compareAfterWrapper = document.getElementById('compareAfterWrapper');
+        const sliderHandle = document.getElementById('sliderHandle');
+        const btnToggleCompare = document.getElementById('btnToggleCompare');
+        const compareBtnLabel = document.getElementById('compareBtnLabel');
+
+        const processingOverlay = document.getElementById('processingOverlay');
+        const imageDimensions = document.getElementById('imageDimensions');
+        const presetsList = document.getElementById('presetsList');
+        const presetSearch = document.getElementById('presetSearch');
+
+        // --- Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderPresetsList('all');
+            setupEventListeners();
+        });
+
+        // --- Event Listeners Setup ---
+        function setupEventListeners() {
+            // File Upload Triggers
+            dropZone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-indigo-500', 'bg-studio-800');
+            });
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('border-indigo-500', 'bg-studio-800');
+            });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-indigo-500', 'bg-studio-800');
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileSelect();
+                }
+            });
+
+            btnNewPhoto.addEventListener('click', () => fileInput.click());
+
+            // Tab Switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetTab = btn.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.classList.remove('text-indigo-400', 'border-indigo-500');
+                        b.classList.add('text-gray-400', 'border-transparent');
+                    });
+                    btn.classList.remove('text-gray-400', 'border-transparent');
+                    btn.classList.add('text-indigo-400', 'border-indigo-500');
+
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                    document.getElementById(targetTab).classList.remove('hidden');
+                });
+            });
+
+            // Preset Category Filtering
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.category-btn').forEach(b => {
+                        b.classList.remove('bg-indigo-600', 'text-white');
+                        b.classList.add('bg-studio-700', 'text-gray-300');
+                    });
+                    btn.classList.remove('bg-studio-700', 'text-gray-300');
+                    btn.classList.add('bg-indigo-600', 'text-white');
+
+                    renderPresetsList(btn.getAttribute('data-cat'), presetSearch.value.trim());
+                });
+            });
+
+            presetSearch.addEventListener('input', (e) => {
+                const activeCat = document.querySelector('.category-btn.bg-indigo-600')?.getAttribute('data-cat') || 'all';
+                renderPresetsList(activeCat, e.target.value.trim());
+            });
+
+            // Adjustment Sliders Listeners
+            const sliders = [
+                { id: 'sliderBrightness', key: 'brightness', unit: '', label: 'valBrightness' },
+                { id: 'sliderContrast', key: 'contrast', unit: '', label: 'valContrast' },
+                { id: 'sliderSaturation', key: 'saturation', unit: '', label: 'valSaturation' },
+                { id: 'sliderWarmth', key: 'warmth', unit: '', label: 'valWarmth' },
+                { id: 'sliderSepia', key: 'sepia', unit: '%', label: 'valSepia' },
+                { id: 'sliderBlur', key: 'blur', unit: 'px', label: 'valBlur' },
+                { id: 'sliderVignette', key: 'vignette', unit: '%', label: 'valVignette' },
+                { id: 'sliderGlow', key: 'glow', unit: '%', label: 'valGlow' },
+                { id: 'sliderSharpness', key: 'sharpness', unit: '%', label: 'valSharpness' }
+            ];
+
+            sliders.forEach(s => {
+                const el = document.getElementById(s.id);
+                el.addEventListener('input', (e) => {
+                    const val = parseFloat(e.target.value);
+                    state.adjustments[s.key] = val;
+                    document.getElementById(s.label).innerText = val + s.unit;
+                    requestRender();
+                });
+            });
+
+            // Reset Button
+            document.getElementById('btnResetAll').addEventListener('click', () => {
+                state.adjustments = { brightness: 0, contrast: 0, saturation: 0, warmth: 0, sepia: 0, blur: 0, vignette: 0, glow: 0, sharpness: 0 };
+                state.currentPreset = 'original';
+                syncSlidersUI();
+                highlightActivePresetCard('original');
+                requestRender();
+            });
+
+            // Aspect Ratio Crop Buttons
+            document.querySelectorAll('.btn-aspect').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.btn-aspect').forEach(b => {
+                        b.classList.remove('border-indigo-500', 'text-white');
+                        b.classList.add('border-studio-700', 'text-gray-300');
+                    });
+                    btn.classList.remove('border-studio-700', 'text-gray-300');
+                    btn.classList.add('border-indigo-500', 'text-white');
+
+                    state.aspectRatio = btn.getAttribute('data-ratio');
+                    requestRender();
+                });
+            });
+
+            // Rotation Listeners
+            document.getElementById('btnRotateCCW').addEventListener('click', () => {
+                state.rotation = (state.rotation - 90 + 360) % 360;
+                requestRender();
+            });
+            document.getElementById('btnRotateCW').addEventListener('click', () => {
+                state.rotation = (state.rotation + 90) % 360;
+                requestRender();
+            });
+
+            // Frame Text & Overlay
+            document.getElementById('greetingText').addEventListener('input', (e) => {
+                state.frame.text = e.target.value;
+                requestRender();
+            });
+            document.getElementById('chkEnableFrame').addEventListener('change', (e) => {
+                state.frame.enabled = e.target.checked;
+                requestRender();
+            });
+
+            // Split Comparison Mode Toggle
+            btnToggleCompare.addEventListener('click', () => {
+                state.isComparing = !state.isComparing;
+                if (state.isComparing) {
+                    standardView.classList.add('hidden');
+                    compareView.classList.remove('hidden');
+                    compareBtnLabel.innerText = "Single View";
+                    renderCompareMode();
+                } else {
+                    compareView.classList.add('hidden');
+                    standardView.classList.remove('hidden');
+                    compareBtnLabel.innerText = "Split Compare";
+                }
+            });
+
+            // Comparison Slider Dragging Logic
+            let isDraggingSlider = false;
+            const handleMove = (clientX) => {
+                if (!isDraggingSlider || !state.isComparing) return;
+                const rect = compareView.getBoundingClientRect();
+                let x = clientX - rect.left;
+                if (x < 0) x = 0;
+                if (x > rect.width) x = rect.width;
+                const pct = (x / rect.width) * 100;
+                state.sliderPos = pct;
+                sliderHandle.style.left = `${pct}%`;
+                compareAfterWrapper.style.width = `${pct}%`;
+            };
+
+            sliderHandle.addEventListener('mousedown', () => isDraggingSlider = true);
+            window.addEventListener('mouseup', () => isDraggingSlider = false);
+            window.addEventListener('mousemove', (e) => handleMove(e.clientX));
+
+            sliderHandle.addEventListener('touchstart', () => isDraggingSlider = true);
+            window.addEventListener('touchend', () => isDraggingSlider = false);
+            window.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 0) handleMove(e.touches[0].clientX);
+            });
+
+            // Zoom Controls
+            document.getElementById('btnZoomIn').addEventListener('click', () => {
+                state.zoom = Math.min(state.zoom + 0.15, 2.5);
+                updateZoomUI();
+            });
+            document.getElementById('btnZoomOut').addEventListener('click', () => {
+                state.zoom = Math.max(state.zoom - 0.15, 0.5);
+                updateZoomUI();
+            });
+
+            // Export Modal Trigger
+            btnExport.addEventListener('click', () => {
+                document.getElementById('exportModal').classList.remove('hidden');
+            });
+            document.getElementById('btnCloseModal').addEventListener('click', () => {
+                document.getElementById('exportModal').classList.add('hidden');
+            });
+            document.getElementById('btnCancelExport').addEventListener('click', () => {
+                document.getElementById('exportModal').classList.add('hidden');
+            });
+
+            document.getElementById('exportQuality').addEventListener('input', (e) => {
+                document.getElementById('exportQualityVal').innerText = e.target.value + '%';
+            });
+
+            document.getElementById('btnDownloadFinal').addEventListener('click', downloadProcessedImage);
+        }
+
+        // --- Handle Image File Upload ---
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    state.rawImage = img;
+                    uploadSection.classList.add('hidden');
+                    workspaceSection.classList.remove('hidden');
+                    btnNewPhoto.classList.remove('hidden');
+                    btnExport.classList.remove('hidden');
+                    
+                    imageDimensions.innerText = `${img.naturalWidth} x ${img.naturalHeight} px`;
+                    requestRender();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- Render Presets UI Grid ---
+        function renderPresetsList(category = 'all', searchQuery = '') {
+            presetsList.innerHTML = '';
+
+            const filtered = PRESETS.filter(p => {
+                const matchCat = (category === 'all') || (p.category === category);
+                const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.desc.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchCat && matchSearch;
+            });
+
+            filtered.forEach(preset => {
+                const card = document.createElement('div');
+                const isActive = state.currentPreset === preset.id;
+                
+                card.className = `p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between group ${
+                    isActive 
+                        ? 'bg-indigo-600/20 border-indigo-500 shadow-md' 
+                        : 'bg-studio-900/80 border-studio-700/80 hover:border-studio-600 hover:bg-studio-700/40'
+                }`;
+                card.setAttribute('data-preset-id', preset.id);
+
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-lg ${isActive ? 'bg-indigo-600 text-white' : 'bg-studio-800 text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white'} flex items-center justify-center transition-colors">
+                            <i class="fa-solid ${preset.icon} text-sm"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <h4 class="text-xs font-bold text-white">${preset.name}</h4>
+                                ${preset.badge ? `<span class="px-1.5 py-0.5 text-[9px] bg-amber-500/20 text-amber-300 rounded border border-amber-500/30 font-semibold">${preset.badge}</span>` : ''}
+                            </div>
+                            <p class="text-[11px] text-gray-400 leading-tight">${preset.desc}</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs text-gray-600 group-hover:text-gray-300"></i>
+                `;
+
+                card.addEventListener('click', () => applyPreset(preset));
+                presetsList.appendChild(card);
+            });
+        }
+
+        function highlightActivePresetCard(id) {
+            document.querySelectorAll('#presetsList > div').forEach(card => {
+                if (card.getAttribute('data-preset-id') === id) {
+                    card.classList.add('bg-indigo-600/20', 'border-indigo-500');
+                    card.classList.remove('bg-studio-900/80', 'border-studio-700/80');
+                } else {
+                    card.classList.remove('bg-indigo-600/20', 'border-indigo-500');
+                    card.classList.add('bg-studio-900/80', 'border-studio-700/80');
+                }
+            });
+        }
+
+        // --- Apply Selected Preset ---
+        function applyPreset(preset) {
+            state.currentPreset = preset.id;
+            highlightActivePresetCard(preset.id);
+
+            // Copy preset default sliders
+            state.adjustments = { ...preset.adjustments };
+            syncSlidersUI();
+
+            requestRender();
+        }
+
+        function syncSlidersUI() {
+            document.getElementById('sliderBrightness').value = state.adjustments.brightness;
+            document.getElementById('valBrightness').innerText = state.adjustments.brightness;
+
+            document.getElementById('sliderContrast').value = state.adjustments.contrast;
+            document.getElementById('valContrast').innerText = state.adjustments.contrast;
+
+            document.getElementById('sliderSaturation').value = state.adjustments.saturation;
+            document.getElementById('valSaturation').innerText = state.adjustments.saturation;
+
+            document.getElementById('sliderWarmth').value = state.adjustments.warmth;
+            document.getElementById('valWarmth').innerText = state.adjustments.warmth;
+
+            document.getElementById('sliderSepia').value = state.adjustments.sepia;
+            document.getElementById('valSepia').innerText = state.adjustments.sepia + '%';
+
+            document.getElementById('sliderBlur').value = state.adjustments.blur;
+            document.getElementById('valBlur').innerText = state.adjustments.blur + 'px';
+
+            document.getElementById('sliderVignette').value = state.adjustments.vignette;
+            document.getElementById('valVignette').innerText = state.adjustments.vignette + '%';
+
+            document.getElementById('sliderGlow').value = state.adjustments.glow;
+            document.getElementById('valGlow').innerText = state.adjustments.glow + '%';
+
+            document.getElementById('sliderSharpness').value = state.adjustments.sharpness;
+            document.getElementById('valSharpness').innerText = state.adjustments.sharpness + '%';
+        }
+
+        // --- Render Request & Pipeline ---
+        let renderScheduled = false;
+        function requestRender() {
+            if (renderScheduled) return;
+            renderScheduled = true;
+            requestAnimationFrame(() => {
+                renderPipeline();
+                renderScheduled = false;
+            });
+        }
+
+        function renderPipeline() {
+            if (!state.rawImage) return;
+
+            // 1. Calculate Crop Dimensions based on Aspect Ratio & Rotation
+            const img = state.rawImage;
+            let srcW = img.naturalWidth;
+            let srcH = img.naturalHeight;
+
+            let cropW = srcW;
+            let cropH = srcH;
+
+            if (state.aspectRatio !== 'original') {
+                let targetRatio = 1;
+                if (state.aspectRatio === '1:1' || state.aspectRatio === '2:2') targetRatio = 1;
+                else if (state.aspectRatio === '35:45') targetRatio = 35 / 45;
+                else if (state.aspectRatio === '16:9') targetRatio = 16 / 9;
+                else if (state.aspectRatio === '4:5') targetRatio = 4 / 5;
+
+                const currentRatio = srcW / srcH;
+                if (currentRatio > targetRatio) {
+                    cropW = srcH * targetRatio;
+                    cropH = srcH;
+                } else {
+                    cropW = srcW;
+                    cropH = srcW / targetRatio;
+                }
+            }
+
+            const cropX = (srcW - cropW) / 2;
+            const cropY = (srcH - cropH) / 2;
+
+            // Target canvas orientation rotation check
+            const isRotated90 = (state.rotation === 90 || state.rotation === 270);
+            const destW = isRotated90 ? cropH : cropW;
+            const destH = isRotated90 ? cropW : cropH;
+
+            outputCanvas.width = destW;
+            outputCanvas.height = destH;
+
+            // 2. Draw Base & Rotated Image
+            ctx.save();
+            ctx.clearRect(0, 0, destW, destH);
+            
+            ctx.translate(destW / 2, destH / 2);
+            ctx.rotate((state.rotation * Math.PI) / 180);
+            ctx.drawImage(img, cropX, cropY, cropW, cropH, -cropW / 2, -cropH / 2, cropW, cropH);
+            ctx.restore();
+
+            // 3. Apply Special Preset Background & Overlays (e.g. Passport, Corporate, Sketch)
+            const activePresetObj = PRESETS.find(p => p.id === state.currentPreset);
+            const specialFX = activePresetObj ? activePresetObj.specialFX : 'none';
+
+            applySpecialFX(ctx, destW, destH, specialFX);
+
+            // 4. Pixel Level Processing (Brightness, Contrast, Saturation, Sepia, Sharpness, Pencil Edge)
+            applyPixelFilterAdjustments(ctx, destW, destH, specialFX);
+
+            // 5. Canvas Blur & Glow Bloom Pass
+            if (state.adjustments.blur > 0 || state.adjustments.glow > 0) {
+                applyGlowAndBlur(ctx, destW, destH);
+            }
+
+            // 6. Vignette Shading
+            if (state.adjustments.vignette > 0) {
+                applyVignette(ctx, destW, destH, state.adjustments.vignette);
+            }
+
+            // 7. Decorative Frame / Greeting Text
+            if (state.frame.enabled || state.frame.text || specialFX === 'festivalBokeh') {
+                renderFrameOverlay(ctx, destW, destH);
+            }
+
+            // If Split Compare mode is active, update comparison canvases
+            if (state.isComparing) {
+                renderCompareMode();
+            }
+        }
+
+        // --- Special FX Render Engine ---
+        function applySpecialFX(canvasCtx, width, height, fxType) {
+            if (fxType === 'passportBackdrop') {
+                // Official Passport Light Blue Studio Background Simulation
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = width;
+                tempCanvas.height = height;
+                const tempCtx = tempCanvas.getContext('2d');
+                
+                // Light Blue Radial Studio Gradient
+                const grad = tempCtx.createRadialGradient(width/2, height*0.4, width*0.1, width/2, height/2, width*0.8);
+                grad.addColorStop(0, '#e0f2fe');
+                grad.addColorStop(1, '#38bdf8');
+                tempCtx.fillStyle = grad;
+                tempCtx.fillRect(0, 0, width, height);
+
+                // Blend subtle portrait mask over backdrop
+                canvasCtx.globalCompositeOperation = 'destination-over';
+                canvasCtx.drawImage(tempCanvas, 0, 0);
+                canvasCtx.globalCompositeOperation = 'source-over';
+            }
+            else if (fxType === 'corporateBackdrop') {
+                // Corporate Office Studio Backdrop
+                const grad = canvasCtx.createLinearGradient(0, 0, width, height);
+                grad.addColorStop(0, 'rgba(30, 41, 59, 0.25)');
+                grad.addColorStop(1, 'rgba(15, 23, 42, 0.4)');
+                canvasCtx.fillStyle = grad;
+                canvasCtx.fillRect(0, 0, width, height);
+            }
+            else if (fxType === 'lightLeak') {
+                // Dreamy Golden Hour Light Leak Burst
+                const grad = canvasCtx.createRadialGradient(0, 0, 10, width * 0.4, height * 0.4, width * 0.9);
+                grad.addColorStop(0, 'rgba(251, 191, 36, 0.4)');
+                grad.addColorStop(0.5, 'rgba(244, 114, 182, 0.15)');
+                grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                canvasCtx.fillStyle = grad;
+                canvasCtx.fillRect(0, 0, width, height);
+            }
+            else if (fxType === 'festivalBokeh') {
+                // Festive Bokeh Particles Overlay
+                canvasCtx.save();
+                for (let i = 0; i < 35; i++) {
+                    const x = (Math.sin(i * 99) * 0.5 + 0.5) * width;
+                    const y = (Math.cos(i * 33) * 0.5 + 0.5) * height;
+                    const r = (i % 5 + 2) * (width / 200);
+                    canvasCtx.beginPath();
+                    canvasCtx.arc(x, y, r, 0, Math.PI * 2);
+                    canvasCtx.fillStyle = `rgba(253, 224, 71, ${0.1 + (i % 4) * 0.08})`;
+                    canvasCtx.shadowBlur = 10;
+                    canvasCtx.shadowColor = '#fde047';
+                    canvasCtx.fill();
+                }
+                canvasCtx.restore();
+            }
+        }
+
+        // --- Pixel Level Manipulation (Filters, Sobel Sketch & Color Grades) ---
+        function applyPixelFilterAdjustments(canvasCtx, width, height, fxType) {
+            const imgData = canvasCtx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            const len = data.length;
+
+            const bMult = state.adjustments.brightness * 2.55;
+            const cFactor = (259 * (state.adjustments.contrast + 255)) / (255 * (259 - state.adjustments.contrast));
+            const satVal = state.adjustments.saturation / 100;
+            const sepiaVal = state.adjustments.sepia / 100;
+            const warmthVal = state.adjustments.warmth;
+
+            const isSketch = (fxType === 'pencilSketch');
+            const isCartoon = (fxType === 'cartoonify');
+            const isOil = (fxType === 'oilCanvas');
+            const isTealOrange = (fxType === 'tealOrange');
+
+            for (let i = 0; i < len; i += 4) {
+                let r = data[i];
+                let g = data[i + 1];
+                let b = data[i + 2];
+
+                // Brightness & Contrast
+                r = cFactor * (r + bMult - 128) + 128;
+                g = cFactor * (g + bMult - 128) + 128;
+                b = cFactor * (b + bMult - 128) + 128;
+
+                // Saturation Adjustment
+                const gray = 0.2989 * r + 0.5870 * g + 0.1140 * b;
+                r = gray + (r - gray) * (1 + satVal);
+                g = gray + (g - gray) * (1 + satVal);
+                b = gray + (b - gray) * (1 + satVal);
+
+                // Warmth / Color Temperature
+                if (warmthVal !== 0) {
+                    r += warmthVal * 0.8;
+                    b -= warmthVal * 0.8;
+                }
+
+                // Teal & Orange Color Grade FX
+                if (isTealOrange) {
+                    if (gray > 128) {
+                        // Highlights to warm orange
+                        r += 15;
+                        g += 5;
+                    } else {
+                        // Shadows to cool teal
+                        g += 10;
+                        b += 25;
+                    }
+                }
+
+                // Cartoon Posterization Color Quantization
+                if (isCartoon) {
+                    const levels = 6;
+                    r = Math.floor(r / (256 / levels)) * (255 / (levels - 1));
+                    g = Math.floor(g / (256 / levels)) * (255 / (levels - 1));
+                    b = Math.floor(b / (256 / levels)) * (255 / (levels - 1));
+                }
+
+                // Sepia Tone
+                if (sepiaVal > 0) {
+                    const sr = (r * 0.393) + (g * 0.769) + (b * 0.189);
+                    const sg = (r * 0.349) + (g * 0.686) + (b * 0.168);
+                    const sb = (r * 0.272) + (g * 0.534) + (b * 0.131);
+                    r = r * (1 - sepiaVal) + sr * sepiaVal;
+                    g = g * (1 - sepiaVal) + sg * sepiaVal;
+                    b = b * (1 - sepiaVal) + sb * sepiaVal;
+                }
+
+                // Clamp Values 0-255
+                data[i]     = Math.min(255, Math.max(0, r));
+                data[i + 1] = Math.min(255, Math.max(0, g));
+                data[i + 2] = Math.min(255, Math.max(0, b));
+            }
+
+            canvasCtx.putImageData(imgData, 0, 0);
+
+            // Pencil Sketch Edge Detection Pass (Sobel Derivative Filter)
+            if (isSketch) {
+                applySobelSketch(canvasCtx, width, height);
+            }
+        }
+
+        // --- Sobel Pencil Sketch Generator ---
+        function applySobelSketch(canvasCtx, width, height) {
+            const srcData = canvasCtx.getImageData(0, 0, width, height);
+            const src = srcData.data;
+            const output = canvasCtx.createImageData(width, height);
+            const out = output.data;
+
+            // Convert to grayscale matrix array
+            const grayBuf = new Uint8ClampedArray(width * height);
+            for (let i = 0; i < src.length; i += 4) {
+                grayBuf[i / 4] = 0.299 * src[i] + 0.587 * src[i + 1] + 0.114 * src[i + 2];
+            }
+
+            // Sobel Convolution Matrices
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    const idx = y * width + x;
+
+                    const gx =
+                        -1 * grayBuf[idx - width - 1] + 1 * grayBuf[idx - width + 1] +
+                        -2 * grayBuf[idx - 1]         + 2 * grayBuf[idx + 1] +
+                        -1 * grayBuf[idx + width - 1] + 1 * grayBuf[idx + width + 1];
+
+                    const gy =
+                        -1 * grayBuf[idx - width - 1] - 2 * grayBuf[idx - width] - 1 * grayBuf[idx - width + 1] +
+                         1 * grayBuf[idx + width - 1] + 2 * grayBuf[idx + width] + 1 * grayBuf[idx + width + 1];
+
+                    const mag = 255 - Math.min(255, Math.sqrt(gx * gx + gy * gy));
+                    const outIdx = idx * 4;
+
+                    out[outIdx]     = mag; // R
+                    out[outIdx + 1] = mag; // G
+                    out[outIdx + 2] = mag; // B
+                    out[outIdx + 3] = 255; // Alpha
+                }
+            }
+
+            canvasCtx.putImageData(output, 0, 0);
+        }
+
+        // --- Glow Bloom & Soft Focus Pass ---
+        function applyGlowAndBlur(canvasCtx, width, height) {
+            const blurVal = state.adjustments.blur;
+            const glowVal = state.adjustments.glow;
+
+            if (blurVal > 0) {
+                canvasCtx.filter = `blur(${blurVal}px)`;
+                canvasCtx.drawImage(outputCanvas, 0, 0);
+                canvasCtx.filter = 'none';
+            }
+
+            if (glowVal > 0) {
+                canvasCtx.save();
+                canvasCtx.globalCompositeOperation = 'screen';
+                canvasCtx.filter = `blur(${glowVal / 3}px)`;
+                canvasCtx.globalAlpha = glowVal / 100;
+                canvasCtx.drawImage(outputCanvas, 0, 0);
+                canvasCtx.restore();
+            }
+        }
+
+        // --- Vignette Generator ---
+        function applyVignette(canvasCtx, width, height, amount) {
+            canvasCtx.save();
+            const radius = Math.sqrt(Math.pow(width / 2, 2) + Math.pow(height / 2, 2));
+            const grad = canvasCtx.createRadialGradient(width / 2, height / 2, radius * 0.4, width / 2, height / 2, radius);
+            grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+            grad.addColorStop(1, `rgba(0, 0, 0, ${amount / 100})`);
+            
+            canvasCtx.fillStyle = grad;
+            canvasCtx.fillRect(0, 0, width, height);
+            canvasCtx.restore();
+        }
+
+        // --- Decorative Border & Text Overlay ---
+        function renderFrameOverlay(canvasCtx, width, height) {
+            canvasCtx.save();
+            const borderThickness = Math.max(12, Math.floor(Math.min(width, height) * 0.04));
+
+            if (state.frame.enabled || state.currentPreset === 'festival') {
+                // Gold Double Border
+                canvasCtx.strokeStyle = '#f59e0b';
+                canvasCtx.lineWidth = borderThickness;
+                canvasCtx.strokeRect(borderThickness / 2, borderThickness / 2, width - borderThickness, height - borderThickness);
+
+                canvasCtx.strokeStyle = '#ffffff';
+                canvasCtx.lineWidth = 2;
+                canvasCtx.strokeRect(borderThickness + 4, borderThickness + 4, width - (borderThickness + 4) * 2, height - (borderThickness + 4) * 2);
+            }
+
+            // Custom Banner Text Render
+            const userText = state.frame.text || (state.currentPreset === 'festival' ? 'Season Greetings & Joy' : '');
+            if (userText) {
+                const fontSize = Math.max(16, Math.floor(width * 0.035));
+                canvasCtx.font = `600 ${fontSize}px 'Cinzel', serif`;
+                canvasCtx.textAlign = 'center';
+                canvasCtx.textBaseline = 'bottom';
+
+                // Text Banner Background Ribbon
+                const bannerHeight = fontSize * 2.2;
+                canvasCtx.fillStyle = 'rgba(11, 15, 23, 0.75)';
+                canvasCtx.fillRect(0, height - borderThickness - bannerHeight, width, bannerHeight);
+
+                // Gold Text Fill & Glow Shadow
+                canvasCtx.fillStyle = '#fef08a';
+                canvasCtx.shadowColor = '#b45309';
+                canvasCtx.shadowBlur = 8;
+                canvasCtx.fillText(userText, width / 2, height - borderThickness - (bannerHeight / 4));
+            }
+
+            canvasCtx.restore();
+        }
+
+        // --- Render Split Comparison View ---
+        function renderCompareMode() {
+            if (!state.rawImage || !state.isComparing) return;
+
+            const w = outputCanvas.width;
+            const h = outputCanvas.height;
+
+            compareCanvasBefore.width = w;
+            compareCanvasBefore.height = h;
+            compareCanvasAfter.width = w;
+            compareCanvasAfter.height = h;
+
+            // Draw Original Unfiltered Image on 'Before' canvas
+            ctxBefore.clearRect(0, 0, w, h);
+            ctxBefore.drawImage(state.rawImage, 0, 0, w, h);
+
+            // Draw Current Processed Image on 'After' canvas
+            ctxAfter.clearRect(0, 0, w, h);
+            ctxAfter.drawImage(outputCanvas, 0, 0, w, h);
+        }
+
+        // --- Zoom Level UI Sync ---
+        function updateZoomUI() {
+            document.getElementById('zoomLevel').innerText = `${Math.round(state.zoom * 100)}%`;
+            standardView.style.transform = `scale(${state.zoom})`;
+            compareView.style.transform = `scale(${state.zoom})`;
+        }
+
+        // --- High-Resolution Final Image Download ---
+        function downloadProcessedImage() {
+            const format = document.getElementById('exportFormat').value;
+            const quality = parseFloat(document.getElementById('exportQuality').value) / 100;
+
+            const mimeType = format === 'png' ? 'image/png' : format === 'webp' ? 'image/webp' : 'image/jpeg';
+            const fileExtension = format;
+
+            const dataURL = outputCanvas.toDataURL(mimeType, quality);
+
+            const a = document.createElement('a');
+            a.href = dataURL;
+            a.download = `Studio_Photo_${state.currentPreset}_${Date.now()}.${fileExtension}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            document.getElementById('exportModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
