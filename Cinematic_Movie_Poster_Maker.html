@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Create a cinematic movie-poster collage from multiple photos. Free browser-based photo poster maker.">
+<meta property="og:title" content="Cinematic Movie Poster Maker">
+<meta property="og:description" content="Merge multiple photos into a dramatic movie-style poster.">
+<title>Cinematic Movie Poster Maker</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+<style>
+:root{--bg:#0b1020;--panel:#141c30;--panel2:#1b2740;--text:#f4f6fb;--muted:#aab5ca;--gold:#f6c667;--line:#2c3953;--accent:#e64d3d}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1c2b49 0,#0b1020 55%);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{text-align:center;padding:34px 18px 22px}header .eyebrow{color:var(--gold);letter-spacing:3px;font-size:12px;font-weight:800}h1{font-size:clamp(28px,5vw,48px);line-height:1.1;margin:10px 0}header p{color:var(--muted);margin:8px auto;max-width:720px}
+main{max-width:1180px;margin:auto;padding:10px 18px 55px}.layout{display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:22px;align-items:start}
+.panel{background:rgba(20,28,48,.94);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 18px 45px #0005}.panel h2{font-size:18px;margin:0 0 14px}
+.drop{border:2px dashed #52627e;border-radius:14px;padding:24px 14px;text-align:center;background:#0e1729;cursor:pointer;transition:.2s}.drop:hover,.drop.drag{border-color:var(--gold);background:#18233a}.drop strong{display:block;font-size:17px}.drop small{color:var(--muted)}
+input[type=file]{display:none}.field{margin-top:16px}.field label{display:block;font-weight:650;font-size:13px;color:#dbe2ef;margin-bottom:6px}.field input[type=text],.field select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#0d1526;color:var(--text);font:inherit}
+.field input[type=range]{width:100%;accent-color:var(--gold)}.rangeval{float:right;color:var(--gold)}
+.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.thumb{position:relative;aspect-ratio:1/1;border-radius:9px;overflow:hidden;background:#0a1020;border:1px solid var(--line)}.thumb img{width:100%;height:100%;object-fit:cover}.thumb button{position:absolute;right:4px;top:4px;border:0;border-radius:50%;width:25px;height:25px;background:#000b;color:white;cursor:pointer;font-weight:bold}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:750;cursor:pointer;color:#111827;background:var(--gold);font:inherit}.btn.secondary{background:#263650;color:var(--text);border:1px solid #42516c}.btn.red{background:var(--accent);color:white}.btn:disabled{opacity:.4;cursor:not-allowed}
+.previewPanel{min-width:0}.previewTop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.previewTop h2{margin:0;font-size:18px}.canvasWrap{background:#070b14;border:1px solid var(--line);border-radius:16px;padding:12px;min-height:400px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+canvas{display:block;max-width:100%;max-height:78vh;width:auto;height:auto;box-shadow:0 18px 55px #0009;border-radius:3px}.empty{color:var(--muted);text-align:center;padding:65px 15px}.empty .symbol{font-size:48px;display:block;margin-bottom:10px}
+.note{font-size:12px;color:var(--muted);margin-top:12px}.status{min-height:22px;color:var(--gold);font-size:13px;margin-top:10px}
+footer{text-align:center;color:#8290a8;font-size:12px;padding:20px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.previewPanel{order:-1}.canvasWrap{min-height:260px}}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">YOUR PHOTOS · ONE EPIC FRAME</div><h1>Cinematic Movie Poster Maker</h1><p>Combine multiple photos into a dramatic, layered movie-poster design. Your photos stay in your browser.</p></header>
+<main><div class="layout">
+<section class="panel">
+<h2>1. Add your photos</h2>
+<label class="drop" id="dropZone" for="photoInput"><strong>＋ Choose multiple photos</strong><small>or drag and drop images here<br>JPG, PNG, WEBP · 2 or more recommended</small></label>
+<input id="photoInput" type="file" accept="image/*" multiple>
+<div class="thumbs" id="thumbs"></div>
+<div class="field"><label for="movieTitle">Movie title</label><input id="movieTitle" type="text" maxlength="42" value="THE LAST LEGEND" placeholder="Enter your movie title"></div>
+<div class="field"><label for="tagline">Tagline</label><input id="tagline" type="text" maxlength="80" value="ONE STORY. MANY FACES. ONE DESTINY." placeholder="Enter a tagline"></div>
+<div class="field"><label for="style">Poster layout</label><select id="style"><option value="diagonal">Diagonal cinematic collage</option><option value="strip">Dynamic vertical panels</option><option value="hero">Main hero with supporting cast</option></select></div>
+<div class="field"><label for="darkness">Cinematic overlay <span class="rangeval" id="darkVal">42%</span></label><input id="darkness" type="range" min="15" max="75" value="42"></div>
+<div class="actions"><button class="btn red" id="generateBtn">Generate poster</button><button class="btn secondary" id="clearBtn">Clear photos</button></div>
+<div class="status" id="status" role="status" aria-live="polite"></div>
+<p class="note">Tip: use portrait and landscape photos together for a richer collage. For best results, select 2–8 photos.</p>
+</section>
+<section class="panel previewPanel">
+<div class="previewTop"><h2>2. Your movie poster</h2><span class="note">Portrait · 1200 × 1600</span></div>
+<div class="canvasWrap" id="canvasWrap"><div class="empty" id="empty"><span class="symbol">🎬</span>Your generated poster will appear here.</div><canvas id="poster" width="1200" height="1600" hidden></canvas></div>
+<div class="actions">
+<button class="btn" id="downloadBtn" disabled>Download PNG</button>
+<button class="btn secondary" id="copyBtn" disabled>Copy image</button>
+<button class="btn secondary" id="shareBtn" disabled>Share</button>
+<button class="btn secondary" id="emailBtn" disabled>Email</button>
+</div>
+<p class="note">Copy works in supported browsers (usually HTTPS or localhost). Share uses your device's share sheet when image sharing is supported. Email opens your email app with a subject and message; attach the downloaded poster manually.</p>
+</section>
+</div></main>
+<footer>Made for creative photo storytelling · No upload to a server</footer>
+<script>
+(() => {
+ const input=document.getElementById('photoInput'), thumbs=document.getElementById('thumbs'), drop=document.getElementById('dropZone');
+ const canvas=document.getElementById('poster'), ctx=canvas.getContext('2d');
+ const status=document.getElementById('status'), empty=document.getElementById('empty');
+ const generateBtn=document.getElementById('generateBtn'), downloadBtn=document.getElementById('downloadBtn'), copyBtn=document.getElementById('copyBtn'), shareBtn=document.getElementById('shareBtn'), emailBtn=document.getElementById('emailBtn');
+ let photos=[], generated=false;
+ const W=canvas.width,H=canvas.height;
+ const say=t=>status.textContent=t;
+ function addFiles(files){
+   const accepted=[...files].filter(f=>f.type.startsWith('image/'));
+   if(!accepted.length){say('Please choose valid image files.');return;}
+   accepted.forEach(file=>{
+     const url=URL.createObjectURL(file), img=new Image();
+     img.onload=()=>{photos.push({file,url,img});renderThumbs();say(photos.length+' photo(s) ready.');};
+     img.onerror=()=>{URL.revokeObjectURL(url);say('Could not read '+file.name);};
+     img.src=url;
+   });
+ }
+ function renderThumbs(){
+   thumbs.innerHTML='';
+   photos.forEach((p,i)=>{
+     const box=document.createElement('div');box.className='thumb';
+     const im=document.createElement('img');im.src=p.url;im.alt='Selected photo '+(i+1);
+     const rm=document.createElement('button');rm.type='button';rm.textContent='×';rm.title='Remove photo';rm.onclick=()=>{URL.revokeObjectURL(p.url);photos.splice(i,1);renderThumbs();say(photos.length+' photo(s) selected.');};
+     box.append(im,rm);thumbs.append(box);
+   });
+ }
+ input.addEventListener('change',e=>{addFiles(e.target.files);input.value='';});
+ ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+ ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');}));
+ drop.addEventListener('drop',e=>addFiles(e.dataTransfer.files));
+ document.getElementById('darkness').addEventListener('input',e=>document.getElementById('darkVal').textContent=e.target.value+'%');
+ function cover(img,x,y,w,h,focus=.5){
+   const ir=img.width/img.height, tr=w/h;let sx=0,sy=0,sw=img.width,sh=img.height;
+   if(ir>tr){sw=img.height*tr;sx=(img.width-sw)*focus;}else{sh=img.width/tr;sy=(img.height-sh)*.5;}
+   ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);
+ }
+ function polygon(points){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.clip();}
+ function drawPhoto(img,points,focus=.5){ctx.save();polygon(points);let xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);let x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x,h=Math.max(...ys)-y;cover(img,x,y,w,h,focus);ctx.restore();}
+ function gradient(x0,y0,x1,y1,stops){const g=ctx.createLinearGradient(x0,y0,x1,y1);stops.forEach(s=>g.addColorStop(s[0],s[1]));return g;}
+ function background(){ctx.fillStyle='#080d18';ctx.fillRect(0,0,W,H);const g=ctx.createRadialGradient(600,520,50,600,700,1100);g.addColorStop(0,'#34405a');g.addColorStop(1,'#080d18');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
+ function drawCollage(){
+   const n=photos.length, mode=document.getElementById('style').value;
+   if(mode==='strip'){
+     const gap=7, usable=W-gap*(n-1), pw=usable/n;
+     photos.forEach((p,i)=>{const x=i*(pw+gap);cover(p.img,x,0,pw,H,.5);});
+   } else if(mode==='hero'){
+     const main=photos[0];cover(main.img,0,0,W,H,.5);
+     if(n>1){const count=n-1, cols=Math.min(3,count), cellW=270,cellH=330,gap=16,startX=W-(cols*cellW+(cols-1)*gap)-45;
+       photos.slice(1).forEach((p,i)=>{const col=i%cols,row=Math.floor(i/cols),x=startX+col*(cellW+gap),y=760+row*(cellH+gap);ctx.save();ctx.shadowColor='#000';ctx.shadowBlur=24;ctx.strokeStyle='#e5bd71';ctx.lineWidth=5;ctx.strokeRect(x-3,y-3,cellW+6,cellH+6);cover(p.img,x,y,cellW,cellH,.5);ctx.restore();});
+     }
+   } else {
+     const first=photos[0];cover(first.img,0,0,W,H,.5);
+     if(n>1){
+       const pts=[[[0,0],[W*.72,0],[W*.30,H*.56],[0,H*.68]],[[W*.72,0],[W,H*.0],[W,H*.56],[W*.30,H*.56]]];
+       drawPhoto(photos[1].img,pts[1],.5);
+       if(n>2)drawPhoto(photos[2].img,[[0,H*.68],[W*.30,H*.56],[W,H*.56],[W,H*.82],[W*.78,H],[0,H]],.5);
+       if(n>3){
+         const count=n-3, cols=Math.min(4,count), gap=9, pw=(W-90-(cols-1)*gap)/cols, y=H*.72, ph=330;
+         photos.slice(3).forEach((p,i)=>{const x=45+(i%cols)*(pw+gap), yy=y+Math.floor(i/cols)*(ph+gap);ctx.save();ctx.shadowColor='#000';ctx.shadowBlur=18;ctx.strokeStyle='#d9b36d';ctx.lineWidth=5;ctx.strokeRect(x-2,yy-2,pw+4,ph+4);cover(p.img,x,yy,pw,ph,.5);ctx.restore();});
+       }
+     }
+     // cinematic diagonal seams
+     ctx.save();ctx.strokeStyle='#e6c27d';ctx.lineWidth=7;ctx.globalAlpha=.85;
+     ctx.beginPath();ctx.moveTo(W*.72,0);ctx.lineTo(W*.30,H*.56);ctx.stroke();
+     if(n>2){ctx.beginPath();ctx.moveTo(W*.30,H*.56);ctx.lineTo(0,H*.68);ctx.stroke();}
+     ctx.restore();
+   }
+ }
+ function textFit(text,maxWidth,startSize,fontWeight='900'){
+   let size=startSize;ctx.font=fontWeight+' '+size+'px Impact, "Arial Narrow", sans-serif';
+   while(ctx.measureText(text).width>maxWidth&&size>30){size-=2;ctx.font=fontWeight+' '+size+'px Impact, "Arial Narrow", sans-serif';}
+   return size;
+ }
+ function generate(){
+   if(!photos.length){say('Please add at least one photo first.');return;}
+   try{
+     background();drawCollage();
+     const opacity=Number(document.getElementById('darkness').value)/100;
+     ctx.fillStyle=gradient(0,0,0,H,[[0,'rgba(3,7,15,.18)'],[.38,'rgba(3,7,15,.12)'],[.62,'rgba(3,7,15,'+(opacity*.45)+')'],[1,'rgba(2,5,12,.98)']]);ctx.fillRect(0,0,W,H);
+     // subtle film grain
+     ctx.save();ctx.globalAlpha=.07;for(let i=0;i<2600;i++){ctx.fillStyle=Math.random()>.5?'#fff':'#000';ctx.fillRect(Math.random()*W,Math.random()*H,2,2);}ctx.restore();
+     const title=(document.getElementById('movieTitle').value||'UNTITLED').toUpperCase();
+     const tagline=(document.getElementById('tagline').value||'').toUpperCase();
+     ctx.textAlign='center';ctx.textBaseline='middle';
+     ctx.fillStyle='#e8c77e';ctx.font='bold 27px Arial,sans-serif';ctx.letterSpacing='8px';ctx.fillText('A CINEMATIC EXPERIENCE',W/2,H*.755);
+     ctx.save();ctx.shadowColor='#000';ctx.shadowBlur=24;ctx.fillStyle='#fff';const size=textFit(title,W-100,126);ctx.font='900 '+size+'px Impact, "Arial Narrow", sans-serif';ctx.letterSpacing='2px';ctx.fillText(title,W/2,H*.835);ctx.restore();
+     if(tagline){ctx.fillStyle='#f1dba9';ctx.font='600 25px Arial,sans-serif';ctx.letterSpacing='3px';ctx.fillText(tagline,W/2,H*.895);}
+     ctx.fillStyle='#c7cbd3';ctx.font='18px Arial,sans-serif';ctx.letterSpacing='5px';ctx.fillText('ONLY IN THEATRES  ·  COMING SOON',W/2,H*.955);
+     // fine poster border
+     ctx.strokeStyle='rgba(238,207,145,.75)';ctx.lineWidth=5;ctx.strokeRect(22,22,W-44,H-44);
+     canvas.hidden=false;empty.hidden=true;generated=true;[downloadBtn,copyBtn,shareBtn,emailBtn].forEach(b=>b.disabled=false);
+     say('Poster generated successfully. Try Download, Copy or Share.');
+   }catch(err){console.error(err);say('Poster generation failed: '+(err.message||'unknown error'));}
+ }
+ function blob(){return new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Could not create image file.')),'image/png'));}
+ generateBtn.addEventListener('click',generate);
+ downloadBtn.addEventListener('click',async()=>{if(!generated)return;try{const b=await blob(),url=URL.createObjectURL(b),a=document.createElement('a');a.href=url;a.download='cinematic-movie-poster.png';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);say('PNG poster downloaded.');}catch(e){say(e.message);}});
+ copyBtn.addEventListener('click',async()=>{try{const b=await blob();if(!navigator.clipboard||!window.ClipboardItem)throw new Error('Image copy is not supported here. Open this page on HTTPS or localhost in a supported browser.');await navigator.clipboard.write([new ClipboardItem({'image/png':b})]);say('Poster copied to clipboard.');}catch(e){say(e.message||'Copy failed.');}});
+ shareBtn.addEventListener('click',async()=>{try{const b=await blob(),f=new File([b],'cinematic-movie-poster.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'My Movie Poster',text:'Created with Cinematic Movie Poster Maker'});}else if(navigator.share){await navigator.share({title:'My Movie Poster',text:'I created a cinematic movie poster!'});}else{say('Sharing is not available in this browser. Download the PNG and share it manually.');return;}say('Share sheet opened.');}catch(e){if(e.name!=='AbortError')say('Share could not be completed: '+e.message);}});
+ emailBtn.addEventListener('click',()=>{const title=document.getElementById('movieTitle').value||'My Movie Poster';const subject=encodeURIComponent('My cinematic movie poster');const body=encodeURIComponent('Hi,\n\nI created a movie poster called "'+title+'".\n\nPlease find the downloaded poster attached.\n');window.location.href='mailto:?subject='+subject+'&body='+body;say('Email app opened. Attach cinematic-movie-poster.png after downloading it.');});
+ document.getElementById('clearBtn').addEventListener('click',()=>{photos.forEach(p=>URL.revokeObjectURL(p.url));photos=[];renderThumbs();canvas.hidden=true;empty.hidden=false;generated=false;[downloadBtn,copyBtn,shareBtn,emailBtn].forEach(b=>b.disabled=true);say('Photos cleared.');});
+})();
+</script>
+</body>
+</html>

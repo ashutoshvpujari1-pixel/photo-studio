@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Create a cinematic movie-style poster by merging two photos with a dramatic diagonal split.">
+<title>Diagonal Movie Poster Studio</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+<style>
+:root{--bg:#0b1020;--panel:#141c30;--panel2:#1b2740;--text:#f4f6fb;--muted:#aab5ca;--accent:#f0b44b;--line:#2d3a55}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0%,#263452 0,transparent 35%),linear-gradient(145deg,#080c17,#111a2d);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;min-height:100vh}
+header{text-align:center;padding:34px 18px 22px}header .eyebrow{color:var(--accent);font-size:12px;letter-spacing:3px;font-weight:800;text-transform:uppercase}h1{font-size:clamp(28px,5vw,46px);margin:10px 0 8px;letter-spacing:1px}header p{color:var(--muted);margin:0}
+main{max-width:1180px;margin:auto;padding:12px 18px 48px;display:grid;grid-template-columns:minmax(300px,390px) 1fr;gap:22px;align-items:start}
+.panel{background:rgba(20,28,48,.94);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 18px 55px #0005}
+.panel h2{font-size:18px;margin:0 0 17px}.upload{display:block;border:1.5px dashed #536482;border-radius:13px;padding:16px;margin:12px 0;background:#ffffff06;cursor:pointer;transition:.2s}.upload:hover{border-color:var(--accent);background:#f0b44b0b}.upload strong{display:block;margin-bottom:5px}.upload small{color:var(--muted)}.upload input{display:block;width:100%;margin-top:12px;color:var(--muted);font-size:13px}
+.field{margin-top:15px}.field label{display:block;color:#dce4f2;font-size:13px;margin-bottom:7px}.field input,.field select{width:100%;background:#0c1425;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px 12px;font-size:14px;outline:none}.field input:focus,.field select:focus{border-color:var(--accent)}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:750;cursor:pointer;font-size:13px;transition:.18s}.btn:hover{transform:translateY(-1px);filter:brightness(1.08)}.primary{background:linear-gradient(110deg,#f6ca70,#e49a2c);color:#211507;flex:1}.secondary{background:#25334d;color:#eef3fc;border:1px solid #3a4b69}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.preview-panel{min-width:0}.preview-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}.preview-head h2{margin:0}.status{font-size:12px;color:var(--muted)}.canvas-wrap{background:repeating-conic-gradient(#172238 0% 25%,#111a2b 0% 50%) 50%/22px 22px;border:1px solid var(--line);border-radius:15px;padding:15px;display:flex;justify-content:center;align-items:center;min-height:440px;overflow:hidden}
+canvas{display:block;width:min(100%,560px);height:auto;max-height:76vh;object-fit:contain;box-shadow:0 20px 55px #0009;border-radius:4px;background:#101827}
+.placeholder{color:var(--muted);text-align:center;max-width:300px;line-height:1.6}.placeholder .symbol{font-size:48px;display:block;margin-bottom:12px}
+.bottom-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.hint{font-size:12px;color:var(--muted);line-height:1.55;margin-top:14px}.toast{min-height:18px;color:#f4c66f;font-size:12px;margin-top:10px}
+@media(max-width:850px){main{grid-template-columns:1fr}.canvas-wrap{min-height:300px}header{padding-top:26px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Cinematic creation studio</div>
+  <h1>DIAGONAL MOVIE POSTER MAKER</h1>
+  <p>Bring two photos together in a dramatic, big-screen poster design.</p>
+</header>
+<main>
+<section class="panel">
+  <h2>01 · Add your photos</h2>
+  <label class="upload"><strong>Photo One · Left / Upper side</strong><small>Choose the first image</small><input id="photo1" type="file" accept="image/*"></label>
+  <label class="upload"><strong>Photo Two · Right / Lower side</strong><small>Choose the second image</small><input id="photo2" type="file" accept="image/*"></label>
+  <div class="field"><label for="movieTitle">Movie title</label><input id="movieTitle" maxlength="40" value="THE FINAL SHOWDOWN" placeholder="Enter movie title"></div>
+  <div class="field"><label for="tagline">Tagline</label><input id="tagline" maxlength="90" value="TWO WORLDS. ONE DESTINY." placeholder="Enter a dramatic tagline"></div>
+  <div class="field"><label for="credit">Bottom credit / release line</label><input id="credit" maxlength="70" value="A STORY THAT WILL BE REMEMBERED" placeholder="Optional poster credit"></div>
+  <div class="field"><label for="style">Poster finish</label><select id="style"><option value="gold">Golden blockbuster</option><option value="red">Action / thriller</option><option value="blue">Epic / sci-fi</option><option value="mono">Classic monochrome</option></select></div>
+  <div class="actions"><button class="btn primary" id="generate">✦ Generate Movie Poster</button><button class="btn secondary" id="reset">Reset</button></div>
+  <div class="hint">Tip: Portrait photos work especially well. The design keeps both complete photos visible using a cinematic cover crop. Your photos are processed in this browser and are not uploaded.</div>
+  <div class="toast" id="message" role="status"></div>
+</section>
+<section class="panel preview-panel">
+  <div class="preview-head"><h2>02 · Your movie poster</h2><span class="status" id="status">Waiting for photos</span></div>
+  <div class="canvas-wrap" id="canvasWrap">
+    <div class="placeholder" id="placeholder"><span class="symbol">🎬</span>Upload two photos and select <b>Generate Movie Poster</b> to create your cinematic artwork.</div>
+    <canvas id="poster" width="1200" height="1600" hidden></canvas>
+  </div>
+  <div class="bottom-actions">
+    <button class="btn secondary" id="download" disabled>⬇ Download JPG</button>
+    <button class="btn secondary" id="copy" disabled>▣ Copy image</button>
+    <button class="btn secondary" id="share" disabled>↗ Share</button>
+    <button class="btn secondary" id="email" disabled>✉ Email</button>
+  </div>
+  <div class="hint">Copy works in supported browsers (usually HTTPS or localhost). Share uses your device's share sheet when image sharing is supported. Email opens your email app with a message; attach the downloaded JPG yourself.</div>
+</section>
+</main>
+<script>
+(() => {
+ const $ = id => document.getElementById(id);
+ const canvas=$('poster'),ctx=canvas.getContext('2d');
+ let images=[null,null],generated=false;
+ const W=1200,H=1600;
+ function loadFile(file,index){
+   if(!file){images[index]=null;return}
+   if(!file.type.startsWith('image/')){say('Please select a valid image file.');return}
+   const url=URL.createObjectURL(file),img=new Image();
+   img.onload=()=>{images[index]=img;say(`Photo ${index+1} loaded (${img.naturalWidth} × ${img.naturalHeight}).`);URL.revokeObjectURL(url);};
+   img.onerror=()=>say('Could not read that image. Please try another file.');
+   img.src=url;
+ }
+ $('photo1').addEventListener('change',e=>loadFile(e.target.files[0],0));
+ $('photo2').addEventListener('change',e=>loadFile(e.target.files[0],1));
+ function say(t){$('message').textContent=t}
+ function cover(img,x,y,w,h){
+   const scale=Math.max(w/img.width,h/img.height),sw=w/scale,sh=h/scale;
+   const sx=(img.width-sw)/2,sy=(img.height-sh)/2;
+   ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);
+ }
+ function palette(){
+   const s=$('style').value;
+   if(s==='red')return {a:'#ff3d36',b:'#6d1016',glow:'#ff5a35'};
+   if(s==='blue')return {a:'#57c7ff',b:'#122b69',glow:'#40bfff'};
+   if(s==='mono')return {a:'#f4f0e8',b:'#252525',glow:'#ffffff'};
+   return {a:'#ffd16a',b:'#573313',glow:'#ffc45b'};
+ }
+ function generate(){
+   if(!images[0]||!images[1]){say('Please upload both photos before generating.');return}
+   const p=palette();ctx.clearRect(0,0,W,H);
+   // Two full-bleed image fields, separated by a bold diagonal.
+   // Use two complementary clipping polygons around ONE shared diagonal.
+   // Photo 1 occupies the upper-left side; photo 2 occupies the lower-right side.
+   const topCut = W * 0.64;
+   const bottomCut = W * 0.36;
+   ctx.save();
+   ctx.beginPath();
+   ctx.moveTo(0, 0);
+   ctx.lineTo(topCut, 0);
+   ctx.lineTo(bottomCut, H);
+   ctx.lineTo(0, H);
+   ctx.closePath();
+   ctx.clip();
+   cover(images[0], 0, 0, W, H);
+   ctx.restore();
+
+   ctx.save();
+   ctx.beginPath();
+   ctx.moveTo(topCut, 0);
+   ctx.lineTo(W, 0);
+   ctx.lineTo(W, H);
+   ctx.lineTo(bottomCut, H);
+   ctx.closePath();
+   ctx.clip();
+   cover(images[1], 0, 0, W, H);
+   ctx.restore();
+   // Dark cinematic grade and edge vignette.
+   const shade=ctx.createLinearGradient(0,0,0,H);shade.addColorStop(0,'rgba(0,0,0,.38)');shade.addColorStop(.42,'rgba(0,0,0,.02)');shade.addColorStop(.68,'rgba(0,0,0,.08)');shade.addColorStop(1,'rgba(0,0,0,.88)');ctx.fillStyle=shade;ctx.fillRect(0,0,W,H);
+   const vig=ctx.createRadialGradient(W/2,H*.43,H*.18,W/2,H*.5,H*.78);vig.addColorStop(0,'rgba(0,0,0,0)');vig.addColorStop(1,'rgba(0,0,0,.52)');ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
+   // Diagonal metallic divider with glow.
+   ctx.save();ctx.beginPath();ctx.moveTo(W*.64,0);ctx.lineTo(W*.36,H);ctx.lineWidth=17;ctx.strokeStyle=p.glow;ctx.shadowColor=p.glow;ctx.shadowBlur=32;ctx.stroke();ctx.lineWidth=3;ctx.shadowBlur=0;ctx.strokeStyle='#fff4d4';ctx.stroke();ctx.restore();
+   // Fine cinematic frame.
+   ctx.strokeStyle='rgba(255,255,255,.65)';ctx.lineWidth=3;ctx.strokeRect(28,28,W-56,H-56);
+   ctx.strokeStyle=p.a;ctx.lineWidth=2;ctx.strokeRect(43,43,W-86,H-86);
+   // Top billing.
+   ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.92)';ctx.font='700 23px Arial';ctx.letterSpacing='8px';ctx.fillText('A CINEMATIC EVENT',W/2,105);
+   // Title area.
+   const title=$('movieTitle').value.trim()||'UNTITLED';
+   ctx.save();ctx.shadowColor='#000';ctx.shadowBlur=20;ctx.textAlign='center';ctx.fillStyle=p.a;
+   let size=104;ctx.font=`900 ${size}px Impact, Arial Black, sans-serif`;
+   while(ctx.measureText(title.toUpperCase()).width>W-130&&size>42){size-=4;ctx.font=`900 ${size}px Impact, Arial Black, sans-serif`;}
+   ctx.lineWidth=7;ctx.strokeStyle='rgba(0,0,0,.82)';ctx.strokeText(title.toUpperCase(),W/2,H-330);ctx.fillText(title.toUpperCase(),W/2,H-330);ctx.restore();
+   // Tagline and footer.
+   ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='italic 30px Georgia';ctx.shadowColor='#000';ctx.shadowBlur=9;
+   ctx.fillText(($('tagline').value||'').toUpperCase(),W/2,H-265, W-150);
+   ctx.shadowBlur=0;ctx.fillStyle=p.a;ctx.font='700 20px Arial';ctx.letterSpacing='4px';
+   ctx.fillText(($('credit').value||'').toUpperCase(),W/2,H-105,W-130);
+   ctx.fillStyle='rgba(255,255,255,.8)';ctx.font='16px Arial';ctx.letterSpacing='3px';ctx.fillText('THE EXPERIENCE BEGINS NOW',W/2,H-68);
+   $('placeholder').hidden=true;canvas.hidden=false;generated=true;
+   ['download','copy','share','email'].forEach(id=>$(id).disabled=false);
+   $('status').textContent='Poster generated · 1200 × 1600';say('Your cinematic poster is ready!');
+ }
+ function blob(){return new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.94))}
+ function filename(){const base=($('movieTitle').value||'movie-poster').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');return (base||'movie-poster')+'.jpg'}
+ $('generate').addEventListener('click',()=>{
+   try {
+     if(!images[0] || !images[1] || !images[0].naturalWidth || !images[1].naturalWidth) {
+       say('Please select two valid photos and wait until both are loaded.');
+       return;
+     }
+     generate();
+   } catch (err) {
+     console.error('Poster generation failed:', err);
+     say('Poster generation failed: ' + (err && err.message ? err.message : 'Please try different photos.'));
+   }
+ });
+ $('download').addEventListener('click',async()=>{if(!generated)return;const b=await blob();const a=document.createElement('a');const u=URL.createObjectURL(b);a.href=u;a.download=filename();a.click();setTimeout(()=>URL.revokeObjectURL(u),1500);say('JPG download started.')});
+ $('copy').addEventListener('click',async()=>{try{const b=await blob();if(!navigator.clipboard||!window.ClipboardItem)throw new Error('Image clipboard is not supported in this browser.');await navigator.clipboard.write([new ClipboardItem({'image/jpeg':b})]);say('Poster copied to clipboard.');}catch(e){say(e.message||'Copy is unavailable. Try downloading the JPG.')}});
+ $('share').addEventListener('click',async()=>{try{const b=await blob(),f=new File([b],filename(),{type:'image/jpeg'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:$('movieTitle').value||'Movie Poster',text:'Check out this movie-style poster!'});}else if(navigator.share){await navigator.share({title:'Movie Poster',text:'I created a cinematic movie poster.'});}else{say('Sharing is not supported here. Download the JPG and share it from your device.')}}catch(e){if(e.name!=='AbortError')say('Sharing was not completed. You can download the JPG instead.')}});
+ $('email').addEventListener('click',()=>{if(!generated)return;const subject=encodeURIComponent('My movie-style poster');const body=encodeURIComponent('Hi,\n\nI created this movie-style poster. Please find the JPG attached.\n\nRemember to attach the downloaded file: '+filename());window.location.href=`mailto:?subject=${subject}&body=${body}`;say('Email app opened. Attach the downloaded JPG before sending.')});
+ $('reset').addEventListener('click',()=>{images=[null,null];$('photo1').value='';$('photo2').value='';$('movieTitle').value='THE FINAL SHOWDOWN';$('tagline').value='TWO WORLDS. ONE DESTINY.';$('credit').value='A STORY THAT WILL BE REMEMBERED';$('style').value='gold';ctx.clearRect(0,0,W,H);canvas.hidden=true;$('placeholder').hidden=false;generated=false;['download','copy','share','email'].forEach(id=>$(id).disabled=true);$('status').textContent='Waiting for photos';say('Studio reset. Add two new photos.')});
+})();
+</script>
+</body>
+</html>
