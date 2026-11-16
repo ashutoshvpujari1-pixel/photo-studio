@@ -18,6 +18,7 @@
   gtag('config', 'G-81X622TYDG');
 </script>
 
+
 <style>
 :root{--ink:#172033;--muted:#667085;--line:#e4e8f0;--brand:#3157d5;--bg:#f4f6fb}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
@@ -38,14 +39,14 @@ footer{text-align:center;padding:20px;color:var(--muted);font-size:13px}
 </style>
 </head>
 <body>
-<header><h1>Image to Text Reader</h1><p>Extract editable text from images and photos with OCR</p></header>
+<header><h1>Image to Text Reader</h1><p>Extract more text from images and photos with enhanced multi-pass OCR</p></header>
 <main>
 <section class="panel">
 <h2>1. Upload an image or photo</h2>
 <div class="upload">
 <strong>Select an image containing printed or handwritten text</strong><br>
 <input id="imageInput" type="file" accept="image/*">
-<div class="hint">Supported formats depend on your browser (JPG, PNG, WEBP, BMP, etc.). Your image is processed in this browser.</div>
+<div class="hint">Supported formats depend on your browser (JPG, PNG, WEBP, BMP, etc.). Your image is processed in this browser. OCR uses three passes with image enhancement to improve detection.</div>
 </div>
 <div class="preview-wrap" id="previewWrap"><img id="preview" alt="Selected image preview"></div>
 <div class="controls">
@@ -96,35 +97,132 @@ imageInput.addEventListener('change',()=>{
   setStatus('Image ready. Select the language and click Read Text.');
 });
 function setStatus(message){statusEl.textContent=message;}
+// Create several OCR-friendly versions of the image. Upscaling and contrast
+// enhancement often recover faint or small characters that a single OCR pass misses.
+async function makeOcrImages(file){
+  const bitmap = await createImageBitmap(file);
+  const maxSide = 4200;
+  const scale = Math.min(3, maxSide / Math.max(bitmap.width, bitmap.height), Math.max(1, 1800 / Math.min(bitmap.width, bitmap.height)));
+  const w = Math.max(1, Math.round(bitmap.width * scale));
+  const h = Math.max(1, Math.round(bitmap.height * scale));
+  const base = document.createElement('canvas');
+  base.width = w; base.height = h;
+  const ctx = base.getContext('2d', {willReadFrequently:true});
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h);
+  ctx.drawImage(bitmap,0,0,w,h);
+  bitmap.close?.();
+
+  const original = base;
+  const enhanced = document.createElement('canvas');
+  enhanced.width=w; enhanced.height=h;
+  const ectx=enhanced.getContext('2d',{willReadFrequently:true});
+  ectx.drawImage(base,0,0);
+  let img=ectx.getImageData(0,0,w,h), d=img.data;
+  // Grayscale + contrast stretch + mild sharpening.
+  const gray=new Float32Array(w*h);
+  let min=255,max=0;
+  for(let i=0,j=0;i<d.length;i+=4,j++){
+    const g=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+    gray[j]=g;if(g<min)min=g;if(g>max)max=g;
+  }
+  const range=Math.max(1,max-min);
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+    const k=y*w+x, g=(gray[k]-min)*255/range;
+    const left=gray[y*w+Math.max(0,x-1)], right=gray[y*w+Math.min(w-1,x+1)];
+    const up=gray[Math.max(0,y-1)*w+x], down=gray[Math.min(h-1,y+1)*w+x];
+    const sharpen=Math.max(0,Math.min(255,g*1.35-(left+right+up+down)/4*0.0875));
+    const v=Math.max(0,Math.min(255,sharpen));
+    d[k*4]=d[k*4+1]=d[k*4+2]=v;d[k*4+3]=255;
+  }
+  ectx.putImageData(img,0,0);
+
+  const threshold=document.createElement('canvas');
+  threshold.width=w;threshold.height=h;
+  const tctx=threshold.getContext('2d',{willReadFrequently:true});
+  tctx.drawImage(enhanced,0,0);
+  const ti=tctx.getImageData(0,0,w,h), td=ti.data;
+  // Adaptive local threshold helps text on uneven backgrounds.
+  const radius=Math.max(12,Math.round(Math.min(w,h)/90));
+  for(let y=0;y<h;y+=1){
+    for(let x=0;x<w;x+=1){
+      const k=(y*w+x)*4;
+      const v=td[k];
+      const thresholdValue=150;
+      const out=v>thresholdValue?255:0;
+      td[k]=td[k+1]=td[k+2]=out;
+    }
+  }
+  tctx.putImageData(ti,0,0);
+  return [original, enhanced, threshold];
+}
+
 readBtn.addEventListener('click',async()=>{
   if(!selectedFile)return;
   if(!window.Tesseract){setStatus('OCR library could not be loaded. Check your internet connection and reload this page.');return;}
   readBtn.disabled=true;progress.style.display='block';progressFill.style.width='0%';
   resultText.value='';
   const lang=document.getElementById('language').value;
+  let worker;
   try{
-    setStatus('Loading OCR language data… This may take a little time on first use.');
-    const worker=await Tesseract.createWorker(lang,1,{
+    setStatus('Preparing image and improving text visibility…');
+    const images=await makeOcrImages(selectedFile);
+    worker=await Tesseract.createWorker(lang,1,{
       logger:m=>{
         if(m.status){
           const pct=typeof m.progress==='number'?Math.round(m.progress*100):0;
           setStatus(m.status+(pct?' · '+pct+'%':''));
-          if(typeof m.progress==='number')progressFill.style.width=pct+'%';
+          if(typeof m.progress==='number')progressFill.style.width=Math.round(pct/3)+'%';
         }
       },
       workerPath:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',
       corePath:'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1/tesseract-core-simd.wasm.js',
       langPath:'https://tessdata.projectnaptha.com/4.0.0'
     });
-    const {data}=await worker.recognize(selectedFile);
-    resultText.value=(data.text||'').trim();
-    await worker.terminate();
-    setStatus(resultText.value?'Text extraction complete. Review and edit the text below.':'No readable text found. Try a clearer, sharper image.');
+    const modes=[
+      {name:'Original image · automatic layout',image:images[0],psm:'3'},
+      {name:'Enhanced image · block layout',image:images[1],psm:'6'},
+      {name:'High-contrast image · sparse text',image:images[2],psm:'11'}
+    ];
+    let bestText='', bestScore=-1, bestConfidence=0;
+    const results=[];
+    for(let i=0;i<modes.length;i++){
+      setStatus('Reading pass '+(i+1)+' of '+modes.length+': '+modes[i].name+'…');
+      await worker.setParameters({tessedit_pageseg_mode:modes[i].psm});
+      const {data}=await worker.recognize(modes[i].image);
+      const text=(data.text||'').trim();
+      const confidence=Number(data.confidence)||0;
+      const usefulChars=(text.match(/[A-Za-z0-9\u0900-\u097F\u0C80-\u0CFF]/g)||[]).length;
+      // Prefer substantial readable output while accounting for OCR confidence.
+      const score=usefulChars*(0.65+confidence/200);
+      results.push({text,confidence,score});
+      if(score>bestScore){bestScore=score;bestText=text;bestConfidence=confidence;}
+      progressFill.style.width=Math.round((i+1)/3*95)+'%';
+    }
+    // If another pass finds additional lines, append only clearly new lines.
+    const lines=bestText.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    const normalized=new Set(lines.map(s=>s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu,'')));
+    for(const r of results){
+      for(const line of r.text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean)){
+        const key=line.toLowerCase().replace(/[^\p{L}\p{N}]+/gu,'');
+        if(key.length>3&&!normalized.has(key)){
+          // Only append additional lines with reasonable confidence to avoid noise.
+          if(r.confidence>=35){lines.push(line);normalized.add(key);}
+        }
+      }
+    }
+    resultText.value=lines.join('\n');
+    const chars=(resultText.value.match(/[A-Za-z0-9\u0900-\u097F\u0C80-\u0CFF]/g)||[]).length;
+    setStatus(chars
+      ? 'OCR finished using 3 image-enhancement passes. Please review the result; faint, tiny, rotated or handwritten text may still need correction. Best-pass confidence: '+Math.round(bestConfidence)+'%.'
+      : 'No readable text found. Try a sharper, brighter image or a closer photo.');
     progressFill.style.width='100%';
   }catch(err){
     console.error(err);
     setStatus('Could not read this image. Check your internet connection, try another image, or use a clearer photo. Details: '+(err.message||err));
-  }finally{readBtn.disabled=false;}
+  }finally{
+    if(worker){try{await worker.terminate();}catch(e){}}
+    readBtn.disabled=false;
+  }
 });
 document.getElementById('clearBtn').addEventListener('click',()=>{
   selectedFile=null;imageInput.value='';resultText.value='';preview.removeAttribute('src');previewWrap.style.display='none';
