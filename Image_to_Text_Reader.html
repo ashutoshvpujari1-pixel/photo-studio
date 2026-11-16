@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Extract text from images and photos using OCR. Copy, download as TXT, PDF or Word, and email the extracted text.">
+<title>Image to Text Reader – OCR Tool</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+<style>
+:root{--ink:#172033;--muted:#667085;--line:#e4e8f0;--brand:#3157d5;--bg:#f4f6fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+header{background:linear-gradient(120deg,#172b65,#3157d5);color:white;padding:32px 18px;text-align:center}
+header h1{margin:0 0 9px;font-size:clamp(25px,4vw,36px)}header p{margin:0;color:#e2e9ff}
+main{max-width:1100px;margin:26px auto;padding:0 16px}.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 8px 28px #18264a0a}
+h2{font-size:19px;margin:0 0 15px}.upload{border:2px dashed #aab8e8;border-radius:13px;padding:25px;text-align:center;background:#f8faff}
+input,select,textarea,button{font:inherit}input[type=file]{max-width:100%;margin:12px auto}select{padding:10px;border:1px solid var(--line);border-radius:9px;background:white}
+.preview-wrap{display:none;margin-top:18px;text-align:center}.preview-wrap img{max-width:100%;max-height:380px;object-fit:contain;border-radius:10px;border:1px solid var(--line)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:15px}
+button{border:0;border-radius:9px;padding:11px 16px;cursor:pointer;font-weight:700;background:#edf1ff;color:#2443a8}
+button.primary{background:var(--brand);color:white}button.dark{background:#202b45;color:white}button:disabled{opacity:.55;cursor:not-allowed}
+textarea{width:100%;min-height:270px;resize:vertical;padding:15px;border:1px solid #cfd6e4;border-radius:11px;line-height:1.55;color:#172033}
+.status{font-size:14px;color:var(--muted);margin-top:12px;min-height:20px}.bar{height:8px;background:#edf0f6;border-radius:10px;overflow:hidden;margin-top:9px;display:none}.bar span{display:block;height:100%;width:0;background:#3157d5;transition:width .2s}
+.actions button{margin:0 6px 8px 0}.hint{font-size:13px;color:var(--muted);line-height:1.5}
+footer{text-align:center;padding:20px;color:var(--muted);font-size:13px}
+@media(max-width:600px){.panel{padding:16px}.controls>*{flex:1 1 100%}.controls select{width:100%}}
+</style>
+</head>
+<body>
+<header><h1>Image to Text Reader</h1><p>Extract editable text from images and photos with OCR</p></header>
+<main>
+<section class="panel">
+<h2>1. Upload an image or photo</h2>
+<div class="upload">
+<strong>Select an image containing printed or handwritten text</strong><br>
+<input id="imageInput" type="file" accept="image/*">
+<div class="hint">Supported formats depend on your browser (JPG, PNG, WEBP, BMP, etc.). Your image is processed in this browser.</div>
+</div>
+<div class="preview-wrap" id="previewWrap"><img id="preview" alt="Selected image preview"></div>
+<div class="controls">
+<label for="language"><strong>Text language:</strong></label>
+<select id="language">
+<option value="eng">English</option><option value="hin">Hindi</option><option value="mar">Marathi</option><option value="kan">Kannada</option>
+<option value="eng+hin">English + Hindi</option><option value="eng+mar">English + Marathi</option>
+</select>
+<button class="primary" id="readBtn" disabled>Read Text</button>
+<button id="clearBtn">Clear</button>
+</div>
+<div class="status" id="status" role="status" aria-live="polite">Choose an image to begin.</div>
+<div class="bar" id="progress"><span id="progressFill"></span></div>
+</section>
+<section class="panel">
+<h2>2. Extracted text</h2>
+<textarea id="resultText" placeholder="Extracted text will appear here. You can edit it before downloading or sharing..." spellcheck="true"></textarea>
+<div class="controls actions">
+<button class="primary" id="copyBtn">Copy Text</button>
+<button id="txtBtn">Download Notepad (.txt)</button>
+<button id="pdfBtn">Download PDF</button>
+<button id="wordBtn">Download Word (.doc)</button>
+<button class="dark" id="emailBtn">Email Text</button>
+<button id="shareBtn">Share Text</button>
+</div>
+<p class="hint">Email opens your default email application with the extracted text filled in. Share uses your device's share menu when supported.</p>
+</section>
+</main>
+<footer>Image to Text Reader · OCR runs in your browser · No account required</footer>
+<script>
+const imageInput=document.getElementById('imageInput');
+const preview=document.getElementById('preview');
+const previewWrap=document.getElementById('previewWrap');
+const readBtn=document.getElementById('readBtn');
+const resultText=document.getElementById('resultText');
+const statusEl=document.getElementById('status');
+const progress=document.getElementById('progress');
+const progressFill=document.getElementById('progressFill');
+let selectedFile=null, previewUrl=null;
+
+imageInput.addEventListener('change',()=>{
+  selectedFile=imageInput.files && imageInput.files[0];
+  if(previewUrl) URL.revokeObjectURL(previewUrl);
+  if(!selectedFile){previewWrap.style.display='none';readBtn.disabled=true;return;}
+  if(!selectedFile.type.startsWith('image/')){setStatus('Please select a valid image file.');selectedFile=null;readBtn.disabled=true;return;}
+  previewUrl=URL.createObjectURL(selectedFile);
+  preview.src=previewUrl;previewWrap.style.display='block';readBtn.disabled=false;
+  setStatus('Image ready. Select the language and click Read Text.');
+});
+function setStatus(message){statusEl.textContent=message;}
+readBtn.addEventListener('click',async()=>{
+  if(!selectedFile)return;
+  if(!window.Tesseract){setStatus('OCR library could not be loaded. Check your internet connection and reload this page.');return;}
+  readBtn.disabled=true;progress.style.display='block';progressFill.style.width='0%';
+  resultText.value='';
+  const lang=document.getElementById('language').value;
+  try{
+    setStatus('Loading OCR language data… This may take a little time on first use.');
+    const worker=await Tesseract.createWorker(lang,1,{
+      logger:m=>{
+        if(m.status){
+          const pct=typeof m.progress==='number'?Math.round(m.progress*100):0;
+          setStatus(m.status+(pct?' · '+pct+'%':''));
+          if(typeof m.progress==='number')progressFill.style.width=pct+'%';
+        }
+      },
+      workerPath:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',
+      corePath:'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1/tesseract-core-simd.wasm.js',
+      langPath:'https://tessdata.projectnaptha.com/4.0.0'
+    });
+    const {data}=await worker.recognize(selectedFile);
+    resultText.value=(data.text||'').trim();
+    await worker.terminate();
+    setStatus(resultText.value?'Text extraction complete. Review and edit the text below.':'No readable text found. Try a clearer, sharper image.');
+    progressFill.style.width='100%';
+  }catch(err){
+    console.error(err);
+    setStatus('Could not read this image. Check your internet connection, try another image, or use a clearer photo. Details: '+(err.message||err));
+  }finally{readBtn.disabled=false;}
+});
+document.getElementById('clearBtn').addEventListener('click',()=>{
+  selectedFile=null;imageInput.value='';resultText.value='';preview.removeAttribute('src');previewWrap.style.display='none';
+  progress.style.display='none';progressFill.style.width='0%';readBtn.disabled=true;setStatus('Cleared. Choose another image to begin.');
+  if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null;}
+});
+function getText(){const t=resultText.value.trim();if(!t){setStatus('There is no text to export yet. Read an image or enter text first.');return null;}return t;}
+function saveBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+document.getElementById('copyBtn').addEventListener('click',async()=>{
+  const t=getText();if(!t)return;
+  try{await navigator.clipboard.writeText(t);setStatus('Text copied to clipboard.');}
+  catch(e){resultText.select();document.execCommand('copy');setStatus('Text copied (using browser fallback).');}
+});
+document.getElementById('txtBtn').addEventListener('click',()=>{const t=getText();if(t)saveBlob(new Blob([t],{type:'text/plain;charset=utf-8'}),'extracted-text.txt');});
+document.getElementById('pdfBtn').addEventListener('click',()=>{
+  const t=getText();if(!t)return;
+  if(!window.jspdf){setStatus('PDF library did not load. Check your internet connection and reload.');return;}
+  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'a4'});
+  const margin=15,width=180,lineHeight=7,lines=doc.splitTextToSize(t,width);
+  let y=margin;doc.setFont('helvetica','normal');doc.setFontSize(11);
+  for(const line of lines){if(y>280){doc.addPage();y=margin;}doc.text(line,margin,y);y+=lineHeight;}
+  doc.save('extracted-text.pdf');
+});
+document.getElementById('wordBtn').addEventListener('click',()=>{
+  const t=getText();if(!t)return;
+  const safe=t.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const html='<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><pre style="font-family:Arial;white-space:pre-wrap">'+safe+'</pre></body></html>';
+  saveBlob(new Blob(['\ufeff',html],{type:'application/msword'}),'extracted-text.doc');
+});
+document.getElementById('emailBtn').addEventListener('click',()=>{
+  const t=getText();if(!t)return;
+  const subject=encodeURIComponent('Text extracted from image');
+  const body=encodeURIComponent(t.slice(0,12000));
+  window.location.href='mailto:?subject='+subject+'&body='+body;
+});
+document.getElementById('shareBtn').addEventListener('click',async()=>{
+  const t=getText();if(!t)return;
+  if(navigator.share){try{await navigator.share({title:'Extracted text',text:t});setStatus('Share window opened.');}catch(e){if(e.name!=='AbortError')setStatus('Sharing was not completed.');}}
+  else{try{await navigator.clipboard.writeText(t);setStatus('This browser does not support direct sharing. Text copied; you can paste it into an app.');}catch(e){setStatus('Sharing is not supported in this browser. Use Copy Text instead.');}}
+});
+</script>
+</body>
+</html>
