@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProAttire Studio — Executive Headshot & Blockbuster Poster Generator</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter, Playfair Display, Oswald, Cinzel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;400;500;600;700;800&family=Oswald:wght@600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+  <!-- jsPDF & JSZip for PDF and Bulk ZIP Exports -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+            display: ['Oswald', 'sans-serif'],
+            cinzel: ['Cinzel', 'serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#0f172a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom subtle scrollbars & visual polish */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    .checkerboard-bg {
+      background-color: #f8fafc;
+      background-image:
+        linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+        linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+        linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    }
+
+    input[type="range"] {
+      accent-color: #2563eb;
+    }
+
+    .card-hover {
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-900 via-blue-900 to-blue-600 flex items-center justify-center text-white shadow-md">
+          <i class="fa-solid fa-user-tie text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900">ProAttire <span class="text-blue-600">Studio</span></h1>
+            <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">57+ Looks</span>
+          </div>
+          <p class="text-xs text-slate-500 hidden sm:block">Instant Executive Office Attire & Blockbuster Poster Studio</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button id="btnSamplePortrait" type="button" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1.5" title="Load a demo portrait to test instantly">
+          <i class="fa-solid fa-wand-magic-sparkles text-blue-600"></i>
+          <span class="hidden md:inline">Try Demo Face</span>
+          <span class="md:hidden">Demo</span>
+        </button>
+
+        <button id="btnDownloadZip" type="button" disabled class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white shadow-sm transition flex items-center gap-2">
+          <i class="fa-solid fa-file-zipper"></i>
+          <span>Export ZIP (<span id="selectedCountBadge">0</span>)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
+
+    <!-- Step 1 & Step 2 Control Studio -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-sm">
+      
+      <!-- Left Column: Upload & Face Framing Guide -->
+      <div class="lg:col-span-5 flex flex-col justify-between space-y-4">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-600">
+              <span class="w-5 h-5 rounded-full bg-blue-600 text-white inline-flex items-center justify-center text-[11px]">1</span>
+              Upload Portrait Photo
+            </span>
+            <button id="btnClearPhoto" type="button" class="hidden text-xs font-medium text-rose-600 hover:text-rose-700">
+              <i class="fa-solid fa-rotate-left mr-1"></i>Reset
+            </button>
+          </div>
+          <p class="text-sm text-slate-500 mb-3">Upload a clear front-facing selfie or portrait. Processing happens 100% privately in your browser.</p>
+
+          <!-- Dropzone -->
+          <div id="dropZone" class="relative group cursor-pointer rounded-2xl border-2 border-dashed border-slate-300 hover:border-blue-500 bg-slate-50/70 hover:bg-blue-50/30 transition-all p-6 text-center flex flex-col items-center justify-center min-h-[210px]">
+            <input id="photoInput" type="file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+            
+            <div id="uploadPrompt" class="space-y-2.5 pointer-events-none">
+              <div class="w-14 h-14 mx-auto rounded-2xl bg-white shadow-sm border border-slate-200 flex items-center justify-center text-blue-600 group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-slate-800">Click to upload or drag & drop photo</p>
+                <p class="text-xs text-slate-400 mt-0.5">JPG, PNG, WEBP • Best with clear head & shoulders</p>
+              </div>
+              <span class="inline-block px-3 py-1 rounded-lg bg-blue-600 text-white text-xs font-semibold shadow-sm">Select Photo</span>
+            </div>
+
+            <!-- Uploaded Photo Preview Thumbnail -->
+            <div id="uploadedPreviewBox" class="hidden w-full flex flex-col items-center gap-3 pointer-events-none">
+              <div class="relative w-32 h-32 rounded-2xl overflow-hidden shadow-md border-2 border-white ring-2 ring-blue-500/40 checkerboard-bg">
+                <img id="uploadedThumb" src="" alt="Uploaded Portrait" class="w-full h-full object-cover" />
+              </div>
+              <div class="text-center">
+                <p id="uploadedFileName" class="text-xs font-semibold text-slate-800 truncate max-w-[220px]">portrait.jpg</p>
+                <p class="text-[11px] text-emerald-600 font-medium"><i class="fa-solid fa-circle-check mr-1"></i>Ready — Drop another photo to replace</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Primary Generate / Regenerate CTA -->
+        <div class="pt-1 flex flex-col sm:flex-row gap-2.5">
+          <button id="btnGenerateAll" type="button" class="flex-1 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm shadow-lg shadow-blue-600/20 transition flex items-center justify-center gap-2.5">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Generate 57+ Official & Poster Looks</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Column: Live Face Alignment & Studio Lighting Controls -->
+      <div class="lg:col-span-7 bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200/80 flex flex-col justify-between">
+        <div>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-600">
+              <span class="w-5 h-5 rounded-full bg-blue-600 text-white inline-flex items-center justify-center text-[11px]">2</span>
+              Global Face Fit & Studio Lighting
+            </span>
+            <div class="flex items-center gap-2">
+              <button id="btnAutoFit" type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white border border-slate-200 hover:border-blue-400 text-slate-700 shadow-xs transition">
+                <i class="fa-solid fa-crosshairs text-blue-600 mr-1"></i>Auto-Center Face
+              </button>
+              <button id="btnResetAdjustments" type="button" class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-800">
+                Reset Sliders
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+            <!-- Live Reference Calibration Preview -->
+            <div class="sm:col-span-5 flex flex-col items-center">
+              <div class="relative w-44 h-52 rounded-2xl overflow-hidden bg-slate-900 shadow-inner border border-slate-300">
+                <canvas id="calibrationCanvas" width="320" height="380" class="w-full h-full object-cover"></canvas>
+                <div class="absolute bottom-2 inset-x-2 bg-black/60 backdrop-blur-xs text-white text-[10px] text-center py-1 px-2 rounded-lg">
+                  Align chin above collar line
+                </div>
+              </div>
+            </div>
+
+            <!-- Sliders Grid -->
+            <div class="sm:col-span-7 space-y-3">
+              <!-- Zoom / Scale -->
+              <div>
+                <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+                  <span><i class="fa-solid fa-magnifying-glass-plus text-slate-400 mr-1.5"></i>Face Scale / Zoom</span>
+                  <span id="valZoom" class="font-mono text-blue-600 font-semibold">100%</span>
+                </div>
+                <input id="ctrlZoom" type="range" min="50" max="180" value="100" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer" />
+              </div>
+
+              <!-- Horizontal & Vertical Position -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+                    <span>Horizontal (X)</span>
+                    <span id="valOffsetX" class="font-mono text-blue-600">0</span>
+                  </div>
+                  <input id="ctrlOffsetX" type="range" min="-100" max="100" value="0" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer" />
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+                    <span>Vertical (Y)</span>
+                    <span id="valOffsetY" class="font-mono text-blue-600">0</span>
+                  </div>
+                  <input id="ctrlOffsetY" type="range" min="-120" max="120" value="0" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer" />
+                </div>
+              </div>
+
+              <!-- Edge Feathering & Brightness -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+                    <span>Edge Blend / Mask</span>
+                    <span id="valFeather" class="font-mono text-blue-600">28%</span>
+                  </div>
+                  <input id="ctrlFeather" type="range" min="0" max="60" value="28" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer" />
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+                    <span>Studio Brightness</span>
+                    <span id="valBrightness" class="font-mono text-blue-600">104%</span>
+                  </div>
+                  <input id="ctrlBrightness" type="range" min="70" max="140" value="104" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer" />
+                </div>
+              </div>
+
+              <!-- Contrast & Warmth -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+                    <span>Contrast</span>
+                    <span id="valContrast" class="font-mono text-blue-600">105%</span>
+                  </div>
+                  <input id="ctrlContrast" type="range" min="75" max="145" value="105" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer" />
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+                    <span>Skin Warmth</span>
+                    <span id="valWarmth" class="font-mono text-blue-600">+4</span>
+                  </div>
+                  <input id="ctrlWarmth" type="range" min="-30" max="40" value="4" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Name / Title Overlay Input for Posters & ID Badges -->
+        <div class="mt-4 pt-3 border-t border-slate-200/80 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+          <label for="customSubjectName" class="text-xs font-semibold text-slate-600 whitespace-nowrap">
+            <i class="fa-solid fa-signature text-blue-600 mr-1"></i>Your Name / Star Billing:
+          </label>
+          <input id="customSubjectName" type="text" value="AARAV SHARMA" maxlength="26" placeholder="Enter your name for posters & office badges..." class="flex-1 px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <select id="genderAttireMode" class="px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="all">All Styles (57)</option>
+            <option value="tailored">Executive Suits & Blazers</option>
+            <option value="women">Women Executive & Saree</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: Filter Bar & Bulk Selection Controls -->
+    <section class="space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Category Tabs -->
+        <div id="categoryTabs" class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          <button data-cat="all" class="cat-tab active px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-900 text-white shadow-xs whitespace-nowrap transition">
+            All Looks <span class="ml-1 px-1.5 py-0.5 rounded-md bg-white/20 text-[11px]" id="countAll">57</span>
+          </button>
+          <button data-cat="executive" class="cat-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 whitespace-nowrap transition">
+            Executive & C-Suite <span class="ml-1 text-xs text-slate-400" id="countExec">15</span>
+          </button>
+          <button data-cat="corporate" class="cat-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 whitespace-nowrap transition">
+            Corporate & IT <span class="ml-1 text-xs text-slate-400" id="countCorp">15</span>
+          </button>
+          <button data-cat="official" class="cat-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 whitespace-nowrap transition">
+            Official & Ethnic Formal <span class="ml-1 text-xs text-slate-400" id="countOfficial">12</span>
+          </button>
+          <button data-cat="bollywood" class="cat-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 whitespace-nowrap transition">
+            Bollywood Posters <span class="ml-1 text-xs text-slate-400" id="countBolly">8</span>
+          </button>
+          <button data-cat="hollywood" class="cat-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 whitespace-nowrap transition">
+            Hollywood Posters <span class="ml-1 text-xs text-slate-400" id="countHolly">7</span>
+          </button>
+        </div>
+
+        <!-- Search & Select Controls -->
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1 sm:w-56">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input id="searchInput" type="text" placeholder="Search attire or poster..." class="w-full pl-8 pr-3 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <button id="btnSelectVisible" type="button" class="px-3 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-xs font-semibold text-slate-700 whitespace-nowrap">
+            Select All
+          </button>
+        </div>
+      </div>
+
+      <!-- Status Banner when no photo uploaded yet -->
+      <div id="demoBanner" class="bg-blue-50 border border-blue-200 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-sparkles text-sm"></i>
+          </div>
+          <p class="text-xs sm:text-sm text-blue-900">
+            <strong>Preview Mode Active:</strong> Showing studio sample portraits across all 57 templates. Upload your own selfie above to personalize every look instantly!
+          </p>
+        </div>
+        <button id="btnUploadTriggerBanner" type="button" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition">
+          Upload Your Photo
+        </button>
+      </div>
+
+      <!-- 57+ Generated Gallery Grid -->
+      <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        <!-- Cards injected dynamically by JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- High-Resolution Preview, Fine-Tune & Multi-Share Modal -->
+  <div id="previewModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-4xl w-full overflow-hidden shadow-2xl border border-slate-200 my-auto">
+      <!-- Modal Header -->
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between gap-3">
+        <div>
+          <span id="modalCategoryBadge" class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 mb-0.5">Executive</span>
+          <h2 id="modalTitle" class="text-lg font-extrabold text-slate-900">Navy Bespoke Executive Suit</h2>
+        </div>
+        <button id="btnCloseModal" type="button" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 p-5 sm:p-6">
+        <!-- High-Res Canvas View -->
+        <div class="md:col-span-7 flex flex-col items-center justify-center bg-slate-100 rounded-2xl p-3 border border-slate-200">
+          <canvas id="modalCanvas" width="720" height="900" class="max-h-[62vh] w-auto rounded-xl shadow-lg bg-white"></canvas>
+        </div>
+
+        <!-- Per-Photo Fine-Tuning & Export Actions -->
+        <div class="md:col-span-5 flex flex-col justify-between space-y-5">
+          <div class="space-y-4">
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Fine-Tune This Look</h3>
+                <button id="btnApplyToAll" type="button" class="text-[11px] font-semibold text-blue-600 hover:underline">Apply to All 57</button>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs text-slate-600 mb-1">
+                  <span>Zoom</span>
+                  <span id="modalValZoom" class="font-mono font-semibold">100%</span>
+                </div>
+                <input id="modalCtrlZoom" type="range" min="50" max="180" value="100" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer" />
+              </div>
+
+              <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                  <div class="flex justify-between text-xs text-slate-600 mb-1">
+                    <span>Offset X</span>
+                    <span id="modalValX" class="font-mono">0</span>
+                  </div>
+                  <input id="modalCtrlX" type="range" min="-100" max="100" value="0" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer" />
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs text-slate-600 mb-1">
+                    <span>Offset Y</span>
+                    <span id="modalValY" class="font-mono">0</span>
+                  </div>
+                  <input id="modalCtrlY" type="range" min="-120" max="120" value="0" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer" />
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs text-slate-600 mb-1">
+                  <span>Lighting / Brightness</span>
+                  <span id="modalValBright" class="font-mono">104%</span>
+                </div>
+                <input id="modalCtrlBright" type="range" min="70" max="140" value="104" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer" />
+              </div>
+            </div>
+
+            <!-- Export & Share Action Grid -->
+            <div class="space-y-2.5">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Download, Copy & Share</h3>
+              <div class="grid grid-cols-2 gap-2.5">
+                <button id="modalDownloadPng" type="button" class="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-download"></i> Download PNG
+                </button>
+                <button id="modalDownloadJpg" type="button" class="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-file-image"></i> Download JPG
+                </button>
+                <button id="modalDownloadPdf" type="button" class="py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-file-pdf"></i> Save as PDF
+                </button>
+                <button id="modalCopyImg" type="button" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-copy"></i> Copy Image
+                </button>
+                <button id="modalEmailImg" type="button" class="py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-envelope"></i> Email Photo
+                </button>
+                <button id="modalShareImg" type="button" class="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-share-nodes"></i> Share
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            Tip: "Copy Image" places the high-resolution PNG directly on your clipboard so you can paste (`Ctrl+V` / `Cmd+V`) into Gmail, Outlook, LinkedIn, or WhatsApp Web.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic -->
+  <script>
+    /**
+     * ProAttire Studio — Client-Side Executive Attire & Movie Poster Compositor
+     * Generates 57 distinct templates across 5 categories using layered HTML5 Canvas rendering.
+     */
+
+    // =========================================================================
+    // 1. STATE MANAGEMENT
+    // =========================================================================
+    const state = {
+      userImage: null,
+      isDemoImage: true,
+      subjectName: 'AARAV SHARMA',
+      activeCategory: 'all',
+      attireFilter: 'all',
+      searchQuery: '',
+      selectedIds: new Set(),
+      activeModalTemplateId: null,
+      globalAdjust: {
+        zoom: 100,
+        offsetX: 0,
+        offsetY: 0,
+        feather: 28,
+        brightness: 104,
+        contrast: 105,
+        warmth: 4
+      },
+      // Per-template custom overrides when tweaked inside modal
+      perTemplateAdjust: {}
+    };
+
+    // =========================================================================
+    // 2. TEMPLATE CATALOG (57 DISTINCT TEMPLATES)
+    // =========================================================================
+    const TEMPLATES = [
+      // --- CATEGORY 1: EXECUTIVE & C-SUITE (15 Styles) ---
+      { id: 'exec-01', cat: 'executive', gender: 'tailored', title: 'Navy Bespoke CEO Suit', subtitle: 'Executive Glass Office', bgType: 'glass_skyline', suitColor: '#132238', lapel: 'peak', shirtColor: '#ffffff', tieColor: '#991b1b', pocketSquare: '#ffffff', badge: 'CEO / MD' },
+      { id: 'exec-02', cat: 'executive', gender: 'tailored', title: 'Charcoal Pinstripe Director', subtitle: 'Boardroom Panorama', bgType: 'boardroom', suitColor: '#272a30', lapel: 'notch', shirtColor: '#f8fafc', tieColor: '#1e3a8a', pocketSquare: '#dbeafe', pinstripe: true },
+      { id: 'exec-03', cat: 'executive', gender: 'tailored', title: 'Midnight Tuxedo Gala Executive', subtitle: 'Award Night Spotlight', bgType: 'studio_dark_gold', suitColor: '#090d16', lapel: 'shawl', shirtColor: '#ffffff', tieType: 'bowtie', tieColor: '#090d16', pocketSquare: '#ffffff' },
+      { id: 'exec-04', cat: 'executive', gender: 'tailored', title: 'Slate Double-Breasted Power Suit', subtitle: 'Financial District Tower', bgType: 'city_bokeh', suitColor: '#334155', lapel: 'peak', shirtColor: '#eff6ff', tieColor: '#0f172a', pocketSquare: '#94a3b8' },
+      { id: 'exec-05', cat: 'executive', gender: 'women', title: 'Ivory Executive Blazer & Silk Blouse', subtitle: 'Corner Suite Daylight', bgType: 'glass_skyline', suitColor: '#f1f5f9', lapel: 'women_blazer', shirtColor: '#1e293b', tieType: 'necklace', pocketSquare: null },
+      { id: 'exec-06', cat: 'executive', gender: 'tailored', title: 'Espresso Brown Italian Tailored', subtitle: 'Warm Architectural Lounge', bgType: 'warm_wood', suitColor: '#3e2723', lapel: 'notch', shirtColor: '#fffbeb', tieColor: '#78350f', pocketSquare: '#fde68a' },
+      { id: 'exec-07', cat: 'executive', gender: 'tailored', title: 'Royal Blue Managing Partner', subtitle: 'Studio Platinum Backdrop', bgType: 'studio_platinum', suitColor: '#1e3a8a', lapel: 'peak', shirtColor: '#ffffff', tieColor: '#b45309', pocketSquare: '#ffffff' },
+      { id: 'exec-08', cat: 'executive', gender: 'women', title: 'Burgundy Power Suit & Pearl Accent', subtitle: 'Global Summit Stage', bgType: 'conference', suitColor: '#581c2c', lapel: 'women_blazer', shirtColor: '#ffffff', tieType: 'necklace' },
+      { id: 'exec-09', cat: 'executive', gender: 'tailored', title: 'Obsidian Black Chairman Suit', subtitle: 'Minimalist Slate Studio', bgType: 'studio_charcoal', suitColor: '#111827', lapel: 'peak', shirtColor: '#ffffff', tieColor: '#374151', pocketSquare: '#f3f4f6' },
+      { id: 'exec-10', cat: 'executive', gender: 'tailored', title: 'Oxford Grey Three-Piece Suit', subtitle: 'Heritage Law & Finance Chamber', bgType: 'warm_wood', suitColor: '#4b5563', lapel: 'notch', vest: true, shirtColor: '#ffffff', tieColor: '#7f1d1d', pocketSquare: '#ffffff' },
+      { id: 'exec-11', cat: 'executive', gender: 'women', title: 'Navy Tailored Suit & Sky Silk Scarf', subtitle: 'Modern Atrium Office', bgType: 'atrium', suitColor: '#172554', lapel: 'women_blazer', shirtColor: '#ffffff', tieType: 'scarf', tieColor: '#38bdf8' },
+      { id: 'exec-12', cat: 'executive', gender: 'tailored', title: 'Steel Blue Venture Capitalist', subtitle: 'BKC / Wall Street Skyline', bgType: 'city_bokeh', suitColor: '#2c4257', lapel: 'notch', shirtColor: '#f8fafc', tieColor: '#0284c7', pocketSquare: '#e0f2fe' },
+      { id: 'exec-13', cat: 'executive', gender: 'tailored', title: 'Graphite Checkered Executive', subtitle: 'Executive Lounge Bokeh', bgType: 'office_bokeh', suitColor: '#262626', lapel: 'notch', shirtColor: '#ffffff', tieColor: '#1d4ed8', pinstripe: true },
+      { id: 'exec-14', cat: 'executive', gender: 'women', title: 'Emerald Executive Blazer & Gold Pin', subtitle: 'Editorial Studio Portrait', bgType: 'studio_warm', suitColor: '#064e3b', lapel: 'women_blazer', shirtColor: '#fefce8', tieType: 'necklace' },
+      { id: 'exec-15', cat: 'executive', gender: 'tailored', title: 'Classic Navy & Gold Regimental Tie', subtitle: 'Corporate Headquarters', bgType: 'atrium', suitColor: '#0f172a', lapel: 'notch', shirtColor: '#ffffff', tieColor: '#ca8a04', pocketSquare: '#ffffff' },
+
+      // --- CATEGORY 2: CORPORATE & IT LEADERSHIP (15 Styles) ---
+      { id: 'corp-01', cat: 'corporate', gender: 'tailored', title: 'Tech Founder Navy Blazer & Open Collar', subtitle: 'Silicon Valley Glass Campus', bgType: 'tech_campus', suitColor: '#1e293b', lapel: 'notch', shirtColor: '#ffffff', tieType: 'open' },
+      { id: 'corp-02', cat: 'corporate', gender: 'tailored', title: 'LinkedIn Classic Blue Studio Headshot', subtitle: 'Crisp White Shirt & Navy Tie', bgType: 'linkedin_blue', suitColor: '#1e3a8a', lapel: 'notch', shirtColor: '#ffffff', tieColor: '#2563eb' },
+      { id: 'corp-03', cat: 'corporate', gender: 'tailored', title: 'Smart Casual Charcoal Blazer & Sky Shirt', subtitle: 'Modern Coworking Atrium', bgType: 'atrium', suitColor: '#374151', lapel: 'notch', shirtColor: '#e0f2fe', tieType: 'open' },
+      { id: 'corp-04', cat: 'corporate', gender: 'women', title: 'Teal Corporate Blazer & White Top', subtitle: 'IT Park Innovation Hub', bgType: 'tech_campus', suitColor: '#115e59', lapel: 'women_blazer', shirtColor: '#ffffff', tieType: 'open' },
+      { id: 'corp-05', cat: 'corporate', gender: 'tailored', title: 'Crisp White Formal Shirt & ID Lanyard', subtitle: 'Enterprise Office Floor', bgType: 'office_bokeh', suitColor: null, shirtColor: '#ffffff', tieColor: '#1e40af', lanyard: true },
+      { id: 'corp-06', cat: 'corporate', gender: 'tailored', title: 'Keynote Speaker Dark Blazer', subtitle: 'Annual Tech Conference Stage', bgType: 'conference', suitColor: '#0f172a', lapel: 'notch', shirtColor: '#f1f5f9', tieType: 'open' },
+      { id: 'corp-07', cat: 'corporate', gender: 'tailored', title: 'Sky Blue Formal Shirt & Charcoal Tie', subtitle: 'Clean Neutral Studio', bgType: 'studio_platinum', suitColor: null, shirtColor: '#dbeafe', tieColor: '#334155' },
+      { id: 'corp-08', cat: 'corporate', gender: 'women', title: 'Soft Grey Blazer & Pastel Blouse', subtitle: 'LinkedIn Studio Light', bgType: 'linkedin_blue', suitColor: '#64748b', lapel: 'women_blazer', shirtColor: '#fdf2f8', tieType: 'open' },
+      { id: 'corp-09', cat: 'corporate', gender: 'tailored', title: 'Camel Tan Blazer & Crisp White Shirt', subtitle: 'Creative Director Loft', bgType: 'studio_warm', suitColor: '#92400e', lapel: 'notch', shirtColor: '#ffffff', tieType: 'open' },
+      { id: 'corp-10', cat: 'corporate', gender: 'tailored', title: 'Midnight Sweater Over Collared Shirt', subtitle: 'Product Lead Studio Look', bgType: 'studio_charcoal', suitColor: '#1e293b', lapel: 'sweater', shirtColor: '#ffffff', tieType: 'open' },
+      { id: 'corp-11', cat: 'corporate', gender: 'tailored', title: 'Corporate Blue Suit & Emerald Tie', subtitle: 'Consulting Partner Backdrop', bgType: 'glass_skyline', suitColor: '#1d4ed8', lapel: 'notch', shirtColor: '#ffffff', tieColor: '#047857' },
+      { id: 'corp-12', cat: 'corporate', gender: 'women', title: 'Black Structured Blazer & Corporate ID', subtitle: 'Global Operations Center', bgType: 'office_bokeh', suitColor: '#18181b', lapel: 'women_blazer', shirtColor: '#f8fafc', lanyard: true },
+      { id: 'corp-13', cat: 'corporate', gender: 'tailored', title: 'Light Grey Summer Linen Suit', subtitle: 'Daylight Terrace Office', bgType: 'atrium', suitColor: '#9ca3af', lapel: 'notch', shirtColor: '#ffffff', tieType: 'open' },
+      { id: 'corp-14', cat: 'corporate', gender: 'tailored', title: 'Burgundy Tie & Slate Office Suit', subtitle: 'Banking & Finance Headshot', bgType: 'boardroom', suitColor: '#334155', lapel: 'notch', shirtColor: '#ffffff', tieColor: '#881337' },
+      { id: 'corp-15', cat: 'corporate', gender: 'women', title: 'Royal Blue Formal Shirt & Blazer', subtitle: 'Client Advisory Studio', bgType: 'studio_platinum', suitColor: '#1e3a8a', lapel: 'women_blazer', shirtColor: '#e0f2fe', tieType: 'open' },
+
+      // --- CATEGORY 3: FORMAL, CIVIL SERVICES & ETHNIC OFFICIAL (12 Styles) ---
+      { id: 'off-01', cat: 'official', gender: 'tailored', title: 'Classic Black Bandhgala / Jodhpuri Suit', subtitle: 'Civil Services & Diplomatic Official', bgType: 'warm_wood', suitColor: '#111827', lapel: 'bandhgala', pocketSquare: '#dc2626' },
+      { id: 'off-02', cat: 'official', gender: 'tailored', title: 'Navy Ministerial Bandhgala Jacket', subtitle: 'Secretariat Chamber Backdrop', bgType: 'heritage_chamber', suitColor: '#172554', lapel: 'bandhgala', pocketSquare: '#f59e0b' },
+      { id: 'off-03', cat: 'official', gender: 'women', title: 'Handloom Silk Saree & Formal Blouse', subtitle: 'Senior IAS / Official Executive', bgType: 'heritage_chamber', suitColor: '#7f1d1d', lapel: 'saree', shirtColor: '#fef3c7' },
+      { id: 'off-04', cat: 'official', gender: 'tailored', title: 'Ivory Cream Bandhgala & Gold Buttons', subtitle: 'State Banquet & Ceremonial', bgType: 'studio_warm', suitColor: '#f5f5f4', lapel: 'bandhgala', pocketSquare: '#b45309' },
+      { id: 'off-05', cat: 'official', gender: 'tailored', title: 'Official White Background Passport / ID', subtitle: 'Crisp Navy Suit — Pure White Studio', bgType: 'pure_white', suitColor: '#1e293b', lapel: 'notch', shirtColor: '#ffffff', tieColor: '#1e3a8a' },
+      { id: 'off-06', cat: 'official', gender: 'tailored', title: 'Official Sky-Blue Visa / Govt ID Portrait', subtitle: 'Formal Blazer — Standard Sky Backdrop', bgType: 'id_skyblue', suitColor: '#0f172a', lapel: 'notch', shirtColor: '#ffffff', tieColor: '#991b1b' },
+      { id: 'off-07', cat: 'official', gender: 'women', title: 'Royal Blue Kanjeevaram Official Saree', subtitle: 'Executive Board & Diplomatic', bgType: 'warm_wood', suitColor: '#1e3a8a', lapel: 'saree', shirtColor: '#fde68a' },
+      { id: 'off-08', cat: 'official', gender: 'tailored', title: 'Nehru Jacket Over Crisp White Kurta', subtitle: 'PSU & Cultural Ministry Official', bgType: 'heritage_chamber', suitColor: '#334155', lapel: 'nehru', shirtColor: '#ffffff' },
+      { id: 'off-09', cat: 'official', gender: 'tailored', title: 'Advocate / Legal Counsel Black Gown & Band', subtitle: 'High Court Library Chamber', bgType: 'warm_wood', suitColor: '#09090b', lapel: 'advocate', shirtColor: '#ffffff' },
+      { id: 'off-10', cat: 'official', gender: 'women', title: 'Pastel Beige Formal Saree & Blazer', subtitle: 'Corporate & Government Leadership', bgType: 'studio_platinum', suitColor: '#d6d3d1', lapel: 'saree', shirtColor: '#1e293b' },
+      { id: 'off-11', cat: 'official', gender: 'tailored', title: 'Charcoal Bandhgala with Pocket Brooch', subtitle: 'Ambassador Studio Portrait', bgType: 'studio_charcoal', suitColor: '#27272a', lapel: 'bandhgala', pocketSquare: '#e2e8f0' },
+      { id: 'off-12', cat: 'official', gender: 'tailored', title: 'Beige Safari / Field Officer Formal', subtitle: 'Administrative Inspection Look', bgType: 'atrium', suitColor: '#d6ccc2', lapel: 'safari', shirtColor: '#f5ebe0' },
+
+      // --- CATEGORY 4: BOLLYWOOD BLOCKBUSTER POSTERS (8 Styles) ---
+      { id: 'bolly-01', cat: 'bollywood', gender: 'tailored', title: 'DON — The King Is Back', subtitle: 'Noir Gold & Black Action Thriller Poster', posterStyle: 'bolly_don', suitColor: '#090d16', lapel: 'peak', shirtColor: '#111827', tieColor: '#d97706' },
+      { id: 'bolly-02', cat: 'bollywood', gender: 'tailored', title: 'DDLJ — Classic Romance', subtitle: 'Golden Mustard Fields & Iconic Retro Title', posterStyle: 'bolly_ddlj', suitColor: '#3f2e21', lapel: 'notch', shirtColor: '#fef3c7', tieType: 'open' },
+      { id: 'bolly-03', cat: 'bollywood', gender: 'tailored', title: 'SHOLAY — Vintage 70mm Western', subtitle: 'Distressed Sepia & Bold Block Typography', posterStyle: 'bolly_sholay', suitColor: '#451a03', lapel: 'safari', shirtColor: '#d97706' },
+      { id: 'bolly-04', cat: 'bollywood', gender: 'tailored', title: 'K3G — Royal Family Dynasty', subtitle: 'Opulent Palace Gold & Spotlight Drama', posterStyle: 'bolly_k3g', suitColor: '#171717', lapel: 'bandhgala', pocketSquare: '#f59e0b' },
+      { id: 'bolly-05', cat: 'bollywood', gender: 'tailored', title: 'PATHAAN — Spy Universe Action', subtitle: 'High-Octane Fire & Steel Espionage', posterStyle: 'bolly_pathaan', suitColor: '#0f172a', lapel: 'notch', shirtColor: '#020617', tieType: 'open' },
+      { id: 'bolly-06', cat: 'bollywood', gender: 'tailored', title: 'ZINDAGI NA MILEGI DOBARA', subtitle: 'Sun-Kissed Spanish Highway Roadtrip', posterStyle: 'bolly_znmd', suitColor: '#0284c7', lapel: 'notch', shirtColor: '#ffffff', tieType: 'open' },
+      { id: 'bolly-07', cat: 'bollywood', gender: 'tailored', title: 'WAR — Elite Agent Face-Off', subtitle: 'Icy Blue & Ember Tactical Thriller', posterStyle: 'bolly_war', suitColor: '#1e293b', lapel: 'peak', shirtColor: '#334155', tieColor: '#0ea5e9' },
+      { id: 'bolly-08', cat: 'bollywood', gender: 'tailored', title: '3 IDIOTS — Campus Blockbuster', subtitle: 'Vibrant Blue Sky & All Is Well Edition', posterStyle: 'bolly_3idiots', suitColor: '#2563eb', lapel: 'sweater', shirtColor: '#ffffff', tieType: 'open' },
+
+      // --- CATEGORY 5: HOLLYWOOD CINEMATIC POSTERS (7 Styles) ---
+      { id: 'holly-01', cat: 'hollywood', gender: 'tailored', title: '007 — SECRET AGENT NOIR', subtitle: 'Gun-Barrel Spotlight & Classic Tuxedo', posterStyle: 'holly_007', suitColor: '#090d16', lapel: 'shawl', shirtColor: '#ffffff', tieType: 'bowtie', tieColor: '#090d16', pocketSquare: '#ffffff' },
+      { id: 'holly-02', cat: 'hollywood', gender: 'tailored', title: 'THE GODFATHER — Crime Classic', subtitle: 'Chiaroscuro Monochrome & Crimson Rose', posterStyle: 'holly_godfather', suitColor: '#0a0a0a', lapel: 'peak', shirtColor: '#ffffff', tieColor: '#0a0a0a', pocketSquare: '#dc2626' },
+      { id: 'holly-03', cat: 'hollywood', gender: 'tailored', title: 'THE WOLF OF WALL STREET', subtitle: 'Bold Yellow & Black High-Stakes Poster', posterStyle: 'holly_wolf', suitColor: '#0f172a', lapel: 'peak', shirtColor: '#ffffff', tieColor: '#eab308', pocketSquare: '#ffffff' },
+      { id: 'holly-04', cat: 'hollywood', gender: 'tailored', title: 'MISSION: IMPOSSIBLE — Fallout', subtitle: 'Anamorphic Lens Flare & Burning Fuse', posterStyle: 'holly_mi', suitColor: '#18181b', lapel: 'notch', shirtColor: '#27272a', tieColor: '#09090b' },
+      { id: 'holly-05', cat: 'hollywood', gender: 'tailored', title: 'INCEPTION — Dream Architect', subtitle: 'Folded Metropolis & Steel Blue Thriller', posterStyle: 'holly_inception', suitColor: '#1e293b', lapel: 'notch', shirtColor: '#cbd5e1', tieColor: '#0f172a' },
+      { id: 'holly-06', cat: 'hollywood', gender: 'tailored', title: 'TOP GUN — Maverick Sunset', subtitle: 'Golden Hour Runway & Aviator Chrome', posterStyle: 'holly_topgun', suitColor: '#3f2e21', lapel: 'aviator', shirtColor: '#ffffff' },
+      { id: 'holly-07', cat: 'hollywood', gender: 'tailored', title: 'AVENGERS / COSMIC HERO EDITION', subtitle: 'Metallic Blockbuster & Rim-Light Energy', posterStyle: 'holly_hero', suitColor: '#1e1b4b', lapel: 'tactical', shirtColor: '#312e81' }
+    ];
+
+    // =========================================================================
+    // 3. DEMO PORTRAIT GENERATOR (So the app looks stunning right out of the box)
+    // =========================================================================
+    function createDemoPortraitCanvas() {
+      const c = document.createElement('canvas');
+      c.width = 500;
+      c.height = 600;
+      const ctx = c.getContext('2d');
+
+      // Soft studio backdrop
+      const bg = ctx.createRadialGradient(250, 220, 40, 250, 300, 340);
+      bg.addColorStop(0, '#f1f5f9');
+      bg.addColorStop(1, '#cbd5e1');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, 500, 600);
+
+      // Neck & shoulders base
+      const skinGrad = ctx.createLinearGradient(180, 260, 320, 460);
+      skinGrad.addColorStop(0, '#e0a986');
+      skinGrad.addColorStop(0.5, '#d1926c');
+      skinGrad.addColorStop(1, '#b87752');
+      ctx.fillStyle = skinGrad;
+      ctx.beginPath();
+      ctx.moveTo(205, 310);
+      ctx.lineTo(295, 310);
+      ctx.lineTo(325, 450);
+      ctx.lineTo(175, 450);
+      ctx.closePath();
+      ctx.fill();
+
+      // Neck shadow under chin
+      ctx.fillStyle = 'rgba(110, 58, 32, 0.25)';
+      ctx.beginPath();
+      ctx.ellipse(250, 338, 46, 20, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Ears
+      ctx.fillStyle = '#cf8f69';
+      ctx.beginPath();
+      ctx.ellipse(166, 232, 13, 24, -0.1, 0, Math.PI * 2);
+      ctx.ellipse(334, 232, 13, 24, 0.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Head oval
+      const faceGrad = ctx.createRadialGradient(235, 205, 20, 250, 225, 115);
+      faceGrad.addColorStop(0, '#eab694');
+      faceGrad.addColorStop(0.7, '#d89a74');
+      faceGrad.addColorStop(1, '#be7d57');
+      ctx.fillStyle = faceGrad;
+      ctx.beginPath();
+      ctx.moveTo(170, 205);
+      ctx.bezierCurveTo(170, 125, 330, 125, 330, 205);
+      ctx.bezierCurveTo(330, 285, 290, 330, 250, 332);
+      ctx.bezierCurveTo(210, 330, 170, 285, 170, 205);
+      ctx.fill();
+
+      // Styled executive hair
+      ctx.fillStyle = '#1c1917';
+      ctx.beginPath();
+      ctx.moveTo(166, 215);
+      ctx.bezierCurveTo(156, 135, 205, 95, 265, 102);
+      ctx.bezierCurveTo(322, 108, 344, 145, 334, 215);
+      ctx.bezierCurveTo(326, 175, 312, 152, 275, 148);
+      ctx.bezierCurveTo(225, 144, 185, 165, 166, 215);
+      ctx.fill();
+
+      // Eyebrows
+      ctx.strokeStyle = '#292524';
+      ctx.lineWidth = 5.5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(196, 204);
+      ctx.quadraticCurveTo(215, 196, 233, 203);
+      ctx.moveTo(267, 203);
+      ctx.quadraticCurveTo(285, 196, 304, 204);
+      ctx.stroke();
+
+      // Eyes
+      [215, 285].forEach(ex => {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.ellipse(ex, 222, 15, 8.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#291d18';
+        ctx.beginPath();
+        ctx.arc(ex, 222, 6.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(ex - 2, 220, 2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Nose
+      ctx.strokeStyle = 'rgba(130, 72, 42, 0.45)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(250, 218);
+      ctx.lineTo(245, 256);
+      ctx.quadraticCurveTo(250, 262, 258, 257);
+      ctx.stroke();
+
+      // Confident Executive Smile
+      ctx.fillStyle = '#9f4a3f';
+      ctx.beginPath();
+      ctx.moveTo(224, 283);
+      ctx.quadraticCurveTo(250, 278, 276, 283);
+      ctx.quadraticCurveTo(250, 302, 224, 283);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(229, 284);
+      ctx.quadraticCurveTo(250, 282, 271, 284);
+      ctx.quadraticCurveTo(250, 292, 229, 284);
+      ctx.fill();
+
+      return c;
+    }
+
+    // =========================================================================
+    // 4. CORE COMPOSITOR ENGINE (Draws Background + Subject + Tailored Attire + Poster FX)
+    // =========================================================================
+    function renderTemplateToCanvas(canvas, tpl, customAdj = null) {
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+      const adj = customAdj || state.perTemplateAdjust[tpl.id] || state.globalAdjust;
+
+      ctx.save();
+      ctx.clearRect(0, 0, W, H);
+
+      // 1. RENDER BACKGROUND ENVIRONMENT OR POSTER BACKDROP
+      if (tpl.posterStyle) {
+        drawPosterBackground(ctx, W, H, tpl.posterStyle);
+      } else {
+        drawOfficeBackground(ctx, W, H, tpl.bgType || 'studio_platinum');
+      }
+
+      // 2. RENDER SUBJECT PHOTO (With Feather Mask, Zoom, Offset, Lighting & Color Grade)
+      const imgSource = state.userImage || demoCanvas;
+      if (imgSource) {
+        ctx.save();
+        // Position face center in upper-middle portrait zone (approx y = 0.36 * H)
+        const targetFaceX = W * 0.5 + (adj.offsetX / 100) * (W * 0.25);
+        const targetFaceY = H * 0.36 + (adj.offsetY / 100) * (H * 0.25);
+        const scaleFactor = (adj.zoom / 100);
+
+        const drawW = W * 0.68 * scaleFactor;
+        const aspect = (imgSource.height || 600) / (imgSource.width || 500);
+        const drawH = drawW * aspect;
+
+        // Soft elliptical vignette/feathering mask so uploaded photo blends seamlessly into studio & collar
+        const featherPct = adj.feather / 100;
+        const maskCanvas = document.createElement('canvas');
+        maskCanvas.width = W;
+        maskCanvas.height = H;
+        const mCtx = maskCanvas.getContext('2d');
+
+        // Apply brightness, contrast, warmth filters
+        const warmSepia = Math.max(0, adj.warmth) * 0.4;
+        const coolHue = adj.warmth < 0 ? adj.warmth * 0.6 : 0;
+        mCtx.filter = `brightness(${adj.brightness}%) contrast(${adj.contrast}%) sepia(${warmSepia}%) hue-rotate(${coolHue}deg) saturate(${100 + adj.warmth * 0.4}%)`;
+
+        // Monochrome filter for Godfather poster
+        if (tpl.posterStyle === 'holly_godfather') {
+          mCtx.filter += ' grayscale(100%) contrast(125%)';
+        } else if (tpl.posterStyle === 'bolly_sholay') {
+          mCtx.filter += ' sepia(55%) contrast(115%)';
+        }
+
+        mCtx.drawImage(
+          imgSource,
+          targetFaceX - drawW / 2,
+          targetFaceY - drawH * 0.42,
+          drawW,
+          drawH
+        );
+        mCtx.filter = 'none';
+
+        // Apply radial edge feathering using destination-in
+        if (featherPct > 0.01) {
+          mCtx.globalCompositeOperation = 'destination-in';
+          const grad = mCtx.createRadialGradient(
+            targetFaceX,
+            targetFaceY - drawH * 0.02,
+            drawW * (0.38 - featherPct * 0.35),
+            targetFaceX,
+            targetFaceY + drawH * 0.04,
+            drawW * 0.56
+          );
+          grad.addColorStop(0, 'rgba(0,0,0,1)');
+          grad.addColorStop(0.72, 'rgba(0,0,0,0.96)');
+          grad.addColorStop(1, 'rgba(0,0,0,0)');
+          mCtx.fillStyle = grad;
+          mCtx.fillRect(0, 0, W, H);
+        }
+
+        ctx.drawImage(maskCanvas, 0, 0);
+        ctx.restore();
+      }
+
+      // 3. RENDER TAILORED PROFESSIONAL ATTIRE (Suits, Blazers, Shirts, Ties, Bandhgala, Saree)
+      drawProfessionalAttire(ctx, W, H, tpl);
+
+      // 4. RENDER POSTER TYPOGRAPHY & CINEMATIC OVERLAYS (If Bollywood/Hollywood)
+      if (tpl.posterStyle) {
+        drawPosterForegroundAndTitles(ctx, W, H, tpl, state.subjectName || 'SUPERSTAR');
+      } else {
+        // Subtle studio rim light & corporate polish
+        drawStudioFinish(ctx, W, H, tpl);
+      }
+
+      ctx.restore();
+    }
+
+    // =========================================================================
+    // 5. OFFICE & STUDIO BACKGROUNDS RENDERER
+    // =========================================================================
+    function drawOfficeBackground(ctx, W, H, bgType) {
+      if (bgType === 'pure_white') {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, W, H);
+        return;
+      }
+      if (bgType === 'id_skyblue') {
+        const g = ctx.createLinearGradient(0, 0, 0, H);
+        g.addColorStop(0, '#bae6fd');
+        g.addColorStop(1, '#7dd3fc');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+        return;
+      }
+      if (bgType === 'linkedin_blue') {
+        const g = ctx.createRadialGradient(W * 0.5, H * 0.35, W * 0.05, W * 0.5, H * 0.5, W * 0.85);
+        g.addColorStop(0, '#3b82f6');
+        g.addColorStop(0.55, '#1d4ed8');
+        g.addColorStop(1, '#0f172a');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+        return;
+      }
+      if (bgType === 'studio_platinum') {
+        const g = ctx.createRadialGradient(W * 0.5, H * 0.35, W * 0.08, W * 0.5, H * 0.5, W * 0.8);
+        g.addColorStop(0, '#f8fafc');
+        g.addColorStop(0.6, '#cbd5e1');
+        g.addColorStop(1, '#64748b');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+        return;
+      }
+      if (bgType === 'studio_charcoal' || bgType === 'studio_dark_gold') {
+        const g = ctx.createRadialGradient(W * 0.5, H * 0.35, W * 0.05, W * 0.5, H * 0.5, W * 0.85);
+        g.addColorStop(0, bgType === 'studio_dark_gold' ? '#422006' : '#334155');
+        g.addColorStop(1, '#090d16');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+        return;
+      }
+      if (bgType === 'studio_warm') {
+        const g = ctx.createRadialGradient(W * 0.5, H * 0.35, W * 0.06, W * 0.5, H * 0.5, W * 0.85);
+        g.addColorStop(0, '#fef3c7');
+        g.addColorStop(0.65, '#d6b898');
+        g.addColorStop(1, '#78350f');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+        return;
+      }
+
+      // Architectural Office Scenes (Glass Skyline, Boardroom, Tech Campus, Warm Wood, Atrium)
+      const baseGrad = ctx.createLinearGradient(0, 0, 0, H);
+      if (bgType === 'warm_wood' || bgType === 'heritage_chamber') {
+        baseGrad.addColorStop(0, '#451a03');
+        baseGrad.addColorStop(0.5, '#78350f');
+        baseGrad.addColorStop(1, '#291002');
+        ctx.fillStyle = baseGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Wooden architectural wall paneling
+        ctx.strokeStyle = 'rgba(254, 243, 199, 0.12)';
+        ctx.lineWidth = 2;
+        for (let x = W * 0.1; x < W; x += W * 0.2) {
+          ctx.strokeRect(x, H * 0.06, W * 0.16, H * 0.55);
+        }
+      } else {
+        // Modern Glass Corporate Skyscraper / Tech Office
+        baseGrad.addColorStop(0, '#cbd5e1');
+        baseGrad.addColorStop(0.45, '#94a3b8');
+        baseGrad.addColorStop(1, '#334155');
+        ctx.fillStyle = baseGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Out-of-focus skyline buildings
+        const bldgColors = ['rgba(30,41,59,0.28)', 'rgba(51,65,85,0.22)', 'rgba(15,23,42,0.32)', 'rgba(148,163,184,0.35)'];
+        for (let i = 0; i < 9; i++) {
+          const bx = i * (W * 0.12) - 10;
+          const bw = W * 0.11;
+          const bh = H * (0.35 + (i % 3) * 0.14);
+          ctx.fillStyle = bldgColors[i % bldgColors.length];
+          ctx.fillRect(bx, H * 0.65 - bh, bw, bh + H * 0.35);
+        }
+
+        // Glass mullion perspective lines
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(W * 0.18, 0); ctx.lineTo(W * 0.18, H);
+        ctx.moveTo(W * 0.82, 0); ctx.lineTo(W * 0.82, H);
+        ctx.moveTo(0, H * 0.24); ctx.lineTo(W, H * 0.24);
+        ctx.stroke();
+
+        // Soft bokeh light orbs
+        const bokehColors = bgType === 'conference'
+          ? ['rgba(59,130,246,0.35)', 'rgba(14,165,233,0.28)', 'rgba(255,255,255,0.25)']
+          : ['rgba(255,255,255,0.35)', 'rgba(224,242,254,0.3)', 'rgba(254,243,199,0.22)'];
+        for (let b = 0; b < 14; b++) {
+          const rx = ((b * 97) % 100) / 100 * W;
+          const ry = ((b * 53) % 65) / 100 * H;
+          const rr = W * (0.025 + (b % 4) * 0.015);
+          ctx.fillStyle = bokehColors[b % bokehColors.length];
+          ctx.beginPath();
+          ctx.arc(rx, ry, rr, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Soft radial spotlight behind subject's head for natural separation
+      const halo = ctx.createRadialGradient(W * 0.5, H * 0.35, W * 0.04, W * 0.5, H * 0.35, W * 0.48);
+      halo.addColorStop(0, 'rgba(255,255,255,0.38)');
+      halo.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = halo;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // =========================================================================
+    // 6. TAILORED OFFICE ATTIRE RENDERER (Suits, Lapels, Shirts, Ties, Saree, Bandhgala)
+    // =========================================================================
+    function drawProfessionalAttire(ctx, W, H, tpl) {
+      const shoulderY = H * 0.575;
+      const neckCenterX = W * 0.5;
+      const collarTopY = H * 0.525;
+      const chestBottomY = H;
+
+      ctx.save();
+
+      // Special Ethnic / Saree / Bandhgala / Advocate / Aviator handling
+      if (tpl.lapel === 'saree') {
+        drawSareeAttire(ctx, W, H, tpl, shoulderY, collarTopY);
+        ctx.restore();
+        return;
+      }
+      if (tpl.lapel === 'bandhgala' || tpl.lapel === 'nehru') {
+        drawBandhgalaAttire(ctx, W, H, tpl, shoulderY, collarTopY);
+        ctx.restore();
+        return;
+      }
+
+      // --- A. INNER DRESS SHIRT / BLOUSE ---
+      const shirtColor = tpl.shirtColor || '#ffffff';
+      ctx.fillStyle = shirtColor;
+      ctx.beginPath();
+      ctx.moveTo(W * 0.25, shoulderY);
+      ctx.quadraticCurveTo(neckCenterX, collarTopY + H * 0.02, W * 0.75, shoulderY);
+      ctx.lineTo(W * 0.85, chestBottomY);
+      ctx.lineTo(W * 0.15, chestBottomY);
+      ctx.closePath();
+      ctx.fill();
+
+      // Subtle shirt shading
+      const shirtShade = ctx.createLinearGradient(0, collarTopY, 0, H);
+      shirtShade.addColorStop(0, 'rgba(15,23,42,0.12)');
+      shirtShade.addColorStop(0.25, 'rgba(255,255,255,0)');
+      shirtShade.addColorStop(1, 'rgba(15,23,42,0.18)');
+      ctx.fillStyle = shirtShade;
+      ctx.fill();
+
+      // --- B. CRISP COLLAR WINGS ---
+      if (tpl.lapel !== 'women_blazer') {
+        ctx.fillStyle = shirtColor;
+        ctx.strokeStyle = 'rgba(15,23,42,0.18)';
+        ctx.lineWidth = 2;
+
+        // Left collar wing
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX - W * 0.095, collarTopY);
+        ctx.lineTo(neckCenterX, collarTopY + H * 0.065);
+        ctx.lineTo(neckCenterX - W * 0.13, collarTopY + H * 0.095);
+        ctx.lineTo(neckCenterX - W * 0.12, collarTopY + H * 0.015);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Right collar wing
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX + W * 0.095, collarTopY);
+        ctx.lineTo(neckCenterX, collarTopY + H * 0.065);
+        ctx.lineTo(neckCenterX + W * 0.13, collarTopY + H * 0.095);
+        ctx.lineTo(neckCenterX + W * 0.12, collarTopY + H * 0.015);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      // --- C. SILK NECKTIE / BOWTIE / SCARF / NECKLACE ---
+      if (tpl.tieType === 'bowtie') {
+        ctx.fillStyle = tpl.tieColor || '#090d16';
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX, collarTopY + H * 0.06);
+        ctx.lineTo(neckCenterX - W * 0.065, collarTopY + H * 0.042);
+        ctx.lineTo(neckCenterX - W * 0.065, collarTopY + H * 0.082);
+        ctx.closePath();
+        ctx.moveTo(neckCenterX, collarTopY + H * 0.06);
+        ctx.lineTo(neckCenterX + W * 0.065, collarTopY + H * 0.042);
+        ctx.lineTo(neckCenterX + W * 0.065, collarTopY + H * 0.082);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillRect(neckCenterX - W * 0.014, collarTopY + H * 0.047, W * 0.028, H * 0.028);
+      } else if (tpl.tieType === 'necklace') {
+        // Executive pearl / gold strand
+        ctx.strokeStyle = '#fde68a';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(neckCenterX, collarTopY + H * 0.02, W * 0.11, 0.2, Math.PI - 0.2);
+        ctx.stroke();
+      } else if (tpl.tieType === 'scarf') {
+        ctx.fillStyle = tpl.tieColor || '#38bdf8';
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX - W * 0.09, collarTopY + H * 0.02);
+        ctx.quadraticCurveTo(neckCenterX, collarTopY + H * 0.14, neckCenterX + W * 0.09, collarTopY + H * 0.02);
+        ctx.lineTo(neckCenterX + W * 0.05, H * 0.85);
+        ctx.lineTo(neckCenterX - W * 0.03, H * 0.85);
+        ctx.closePath();
+        ctx.fill();
+      } else if (tpl.tieType !== 'open' && tpl.tieColor) {
+        // Windsor Knot & Silk Tie Blade
+        const tieGrad = ctx.createLinearGradient(neckCenterX - 20, collarTopY, neckCenterX + 25, H);
+        tieGrad.addColorStop(0, tpl.tieColor);
+        tieGrad.addColorStop(0.5, lightenHex(tpl.tieColor, 22));
+        tieGrad.addColorStop(1, darkenHex(tpl.tieColor, 25));
+        ctx.fillStyle = tieGrad;
+
+        // Tie Blade
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX - W * 0.022, collarTopY + H * 0.075);
+        ctx.lineTo(neckCenterX + W * 0.022, collarTopY + H * 0.075);
+        ctx.lineTo(neckCenterX + W * 0.046, H * 0.96);
+        ctx.lineTo(neckCenterX, H);
+        ctx.lineTo(neckCenterX - W * 0.046, H * 0.96);
+        ctx.closePath();
+        ctx.fill();
+
+        // Subtle diagonal silk weave stripes
+        ctx.save();
+        ctx.clip();
+        ctx.strokeStyle = 'rgba(255,255,255,0.16)';
+        ctx.lineWidth = 3;
+        for (let y = collarTopY; y < H; y += 18) {
+          ctx.beginPath();
+          ctx.moveTo(neckCenterX - 60, y);
+          ctx.lineTo(neckCenterX + 60, y + 32);
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        // Windsor Knot
+        ctx.fillStyle = tpl.tieColor;
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX - W * 0.032, collarTopY + H * 0.052);
+        ctx.lineTo(neckCenterX + W * 0.032, collarTopY + H * 0.052);
+        ctx.lineTo(neckCenterX + W * 0.022, collarTopY + H * 0.088);
+        ctx.lineTo(neckCenterX - W * 0.022, collarTopY + H * 0.088);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        // Shirt Placket & Buttons for open collar
+        ctx.strokeStyle = 'rgba(15,23,42,0.12)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX, collarTopY + H * 0.07);
+        ctx.lineTo(neckCenterX, H);
+        ctx.stroke();
+        [0.68, 0.78, 0.88].forEach(by => {
+          ctx.fillStyle = 'rgba(148,163,184,0.7)';
+          ctx.beginPath();
+          ctx.arc(neckCenterX, H * by, 4, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
+      // Corporate ID Lanyard if enabled
+      if (tpl.lanyard) {
+        ctx.strokeStyle = '#1d4ed8';
+        ctx.lineWidth = W * 0.022;
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX - W * 0.11, collarTopY + H * 0.01);
+        ctx.lineTo(neckCenterX + W * 0.04, H * 0.86);
+        ctx.lineTo(neckCenterX + W * 0.12, collarTopY + H * 0.01);
+        ctx.stroke();
+
+        // ID Card Badge
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 2;
+        ctx.fillRect(neckCenterX + W * 0.005, H * 0.84, W * 0.095, H * 0.12);
+        ctx.strokeRect(neckCenterX + W * 0.005, H * 0.84, W * 0.095, H * 0.12);
+        ctx.fillStyle = '#2563eb';
+        ctx.fillRect(neckCenterX + W * 0.005, H * 0.84, W * 0.095, H * 0.026);
+      }
+
+      // --- D. OUTER TAILORED SUIT JACKET / BLAZER ---
+      if (tpl.suitColor) {
+        const suitBase = tpl.suitColor;
+        const suitGrad = ctx.createLinearGradient(0, shoulderY, 0, H);
+        suitGrad.addColorStop(0, lightenHex(suitBase, 12));
+        suitGrad.addColorStop(0.5, suitBase);
+        suitGrad.addColorStop(1, darkenHex(suitBase, 22));
+
+        ctx.fillStyle = suitGrad;
+
+        // Left Jacket Torso & Shoulder
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX - W * 0.105, collarTopY);
+        ctx.quadraticCurveTo(W * 0.16, shoulderY, W * 0.04, H * 0.72);
+        ctx.lineTo(W * 0.01, H);
+        ctx.lineTo(neckCenterX, H);
+        ctx.lineTo(neckCenterX, collarTopY + H * 0.25);
+        ctx.closePath();
+        ctx.fill();
+
+        // Right Jacket Torso & Shoulder
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX + W * 0.105, collarTopY);
+        ctx.quadraticCurveTo(W * 0.84, shoulderY, W * 0.96, H * 0.72);
+        ctx.lineTo(W * 0.99, H);
+        ctx.lineTo(neckCenterX, H);
+        ctx.lineTo(neckCenterX, collarTopY + H * 0.25);
+        ctx.closePath();
+        ctx.fill();
+
+        // Optional Pinstripe Texture
+        if (tpl.pinstripe) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(255,255,255,0.11)';
+          ctx.lineWidth = 1.5;
+          for (let sx = W * 0.05; sx < W * 0.95; sx += 14) {
+            ctx.beginPath();
+            ctx.moveTo(sx, shoulderY);
+            ctx.lineTo(sx - 6, H);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+
+        // Tailored Suit Lapels (Left & Right)
+        const lapelColor = lightenHex(suitBase, 18);
+        ctx.fillStyle = lapelColor;
+        ctx.strokeStyle = darkenHex(suitBase, 30);
+        ctx.lineWidth = 2;
+
+        // Left Lapel
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX - W * 0.105, collarTopY);
+        ctx.lineTo(neckCenterX - W * 0.185, collarTopY + H * 0.13);
+        ctx.lineTo(neckCenterX - W * 0.135, collarTopY + H * 0.155);
+        ctx.lineTo(neckCenterX - W * 0.175, collarTopY + H * 0.19);
+        ctx.lineTo(neckCenterX, collarTopY + H * 0.27);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Right Lapel
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX + W * 0.105, collarTopY);
+        ctx.lineTo(neckCenterX + W * 0.185, collarTopY + H * 0.13);
+        ctx.lineTo(neckCenterX + W * 0.135, collarTopY + H * 0.155);
+        ctx.lineTo(neckCenterX + W * 0.175, collarTopY + H * 0.19);
+        ctx.lineTo(neckCenterX, collarTopY + H * 0.27);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Advocate White Neck Bands
+        if (tpl.lapel === 'advocate') {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(neckCenterX - W * 0.032, collarTopY + H * 0.06, W * 0.026, H * 0.13);
+          ctx.fillRect(neckCenterX + W * 0.006, collarTopY + H * 0.06, W * 0.026, H * 0.13);
+        }
+
+        // Pocket Square on Wearer's Left Breast (Viewer's Right)
+        if (tpl.pocketSquare) {
+          ctx.fillStyle = tpl.pocketSquare;
+          ctx.beginPath();
+          ctx.moveTo(neckCenterX + W * 0.16, H * 0.77);
+          ctx.lineTo(neckCenterX + W * 0.20, H * 0.745);
+          ctx.lineTo(neckCenterX + W * 0.24, H * 0.77);
+          ctx.closePath();
+          ctx.fill();
+
+          // Welt pocket line
+          ctx.strokeStyle = darkenHex(suitBase, 35);
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(neckCenterX + W * 0.145, H * 0.772);
+          ctx.lineTo(neckCenterX + W * 0.255, H * 0.772);
+          ctx.stroke();
+        }
+
+        // Jacket Center Button
+        ctx.fillStyle = darkenHex(suitBase, 35);
+        ctx.beginPath();
+        ctx.arc(neckCenterX, H * 0.84, 7, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    // Specialized Bandhgala / Jodhpuri Official Suit Renderer
+    function drawBandhgalaAttire(ctx, W, H, tpl, shoulderY, collarTopY) {
+      const neckCenterX = W * 0.5;
+      const suitBase = tpl.suitColor || '#111827';
+      const grad = ctx.createLinearGradient(0, collarTopY, 0, H);
+      grad.addColorStop(0, lightenHex(suitBase, 14));
+      grad.addColorStop(1, darkenHex(suitBase, 24));
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(neckCenterX - W * 0.105, collarTopY - H * 0.02);
+      ctx.quadraticCurveTo(W * 0.16, shoulderY, W * 0.03, H * 0.72);
+      ctx.lineTo(W * 0.01, H);
+      ctx.lineTo(W * 0.99, H);
+      ctx.lineTo(W * 0.97, H * 0.72);
+      ctx.quadraticCurveTo(W * 0.84, shoulderY, neckCenterX + W * 0.105, collarTopY - H * 0.02);
+      ctx.closePath();
+      ctx.fill();
+
+      // Mandarin Stand Collar
+      ctx.fillStyle = lightenHex(suitBase, 22);
+      ctx.strokeStyle = darkenHex(suitBase, 30);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(neckCenterX - W * 0.105, collarTopY - H * 0.025, W * 0.21, H * 0.048, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      // Center Placket & Metallic Buttons
+      ctx.strokeStyle = darkenHex(suitBase, 35);
+      ctx.beginPath();
+      ctx.moveTo(neckCenterX, collarTopY + H * 0.02);
+      ctx.lineTo(neckCenterX, H);
+      ctx.stroke();
+
+      [0.62, 0.71, 0.80, 0.89].forEach(by => {
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(neckCenterX, H * by, 6, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      if (tpl.pocketSquare) {
+        ctx.fillStyle = tpl.pocketSquare;
+        ctx.beginPath();
+        ctx.moveTo(neckCenterX + W * 0.16, H * 0.74);
+        ctx.lineTo(neckCenterX + W * 0.20, H * 0.71);
+        ctx.lineTo(neckCenterX + W * 0.24, H * 0.74);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    // Specialized Formal Saree & Executive Blouse Renderer
+    function drawSareeAttire(ctx, W, H, tpl, shoulderY, collarTopY) {
+      const neckCenterX = W * 0.5;
+      const sareeColor = tpl.suitColor || '#7f1d1d';
+      const blouseColor = tpl.shirtColor || '#fef3c7';
+
+      // Executive Blouse Base
+      ctx.fillStyle = blouseColor;
+      ctx.beginPath();
+      ctx.moveTo(neckCenterX - W * 0.12, collarTopY + H * 0.02);
+      ctx.quadraticCurveTo(W * 0.17, shoulderY, W * 0.05, H * 0.74);
+      ctx.lineTo(W * 0.03, H);
+      ctx.lineTo(W * 0.97, H);
+      ctx.lineTo(W * 0.95, H * 0.74);
+      ctx.quadraticCurveTo(W * 0.83, shoulderY, neckCenterX + W * 0.12, collarTopY + H * 0.02);
+      ctx.quadraticCurveTo(neckCenterX, collarTopY + H * 0.12, neckCenterX - W * 0.12, collarTopY + H * 0.02);
+      ctx.fill();
+
+      // Draped Silk Saree Pallu across shoulder
+      const palluGrad = ctx.createLinearGradient(W * 0.15, shoulderY, W * 0.85, H);
+      palluGrad.addColorStop(0, lightenHex(sareeColor, 18));
+      palluGrad.addColorStop(0.5, sareeColor);
+      palluGrad.addColorStop(1, darkenHex(sareeColor, 25));
+      ctx.fillStyle = palluGrad;
+
+      ctx.beginPath();
+      ctx.moveTo(W * 0.16, shoulderY - H * 0.01);
+      ctx.lineTo(W * 0.36, collarTopY + H * 0.03);
+      ctx.lineTo(W * 0.96, H * 0.76);
+      ctx.lineTo(W * 0.98, H);
+      ctx.lineTo(W * 0.04, H);
+      ctx.lineTo(W * 0.06, H * 0.74);
+      ctx.closePath();
+      ctx.fill();
+
+      // Zari Gold Border along Pallu Edge
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = W * 0.022;
+      ctx.beginPath();
+      ctx.moveTo(W * 0.34, collarTopY + H * 0.035);
+      ctx.lineTo(W * 0.94, H * 0.76);
+      ctx.stroke();
+    }
+
+    // =========================================================================
+    // 7. BOLLYWOOD & HOLLYWOOD MOVIE POSTER ENGINE
+    // =========================================================================
+    function drawPosterBackground(ctx, W, H, style) {
+      const g = ctx.createLinearGradient(0, 0, 0, H);
+      switch (style) {
+        case 'bolly_don':
+          g.addColorStop(0, '#090d16');
+          g.addColorStop(0.5, '#1e1b18');
+          g.addColorStop(1, '#451a03');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          // Golden city grid lines
+          ctx.strokeStyle = 'rgba(245, 158, 11, 0.22)';
+          ctx.lineWidth = 2;
+          for (let i = 0; i < 8; i++) {
+            ctx.strokeRect(W * 0.08 * i, H * 0.12, W * 0.25, H * 0.5);
+          }
+          break;
+
+        case 'bolly_ddlj':
+          g.addColorStop(0, '#fde68a');
+          g.addColorStop(0.55, '#f59e0b');
+          g.addColorStop(1, '#78350f');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          // Sunburst rays
+          ctx.fillStyle = 'rgba(255,255,255,0.22)';
+          ctx.beginPath(); ctx.arc(W * 0.5, H * 0.34, W * 0.38, 0, Math.PI * 2); ctx.fill();
+          break;
+
+        case 'bolly_sholay':
+          g.addColorStop(0, '#fed7aa');
+          g.addColorStop(0.6, '#c2410c');
+          g.addColorStop(1, '#431407');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          break;
+
+        case 'bolly_k3g':
+          g.addColorStop(0, '#450a0a');
+          g.addColorStop(0.5, '#991b1b');
+          g.addColorStop(1, '#451a03');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          // Ornate palace arch
+          ctx.strokeStyle = '#fbbf24';
+          ctx.lineWidth = 8;
+          ctx.strokeRect(W * 0.05, H * 0.04, W * 0.9, H * 0.92);
+          break;
+
+        case 'bolly_pathaan':
+        case 'bolly_war':
+          g.addColorStop(0, '#020617');
+          g.addColorStop(0.5, '#0c4a6e');
+          g.addColorStop(1, '#9a3412');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          // Diagonal slash flare
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
+          ctx.beginPath(); ctx.moveTo(0, H * 0.2); ctx.lineTo(W, H * 0.45); ctx.lineTo(W, H * 0.52); ctx.lineTo(0, H * 0.27); ctx.fill();
+          break;
+
+        case 'bolly_znmd':
+        case 'bolly_3idiots':
+          g.addColorStop(0, '#0284c7');
+          g.addColorStop(0.65, '#7dd3fc');
+          g.addColorStop(1, '#fef08a');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          break;
+
+        case 'holly_007':
+          ctx.fillStyle = '#090d16'; ctx.fillRect(0, 0, W, H);
+          // Iconic White Spotlight Circle
+          const spot = ctx.createRadialGradient(W * 0.5, H * 0.36, W * 0.05, W * 0.5, H * 0.36, W * 0.44);
+          spot.addColorStop(0, '#ffffff');
+          spot.addColorStop(0.75, '#e2e8f0');
+          spot.addColorStop(0.85, '#090d16');
+          ctx.fillStyle = spot; ctx.fillRect(0, 0, W, H);
+          break;
+
+        case 'holly_godfather':
+          ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, W, H);
+          const gf = ctx.createRadialGradient(W * 0.5, H * 0.34, W * 0.04, W * 0.5, H * 0.34, W * 0.42);
+          gf.addColorStop(0, '#525252');
+          gf.addColorStop(1, '#050505');
+          ctx.fillStyle = gf; ctx.fillRect(0, 0, W, H);
+          break;
+
+        case 'holly_wolf':
+          ctx.fillStyle = '#facc15'; ctx.fillRect(0, 0, W, H);
+          // Bold black diagonal graphic band
+          ctx.fillStyle = '#09090b';
+          ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H * 0.22); ctx.lineTo(0, H * 0.14); ctx.fill();
+          break;
+
+        case 'holly_mi':
+        case 'holly_inception':
+          g.addColorStop(0, '#0f172a');
+          g.addColorStop(0.5, '#1e3a8a');
+          g.addColorStop(1, '#020617');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          // Anamorphic horizontal blue flare
+          const flare = ctx.createLinearGradient(0, H * 0.36, W, H * 0.36);
+          flare.addColorStop(0, 'rgba(56,189,248,0)');
+          flare.addColorStop(0.5, 'rgba(125,211,252,0.75)');
+          flare.addColorStop(1, 'rgba(56,189,248,0)');
+          ctx.fillStyle = flare;
+          ctx.fillRect(0, H * 0.355, W, H * 0.012);
+          break;
+
+        case 'holly_topgun':
+          g.addColorStop(0, '#7c2d12');
+          g.addColorStop(0.5, '#ea580c');
+          g.addColorStop(1, '#facc15');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          break;
+
+        default: // holly_hero
+          g.addColorStop(0, '#1e1b4b');
+          g.addColorStop(0.5, '#4c1d95');
+          g.addColorStop(1, '#090d16');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          break;
+      }
+    }
+
+    function drawPosterForegroundAndTitles(ctx, W, H, tpl, starName) {
+      ctx.save();
+      // Bottom cinematic vignette for crisp movie billing block
+      const vig = ctx.createLinearGradient(0, H * 0.62, 0, H);
+      vig.addColorStop(0, 'rgba(0,0,0,0)');
+      vig.addColorStop(0.55, 'rgba(0,0,0,0.72)');
+      vig.addColorStop(1, 'rgba(0,0,0,0.94)');
+      ctx.fillStyle = vig;
+      ctx.fillRect(0, H * 0.62, W, H * 0.38);
+
+      // Top Star Billing
+      ctx.textAlign = 'center';
+      ctx.fillStyle = tpl.posterStyle === 'holly_wolf' ? '#facc15' : 'rgba(255,255,255,0.92)';
+      ctx.font = `700 ${Math.round(W * 0.036)}px "Oswald", sans-serif`;
+      ctx.fillText(`${starName.toUpperCase()}  IN`, W * 0.5, H * 0.075);
+
+      // Iconic Movie Title Typography
+      const titleMap = {
+        bolly_don: { main: 'DON', sub: 'THE CHASE BEGINS AGAIN', color: '#fbbf24', font: 'Cinzel' },
+        bolly_ddlj: { main: 'D.D.L.J.', sub: 'COME FALL IN LOVE', color: '#fef08a', font: 'Playfair Display' },
+        bolly_sholay: { main: 'SHOLAY', sub: 'THE GREATEST 70MM ACTION CLASSIC', color: '#fdba74', font: 'Oswald' },
+        bolly_k3g: { main: 'K3G', sub: 'IT’S ALL ABOUT LOVING YOUR FAMILY', color: '#fcd34d', font: 'Cinzel' },
+        bolly_pathaan: { main: 'PATHAAN', sub: 'SPY UNIVERSE • IMAX 3D', color: '#38bdf8', font: 'Oswald' },
+        bolly_znmd: { main: 'Z.N.M.D.', sub: 'YOU ONLY LIVE ONCE', color: '#ffffff', font: 'Oswald' },
+        bolly_war: { main: 'WAR', sub: 'UNSTOPPABLE FORCE', color: '#f97316', font: 'Oswald' },
+        bolly_3idiots: { main: '3 IDIOTS', sub: 'ALL IS WELL • CAMPUS EDITION', color: '#fde047', font: 'Oswald' },
+        holly_007: { main: '007', sub: 'LICENSE TO LEAD', color: '#ffffff', font: 'Oswald' },
+        holly_godfather: { main: 'THE GODFATHER', sub: 'AN OFFER YOU CAN’T REFUSE', color: '#ffffff', font: 'Playfair Display' },
+        holly_wolf: { main: 'WOLF OF WALL ST.', sub: 'EARN. SPEND. PARTY.', color: '#facc15', font: 'Oswald' },
+        holly_mi: { main: 'MISSION: IMPOSSIBLE', sub: 'DEAD RECKONING', color: '#38bdf8', font: 'Oswald' },
+        holly_inception: { main: 'INCEPTION', sub: 'YOUR MIND IS THE SCENE OF THE CRIME', color: '#e2e8f0', font: 'Cinzel' },
+        holly_topgun: { main: 'TOP GUN', sub: 'MAVERICK EDITION', color: '#fef08a', font: 'Oswald' },
+        holly_hero: { main: 'ENDGAME', sub: 'WHATEVER IT TAKES', color: '#c084fc', font: 'Cinzel' }
+      };
+
+      const meta = titleMap[tpl.posterStyle] || { main: tpl.title, sub: tpl.subtitle, color: '#ffffff', font: 'Oswald' };
+
+      ctx.fillStyle = meta.color;
+      ctx.shadowColor = 'rgba(0,0,0,0.85)';
+      ctx.shadowBlur = 16;
+      ctx.font = `900 ${Math.round(W * 0.115)}px "${meta.font}", serif`;
+      ctx.fillText(meta.main, W * 0.5, H * 0.885);
+
+      ctx.shadowBlur = 6;
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = `600 ${Math.round(W * 0.031)}px "Inter", sans-serif`;
+      ctx.fillText(meta.sub, W * 0.5, H * 0.928);
+
+      // Classic Movie Poster Credit Billing Block at Bottom
+      ctx.fillStyle = 'rgba(203, 213, 225, 0.72)';
+      ctx.font = `500 ${Math.round(W * 0.017)}px "Oswald", sans-serif`;
+      ctx.fillText(`PROATTIRE PICTURES PRESENTS A BLOCKBUSTER PRODUCTION STARRING ${starName.toUpperCase()} • IN CINEMAS & IMAX`, W * 0.5, H * 0.968);
+
+      ctx.restore();
+    }
+
+    function drawStudioFinish(ctx, W, H, tpl) {
+      // Subtle vignette for studio headshots (skip for pure white / ID backgrounds)
+      if (tpl.bgType === 'pure_white' || tpl.bgType === 'id_skyblue') return;
+      const vig = ctx.createRadialGradient(W * 0.5, H * 0.45, W * 0.35, W * 0.5, H * 0.5, W * 0.78);
+      vig.addColorStop(0, 'rgba(0,0,0,0)');
+      vig.addColorStop(1, 'rgba(15,23,42,0.22)');
+      ctx.fillStyle = vig;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // Color Helpers
+    function lightenHex(hex, percent) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = Math.min(255, (num >> 16) + amt);
+      const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+      const B = Math.min(255, (num & 0x0000FF) + amt);
+      return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+    }
+
+    function darkenHex(hex, percent) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = Math.max(0, (num >> 16) - amt);
+      const G = Math.max(0, ((num >> 8) & 0x00FF) - amt);
+      const B = Math.max(0, (num & 0x0000FF) - amt);
+      return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+    }
+
+    // =========================================================================
+    // 8. GALLERY RENDERING & INTERACTIVE ACTIONS
+    // =========================================================================
+    const demoCanvas = createDemoPortraitCanvas();
+
+    function getFilteredTemplates() {
+      return TEMPLATES.filter(t => {
+        const matchCat = state.activeCategory === 'all' || t.cat === state.activeCategory;
+        const matchGender = state.attireFilter === 'all' || t.gender === state.attireFilter || t.cat === 'bollywood' || t.cat === 'hollywood';
+        const q = state.searchQuery.trim().toLowerCase();
+        const matchSearch = !q || t.title.toLowerCase().includes(q) || t.subtitle.toLowerCase().includes(q) || t.cat.includes(q);
+        return matchCat && matchGender && matchSearch;
+      });
+    }
+
+    function renderCalibrationPreview() {
+      const calCanvas = document.getElementById('calibrationCanvas');
+      renderTemplateToCanvas(calCanvas, TEMPLATES[0], state.globalAdjust);
+    }
+
+    function renderGallery() {
+      const grid = document.getElementById('galleryGrid');
+      const list = getFilteredTemplates();
+      grid.innerHTML = '';
+
+      if (list.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-16 text-center bg-white rounded-3xl border border-slate-200">
+            <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-3"></i>
+            <p class="text-base font-bold text-slate-700">No templates match your current filter</p>
+            <p class="text-xs text-slate-500 mt-1">Try resetting your search or switching category tabs.</p>
+          </div>`;
+        return;
+      }
+
+      list.forEach((tpl) => {
+        const isSelected = state.selectedIds.has(tpl.id);
+        const card = document.createElement('div');
+        card.className = `card-hover bg-white rounded-2xl border ${isSelected ? 'border-blue-600 ring-2 ring-blue-500/30' : 'border-slate-200/90'} overflow-hidden flex flex-col shadow-xs`;
+
+        const catBadgeColors = {
+          executive: 'bg-slate-900 text-white',
+          corporate: 'bg-blue-50 text-blue-700 border border-blue-200',
+          official: 'bg-amber-50 text-amber-800 border border-amber-200',
+          bollywood: 'bg-rose-50 text-rose-700 border border-rose-200',
+          hollywood: 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+        };
+
+        card.innerHTML = `
+          <div class="relative group cursor-pointer bg-slate-100 aspect-[4/5] overflow-hidden" data-preview="${tpl.id}">
+            <canvas id="canvas-${tpl.id}" width="440" height="550" class="w-full h-full object-cover"></canvas>
+            
+            <!-- Selection Checkbox -->
+            <button type="button" data-select="${tpl.id}" class="absolute top-2.5 left-2.5 w-7 h-7 rounded-lg ${isSelected ? 'bg-blue-600 text-white' : 'bg-white/85 text-slate-600 hover:bg-white'} shadow-sm flex items-center justify-center transition z-10" title="Select for ZIP download">
+              <i class="fa-solid ${isSelected ? 'fa-check' : 'fa-plus'} text-xs"></i>
+            </button>
+
+            <!-- Category Pill -->
+            <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide ${catBadgeColors[tpl.cat] || 'bg-slate-800 text-white'} shadow-xs">
+              ${tpl.cat}
+            </span>
+
+            <!-- Hover Preview Overlay -->
+            <div class="absolute inset-0 bg-slate-950/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <span class="px-3.5 py-2 rounded-xl bg-white text-slate-900 text-xs font-bold shadow-lg flex items-center gap-1.5">
+                <i class="fa-solid fa-expand text-blue-600"></i> Customize & Export
+              </span>
+            </div>
+          </div>
+
+          <div class="p-3.5 flex-1 flex flex-col justify-between space-y-3">
+            <div>
+              <h3 class="text-xs sm:text-sm font-bold text-slate-900 line-clamp-1" title="${tpl.title}">${tpl.title}</h3>
+              <p class="text-[11px] text-slate-500 line-clamp-1 mt-0.5">${tpl.subtitle}</p>
+            </div>
+
+            <!-- Card Quick Action Bar: Download, Copy, Email, Share -->
+            <div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-slate-100">
+              <button type="button" data-action="download" data-id="${tpl.id}" class="py-1.5 px-1 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white text-[11px] font-semibold transition flex items-center justify-center gap-1" title="Download PNG">
+                <i class="fa-solid fa-download"></i>
+              </button>
+              <button type="button" data-action="copy" data-id="${tpl.id}" class="py-1.5 px-1 rounded-lg bg-slate-100 hover:bg-emerald-600 text-slate-700 hover:text-white text-[11px] font-semibold transition flex items-center justify-center gap-1" title="Copy Image to Clipboard">
+                <i class="fa-solid fa-copy"></i>
+              </button>
+              <button type="button" data-action="email" data-id="${tpl.id}" class="py-1.5 px-1 rounded-lg bg-slate-100 hover:bg-amber-500 text-slate-700 hover:text-white text-[11px] font-semibold transition flex items-center justify-center gap-1" title="Email Photo">
+                <i class="fa-solid fa-envelope"></i>
+              </button>
+              <button type="button" data-action="share" data-id="${tpl.id}" class="py-1.5 px-1 rounded-lg bg-slate-100 hover:bg-indigo-600 text-slate-700 hover:text-white text-[11px] font-semibold transition flex items-center justify-center gap-1" title="Share Photo">
+                <i class="fa-solid fa-share-nodes"></i>
+              </button>
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+
+        // Render template onto the card's canvas
+        const c = card.querySelector(`#canvas-${tpl.id}`);
+        renderTemplateToCanvas(c, tpl);
+      });
+    }
+
+    // Generate high-res offscreen canvas (900x1125) for exports
+    function buildHighResCanvas(tplId) {
+      const tpl = TEMPLATES.find(t => t.id === tplId);
+      const hiCanvas = document.createElement('canvas');
+      hiCanvas.width = 900;
+      hiCanvas.height = 1125;
+      renderTemplateToCanvas(hiCanvas, tpl);
+      return { canvas: hiCanvas, tpl };
+    }
+
+    // =========================================================================
+    // 9. EXPORT, COPY, EMAIL, SHARE & ZIP HANDLERS
+    // =========================================================================
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'bg-slate-900 text-white border-slate-700',
+        info: 'bg-blue-600 text-white border-blue-500',
+        warn: 'bg-amber-600 text-white border-amber-500'
+      };
+      toast.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-xl border text-xs font-semibold flex items-center gap-2.5 transition-all ${colors[type] || colors.success}`;
+      toast.innerHTML = `<i class="fa-solid ${type === 'warn' ? 'fa-circle-exclamation' : 'fa-circle-check'} text-sm"></i><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(8px)';
+        setTimeout(() => toast.remove(), 250);
+      }, 3400);
+    }
+
+    function downloadImage(tplId, format = 'png') {
+      const { canvas, tpl } = buildHighResCanvas(tplId);
+      const mime = format === 'jpg' ? 'image/jpeg' : 'image/png';
+      const dataUrl = canvas.toDataURL(mime, 0.94);
+      const link = document.createElement('a');
+      link.download = `ProAttire_${tpl.title.replace(/[^a-z0-9]/gi, '_')}.${format}`;
+      link.href = dataUrl;
+      link.click();
+      showToast(`Downloaded "${tpl.title}" (${format.toUpperCase()})`);
+    }
+
+    function downloadPdf(tplId) {
+      const { canvas, tpl } = buildHighResCanvas(tplId);
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      pdf.setFontSize(14);
+      pdf.text(`ProAttire Studio — ${tpl.title}`, 15, 16);
+      pdf.setFontSize(10);
+      pdf.setTextColor(100);
+      pdf.text(`Prepared for: ${state.subjectName || 'Executive Portrait'} | ${tpl.subtitle}`, 15, 22);
+      pdf.addImage(imgData, 'JPEG', 25, 30, 160, 200);
+      pdf.save(`ProAttire_${tpl.title.replace(/[^a-z0-9]/gi, '_')}.pdf`);
+      showToast(`Saved PDF for "${tpl.title}"`);
+    }
+
+    async function copyImageToClipboard(tplId) {
+      const { canvas, tpl } = buildHighResCanvas(tplId);
+      try {
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        if (navigator.clipboard && window.ClipboardItem) {
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+          showToast(`Copied "${tpl.title}" image to clipboard! Paste anywhere with Ctrl+V.`);
+        } else {
+          throw new Error('ClipboardItem unsupported');
+        }
+      } catch (err) {
+        // Fallback: copy caption & download image automatically
+        const tempInput = document.createElement('textarea');
+        tempInput.value = `${tpl.title} — Created with ProAttire Studio`;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        downloadImage(tplId, 'png');
+        showToast('Direct image clipboard blocked by browser — downloaded PNG & copied title!', 'info');
+      }
+    }
+
+    async function emailPhoto(tplId) {
+      const { tpl } = buildHighResCanvas(tplId);
+      // Copy image first so user can immediately paste into the email body
+      await copyImageToClipboard(tplId);
+      const subject = encodeURIComponent(`Official Portrait: ${tpl.title} — ${state.subjectName}`);
+      const body = encodeURIComponent(
+        `Hi,\n\nPlease find my official portrait (${tpl.title} — ${tpl.subtitle}) created via ProAttire Studio.\n\n[Tip: Your high-resolution portrait image has been copied to your clipboard — press Ctrl+V / Cmd+V right here to paste it inline!]\n\nBest regards,\n${state.subjectName}`
+      );
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    }
+
+    async function sharePhoto(tplId) {
+      const { canvas, tpl } = buildHighResCanvas(tplId);
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const file = new File([blob], `ProAttire_${tpl.id}.png`, { type: 'image/png' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            title: `${tpl.title} — ProAttire Studio`,
+            text: `Check out my official look: ${tpl.title} (${tpl.subtitle})`,
+            files: [file]
+          });
+          showToast('Shared successfully!');
+          return;
+        } catch (e) {
+          if (e.name === 'AbortError') return;
+        }
+      }
+      // Desktop fallback: copy to clipboard & notify
+      await copyImageToClipboard(tplId);
+    }
+
+    async function exportSelectedZip() {
+      if (state.selectedIds.size === 0) return;
+      const btn = document.getElementById('btnDownloadZip');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Building ZIP...</span>`;
+
+      try {
+        const zip = new JSZip();
+        const folder = zip.folder('ProAttire_Studio_Portraits');
+
+        for (const id of state.selectedIds) {
+          const { canvas, tpl } = buildHighResCanvas(id);
+          const dataUrl = canvas.toDataURL('image/png');
+          const base64Data = dataUrl.split(',')[1];
+          folder.file(`${tpl.cat}_${tpl.title.replace(/[^a-z0-9]/gi, '_')}.png`, base64Data, { base64: true });
+        }
+
+        const content = await zip.generateAsync({ type: 'blob' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = `ProAttire_Studio_${state.selectedIds.size}_Looks.zip`;
+        link.click();
+        showToast(`Exported ${state.selectedIds.size} high-res portraits in ZIP!`);
+      } finally {
+        btn.disabled = false;
+        updateSelectionBadge();
+      }
+    }
+
+    function updateSelectionBadge() {
+      const count = state.selectedIds.size;
+      const btn = document.getElementById('btnDownloadZip');
+      btn.disabled = count === 0;
+      btn.innerHTML = `<i class="fa-solid fa-file-zipper"></i><span>Export ZIP (<span id="selectedCountBadge">${count}</span>)</span>`;
+    }
+
+    // =========================================================================
+    // 10. EVENT LISTENERS & MODAL CONTROLLER
+    // =========================================================================
+    function handlePhotoFile(file) {
+      if (!file || !file.type.startsWith('image/')) {
+        showToast('Please select a valid image file (JPG, PNG, WEBP).', 'warn');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          state.userImage = img;
+          state.isDemoImage = false;
+          document.getElementById('uploadPrompt').classList.add('hidden');
+          document.getElementById('uploadedPreviewBox').classList.remove('hidden');
+          document.getElementById('uploadedThumb').src = e.target.result;
+          document.getElementById('uploadedFileName').textContent = file.name;
+          document.getElementById('btnClearPhoto').classList.remove('hidden');
+          document.getElementById('demoBanner').classList.add('hidden');
+
+          renderCalibrationPreview();
+          renderGallery();
+          showToast('Photo uploaded! Generated 57+ official & poster looks.');
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Upload inputs
+    const photoInput = document.getElementById('photoInput');
+    const dropZone = document.getElementById('dropZone');
+
+    photoInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) handlePhotoFile(e.target.files[0]);
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('border-blue-600', 'bg-blue-50/60');
+    });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('border-blue-600', 'bg-blue-50/60');
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-blue-600', 'bg-blue-50/60');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) handlePhotoFile(e.dataTransfer.files[0]);
+    });
+
+    document.getElementById('btnUploadTriggerBanner').addEventListener('click', () => photoInput.click());
+
+    document.getElementById('btnClearPhoto').addEventListener('click', () => {
+      state.userImage = null;
+      state.isDemoImage = true;
+      photoInput.value = '';
+      document.getElementById('uploadPrompt').classList.remove('hidden');
+      document.getElementById('uploadedPreviewBox').classList.add('hidden');
+      document.getElementById('btnClearPhoto').classList.add('hidden');
+      document.getElementById('demoBanner').classList.remove('hidden');
+      renderCalibrationPreview();
+      renderGallery();
+      showToast('Reverted to studio demo portrait.', 'info');
+    });
+
+    document.getElementById('btnSamplePortrait').addEventListener('click', () => {
+      state.userImage = null;
+      state.isDemoImage = true;
+      renderCalibrationPreview();
+      renderGallery();
+      showToast('Loaded studio demo portrait across all 57 looks!', 'info');
+    });
+
+    // Global Sliders Binding
+    const sliderConfigs = [
+      { id: 'ctrlZoom', key: 'zoom', valId: 'valZoom', suffix: '%' },
+      { id: 'ctrlOffsetX', key: 'offsetX', valId: 'valOffsetX', suffix: '' },
+      { id: 'ctrlOffsetY', key: 'offsetY', valId: 'valOffsetY', suffix: '' },
+      { id: 'ctrlFeather', key: 'feather', valId: 'valFeather', suffix: '%' },
+      { id: 'ctrlBrightness', key: 'brightness', valId: 'valBrightness', suffix: '%' },
+      { id: 'ctrlContrast', key: 'contrast', valId: 'valContrast', suffix: '%' },
+      { id: 'ctrlWarmth', key: 'warmth', valId: 'valWarmth', suffix: '' }
+    ];
+
+    sliderConfigs.forEach(cfg => {
+      const el = document.getElementById(cfg.id);
+      el.addEventListener('input', () => {
+        const val = parseInt(el.value, 10);
+        state.globalAdjust[cfg.key] = val;
+        document.getElementById(cfg.valId).textContent = (cfg.key === 'warmth' && val > 0 ? '+' : '') + val + cfg.suffix;
+        renderCalibrationPreview();
+      });
+      el.addEventListener('change', () => {
+        renderGallery();
+      });
+    });
+
+    document.getElementById('btnGenerateAll').addEventListener('click', () => {
+      renderCalibrationPreview();
+      renderGallery();
+      document.getElementById('galleryGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showToast('All 57+ official & poster looks refreshed!');
+    });
+
+    document.getElementById('btnAutoFit').addEventListener('click', () => {
+      Object.assign(state.globalAdjust, { zoom: 102, offsetX: 0, offsetY: -6, feather: 30, brightness: 105, contrast: 106, warmth: 5 });
+      syncGlobalSlidersUI();
+      renderCalibrationPreview();
+      renderGallery();
+      showToast('Auto-centered face alignment & balanced studio lighting.');
+    });
+
+    document.getElementById('btnResetAdjustments').addEventListener('click', () => {
+      Object.assign(state.globalAdjust, { zoom: 100, offsetX: 0, offsetY: 0, feather: 28, brightness: 104, contrast: 105, warmth: 4 });
+      state.perTemplateAdjust = {};
+      syncGlobalSlidersUI();
+      renderCalibrationPreview();
+      renderGallery();
+      showToast('Reset all alignment sliders to default.', 'info');
+    });
+
+    function syncGlobalSlidersUI() {
+      sliderConfigs.forEach(cfg => {
+        const val = state.globalAdjust[cfg.key];
+        document.getElementById(cfg.id).value = val;
+        document.getElementById(cfg.valId).textContent = (cfg.key === 'warmth' && val > 0 ? '+' : '') + val + cfg.suffix;
+      });
+    }
+
+    // Subject Name & Gender/Attire Mode
+    document.getElementById('customSubjectName').addEventListener('input', (e) => {
+      state.subjectName = e.target.value || 'SUPERSTAR';
+      renderGallery();
+    });
+
+    document.getElementById('genderAttireMode').addEventListener('change', (e) => {
+      state.attireFilter = e.target.value;
+      renderGallery();
+    });
+
+    // Category Tabs & Search
+    document.querySelectorAll('.cat-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.cat-tab').forEach(t => {
+          t.classList.remove('bg-slate-900', 'text-white', 'active');
+          t.classList.add('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+        });
+        tab.classList.add('bg-slate-900', 'text-white', 'active');
+        tab.classList.remove('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+        state.activeCategory = tab.dataset.cat;
+        renderGallery();
+      });
+    });
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      state.searchQuery = e.target.value;
+      renderGallery();
+    });
+
+    document.getElementById('btnSelectVisible').addEventListener('click', () => {
+      const visible = getFilteredTemplates();
+      const allSelected = visible.every(t => state.selectedIds.has(t.id));
+      if (allSelected) {
+        visible.forEach(t => state.selectedIds.delete(t.id));
+      } else {
+        visible.forEach(t => state.selectedIds.add(t.id));
+      }
+      updateSelectionBadge();
+      renderGallery();
+    });
+
+    document.getElementById('btnDownloadZip').addEventListener('click', exportSelectedZip);
+
+    // Delegated Clicks inside Gallery Grid
+    document.getElementById('galleryGrid').addEventListener('click', (e) => {
+      const selectBtn = e.target.closest('[data-select]');
+      if (selectBtn) {
+        e.stopPropagation();
+        const id = selectBtn.dataset.select;
+        if (state.selectedIds.has(id)) state.selectedIds.delete(id);
+        else state.selectedIds.add(id);
+        updateSelectionBadge();
+        renderGallery();
+        return;
+      }
+
+      const actionBtn = e.target.closest('[data-action]');
+      if (actionBtn) {
+        e.stopPropagation();
+        const { action, id } = actionBtn.dataset;
+        if (action === 'download') downloadImage(id, 'png');
+        if (action === 'copy') copyImageToClipboard(id);
+        if (action === 'email') emailPhoto(id);
+        if (action === 'share') sharePhoto(id);
+        return;
+      }
+
+      const previewBox = e.target.closest('[data-preview]');
+      if (previewBox) {
+        openPreviewModal(previewBox.dataset.preview);
+      }
+    });
+
+    // Modal Logic
+    function openPreviewModal(tplId) {
+      const tpl = TEMPLATES.find(t => t.id === tplId);
+      if (!tpl) return;
+      state.activeModalTemplateId = tplId;
+
+      const adj = { ...(state.perTemplateAdjust[tplId] || state.globalAdjust) };
+      state.perTemplateAdjust[tplId] = adj;
+
+      document.getElementById('modalCategoryBadge').textContent = tpl.cat;
+      document.getElementById('modalTitle').textContent = tpl.title;
+
+      document.getElementById('modalCtrlZoom').value = adj.zoom;
+      document.getElementById('modalValZoom').textContent = adj.zoom + '%';
+      document.getElementById('modalCtrlX').value = adj.offsetX;
+      document.getElementById('modalValX').textContent = adj.offsetX;
+      document.getElementById('modalCtrlY').value = adj.offsetY;
+      document.getElementById('modalValY').textContent = adj.offsetY;
+      document.getElementById('modalCtrlBright').value = adj.brightness;
+      document.getElementById('modalValBright').textContent = adj.brightness + '%';
+
+      renderModalCanvas();
+      document.getElementById('previewModal').classList.remove('hidden');
+    }
+
+    function renderModalCanvas() {
+      const tplId = state.activeModalTemplateId;
+      if (!tplId) return;
+      const tpl = TEMPLATES.find(t => t.id === tplId);
+      const modalCanvas = document.getElementById('modalCanvas');
+      renderTemplateToCanvas(modalCanvas, tpl, state.perTemplateAdjust[tplId]);
+    }
+
+    ['modalCtrlZoom', 'modalCtrlX', 'modalCtrlY', 'modalCtrlBright'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => {
+        const tplId = state.activeModalTemplateId;
+        if (!tplId) return;
+        const adj = state.perTemplateAdjust[tplId];
+        adj.zoom = parseInt(document.getElementById('modalCtrlZoom').value, 10);
+        adj.offsetX = parseInt(document.getElementById('modalCtrlX').value, 10);
+        adj.offsetY = parseInt(document.getElementById('modalCtrlY').value, 10);
+        adj.brightness = parseInt(document.getElementById('modalCtrlBright').value, 10);
+
+        document.getElementById('modalValZoom').textContent = adj.zoom + '%';
+        document.getElementById('modalValX').textContent = adj.offsetX;
+        document.getElementById('modalValY').textContent = adj.offsetY;
+        document.getElementById('modalValBright').textContent = adj.brightness + '%';
+
+        renderModalCanvas();
+        const cardCanvas = document.getElementById(`canvas-${tplId}`);
+        if (cardCanvas) {
+          const tpl = TEMPLATES.find(t => t.id === tplId);
+          renderTemplateToCanvas(cardCanvas, tpl, adj);
+        }
+      });
+    });
+
+    document.getElementById('btnApplyToAll').addEventListener('click', () => {
+      const tplId = state.activeModalTemplateId;
+      if (!tplId) return;
+      Object.assign(state.globalAdjust, state.perTemplateAdjust[tplId]);
+      state.perTemplateAdjust = {};
+      syncGlobalSlidersUI();
+      renderCalibrationPreview();
+      renderGallery();
+      showToast('Applied alignment settings to all 57 templates!');
+    });
+
+    document.getElementById('btnCloseModal').addEventListener('click', () => {
+      document.getElementById('previewModal').classList.add('hidden');
+    });
+
+    document.getElementById('previewModal').addEventListener('click', (e) => {
+      if (e.target.id === 'previewModal') {
+        document.getElementById('previewModal').classList.add('hidden');
+      }
+    });
+
+    document.getElementById('modalDownloadPng').addEventListener('click', () => downloadImage(state.activeModalTemplateId, 'png'));
+    document.getElementById('modalDownloadJpg').addEventListener('click', () => downloadImage(state.activeModalTemplateId, 'jpg'));
+    document.getElementById('modalDownloadPdf').addEventListener('click', () => downloadPdf(state.activeModalTemplateId));
+    document.getElementById('modalCopyImg').addEventListener('click', () => copyImageToClipboard(state.activeModalTemplateId));
+    document.getElementById('modalEmailImg').addEventListener('click', () => emailPhoto(state.activeModalTemplateId));
+    document.getElementById('modalShareImg').addEventListener('click', () => sharePhoto(state.activeModalTemplateId));
+
+    // =========================================================================
+    // 11. INITIALIZATION
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      // Update exact category badge counts
+      document.getElementById('countAll').textContent = TEMPLATES.length;
+      document.getElementById('countExec').textContent = TEMPLATES.filter(t => t.cat === 'executive').length;
+      document.getElementById('countCorp').textContent = TEMPLATES.filter(t => t.cat === 'corporate').length;
+      document.getElementById('countOfficial').textContent = TEMPLATES.filter(t => t.cat === 'official').length;
+      document.getElementById('countBolly').textContent = TEMPLATES.filter(t => t.cat === 'bollywood').length;
+      document.getElementById('countHolly').textContent = TEMPLATES.filter(t => t.cat === 'hollywood').length;
+
+      renderCalibrationPreview();
+      renderGallery();
+    });
+  </script>
+</body>
+</html>

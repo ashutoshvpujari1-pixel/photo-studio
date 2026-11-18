@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Create cinematic Bollywood and Hollywood style movie posters from your own photo. Choose from 56+ poster designs and download, copy, share or email your creation.">
+<meta property="og:title" content="CinePoster Studio – Movie Poster Maker">
+<meta property="og:description" content="Turn one photo into a cinematic movie poster with 56+ creative styles.">
+
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+<title>CinePoster Studio | 56+ Cinematic Movie Poster Designs</title>
+<style>
+:root{--bg:#090d18;--panel:#111a2b;--panel2:#172238;--line:#293750;--text:#f5f7fc;--muted:#a9b5c9;--gold:#f5bd55;--accent:#e34d62}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0,#1c2945 0,transparent 34%),var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+header{padding:28px 5vw 24px;background:linear-gradient(120deg,#111a2d,#24182a 65%,#111a2d);border-bottom:1px solid var(--line)}
+.hero{max-width:1400px;margin:auto;display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
+h1{font-size:clamp(28px,4vw,44px);margin:0 0 8px;letter-spacing:.3px}.gold{color:var(--gold)}header p{margin:0;color:#c1cadd;max-width:760px;line-height:1.55}
+.pill{border:1px solid #705a37;color:#ffda91;padding:9px 14px;border-radius:30px;font-size:13px;white-space:nowrap}
+main{max-width:1400px;margin:26px auto;padding:0 22px}.layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:22px;align-items:start}
+.panel{background:linear-gradient(160deg,var(--panel),#0e1523);border:1px solid var(--line);border-radius:17px;padding:20px;box-shadow:0 14px 35px #0003}
+h2{font-size:18px;margin:0 0 16px}.field{margin:0 0 14px}label{display:block;font-size:13px;color:#d2d9e6;margin-bottom:7px;font-weight:650}
+input[type=text],input[type=date],select{width:100%;padding:12px 13px;border-radius:9px;border:1px solid #34445f;background:#0b1220;color:white;font-size:14px;outline:none}
+input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px #f5bd5520}
+input[type=file]{width:100%;color:var(--muted);font-size:13px}
+.upload{border:1px dashed #536783;border-radius:12px;padding:15px;background:#0c1422}
+.preview{width:100%;height:170px;object-fit:contain;background:#080d16;border-radius:9px;margin-top:10px;display:none}
+.hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:7px}
+.btn{border:0;border-radius:9px;padding:11px 14px;font-weight:750;cursor:pointer;color:#17120a;background:linear-gradient(135deg,#ffd77c,#e9a83d);transition:.2s}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn.secondary{background:#24334b;color:#eaf0fb;border:1px solid #3c506d}.btn.danger{background:#5a2633;color:#fff}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}.btnrow .btn{flex:1}
+.templates-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.templates-head h2{margin:0}.filters{display:flex;gap:7px;flex-wrap:wrap}
+.filter{border:1px solid #35445d;background:#121c2e;color:#cbd5e5;padding:7px 11px;border-radius:30px;font-size:12px;cursor:pointer}
+.filter.active{background:#f5bd55;color:#1a1409;border-color:#f5bd55;font-weight:800}
+.template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:12px}
+.template{border:1px solid #2b3a53;background:#101a2b;border-radius:12px;padding:8px;cursor:pointer;text-align:left;color:white;transition:.18s;min-width:0}
+.template:hover{border-color:#d6a64e;transform:translateY(-2px)}.template.selected{border:2px solid var(--gold);padding:7px;box-shadow:0 0 0 2px #f5bd5520}
+.swatch{height:105px;border-radius:7px;position:relative;overflow:hidden;background:linear-gradient(145deg,var(--c1),var(--c2));display:flex;align-items:center;justify-content:center}
+.swatch:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#000b,transparent 65%)}
+.swatch .shape{width:47px;height:66px;border-radius:45% 45% 8px 8px;background:#ffffff35;border:1px solid #ffffff60;position:relative;box-shadow:0 0 18px #fff3}
+.swatch .mini-title{position:absolute;z-index:1;bottom:8px;left:5px;right:5px;text-align:center;font-size:9px;font-weight:900;letter-spacing:1.3px;text-shadow:0 2px 4px #000}
+.template-name{display:block;font-size:11px;font-weight:750;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.template-cat{display:block;color:#9eabc0;font-size:10px;margin-top:3px}
+.stage-panel{margin-top:18px}.stage-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.canvas-wrap{background:#070b12;border:1px solid #293750;border-radius:13px;padding:12px;display:flex;justify-content:center;align-items:center;min-height:300px}
+canvas{display:block;max-width:100%;height:auto;max-height:760px;object-fit:contain;box-shadow:0 12px 40px #0008}
+.status{font-size:12px;color:var(--muted);min-height:18px;margin-top:10px}
+footer{text-align:center;color:#7f8da5;padding:28px 12px;font-size:12px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.template-grid{grid-template-columns:repeat(auto-fill,minmax(115px,1fr))}}
+@media(max-width:520px){main{padding:0 12px}.panel{padding:15px}.template-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.swatch{height:88px}.btnrow .btn{min-width:44%}}
+</style>
+</head>
+<body>
+<header><div class="hero"><div><h1>🎬 Cine<span class="gold">Poster</span> Studio</h1><p>Turn a single photo into a dramatic movie poster. Add your film title, tagline and release date, then explore 56+ Bollywood- and Hollywood-inspired cinematic designs.</p></div><div class="pill">56+ ORIGINAL POSTER STYLES · NO SIGN-UP</div></div></header>
+<main>
+<div class="layout">
+<aside class="panel">
+<h2>1. Your movie details</h2>
+<div class="field"><label for="photo">Upload one photo</label><div class="upload"><input id="photo" type="file" accept="image/*"><img id="photoPreview" class="preview" alt="Uploaded photo preview"><div class="hint">Use a clear portrait or landscape photo. Your photo is processed in this browser.</div></div></div>
+<div class="field"><label for="movieName">Movie name</label><input id="movieName" type="text" maxlength="42" value="THE LAST LEGEND" placeholder="Enter movie name"></div>
+<div class="field"><label for="tagline">Tagline</label><input id="tagline" type="text" maxlength="90" value="ONE DESTINY. A THOUSAND BATTLES." placeholder="Enter your tagline"></div>
+<div class="field"><label for="releaseDate">Release date</label><input id="releaseDate" type="date"></div>
+<div class="field"><label for="credit">Optional credit line</label><input id="credit" type="text" maxlength="60" value="A CINEMATIC EXPERIENCE" placeholder="e.g. A film by ..."></div>
+<div class="field"><label for="format">Poster format</label><select id="format"><option value="portrait">Portrait – 2:3 (Movie poster)</option><option value="square">Square – 1:1 (Social media)</option><option value="landscape">Landscape – 16:9 (Banner)</option></select></div>
+<div class="btnrow"><button class="btn" id="generateBtn">✨ Generate poster</button><button class="btn secondary" id="randomBtn">Surprise me</button></div>
+<p class="hint">Choose a design from the gallery, then click Generate poster. You can switch styles and regenerate at any time.</p>
+</aside>
+<section>
+<div class="panel">
+<div class="templates-head"><h2>2. Choose a cinematic design <span class="gold" id="countLabel">56 styles</span></h2></div>
+<div class="filters" id="filters">
+<button class="filter active" data-filter="All">All 56+</button><button class="filter" data-filter="Bollywood">Bollywood</button><button class="filter" data-filter="Hollywood">Hollywood</button><button class="filter" data-filter="Action">Action</button><button class="filter" data-filter="Romance">Romance</button><button class="filter" data-filter="Thriller">Thriller</button><button class="filter" data-filter="Drama">Drama</button><button class="filter" data-filter="Sci-Fi">Sci-Fi</button>
+</div>
+<div class="template-grid" id="templateGrid" style="margin-top:15px"></div>
+</div>
+<div class="panel stage-panel">
+<div class="stage-head"><h2>3. Your cinematic poster</h2><div class="btnrow"><button class="btn secondary" id="downloadBtn" disabled>⬇ Download JPG</button><button class="btn secondary" id="copyBtn" disabled>▣ Copy</button></div></div>
+<div class="canvas-wrap"><canvas id="poster" width="900" height="1350" aria-label="Generated movie poster"></canvas></div>
+<div class="btnrow" style="margin-top:12px"><button class="btn secondary" id="shareBtn" disabled>↗ Share</button><button class="btn secondary" id="emailBtn" disabled>✉ Email</button><button class="btn secondary" id="downloadPngBtn" disabled>⬇ Download PNG</button></div>
+<div class="status" id="status" aria-live="polite">Upload a photo to begin. Select any of the 56 designs.</div>
+</div>
+</section>
+</div>
+</main>
+<footer>© CinePoster Studio · Create original cinematic artwork using your own photos. All poster designs are original style presets and are not affiliated with any film studio.</footer>
+<script>
+(() => {
+"use strict";
+const $=id=>document.getElementById(id);
+const palettes=[
+["#100d18","#a51e31","#f5c06b"],["#071629","#087e9b","#d7f5ff"],["#190d0b","#a64b20","#ffcf73"],
+["#090d17","#354e79","#dce8ff"],["#1b1020","#9d2865","#ffc4dc"],["#101a13","#527a3c","#e4d99a"],
+["#090909","#5c171c","#f4e6c6"],["#1a172d","#5a4a9b","#d8d0ff"]];
+const names=[
+["Mumbai Mass Hero","Bollywood","Action"],["Royal Revenge","Bollywood","Drama"],["Ishq Forever","Bollywood","Romance"],["The Underworld","Bollywood","Thriller"],["Desi Warrior","Bollywood","Action"],["Monsoon Love","Bollywood","Romance"],["The Final Badla","Bollywood","Thriller"],["Epic Dynasty","Bollywood","Drama"],
+["Cosmic Horizon","Hollywood","Sci-Fi"],["Dark Knightfall","Hollywood","Action"],["The Last Survivor","Hollywood","Thriller"],["Beyond The Stars","Hollywood","Sci-Fi"],["Code Red","Hollywood","Action"],["The Silent Witness","Hollywood","Thriller"],["A Beautiful Life","Hollywood","Drama"],["Midnight Promise","Hollywood","Romance"],
+["Mass Entry","Bollywood","Action"],["Love In The Rain","Bollywood","Romance"],["King Of The City","Bollywood","Drama"],["Agent X","Bollywood","Thriller"],["Warrior's Oath","Bollywood","Action"],["Dil Se","Bollywood","Romance"],["The Dark Truth","Bollywood","Thriller"],["The Great Saga","Bollywood","Drama"],
+["Apocalypse Earth","Hollywood","Sci-Fi"],["Shadow Protocol","Hollywood","Thriller"],["Rise Of Titans","Hollywood","Action"],["Lost In Space","Hollywood","Sci-Fi"],["The Last Mission","Hollywood","Action"],["Fatal Attraction","Hollywood","Romance"],["The Long Road","Hollywood","Drama"],["The Haunting","Hollywood","Thriller"],
+["Golden Era","Bollywood","Drama"],["Red Alert","Bollywood","Action"],["Forever Yours","Bollywood","Romance"],["Mafia Empire","Bollywood","Thriller"],["The People's Hero","Bollywood","Drama"],["Love & Destiny","Bollywood","Romance"],["Black Money","Bollywood","Thriller"],["Crown Of Fire","Bollywood","Action"],
+["Quantum Shift","Hollywood","Sci-Fi"],["One Last Chance","Hollywood","Drama"],["The Assassin","Hollywood","Action"],["No Way Out","Hollywood","Thriller"],["Eternal Love","Hollywood","Romance"],["Deep Impact","Hollywood","Sci-Fi"],["The Great Escape","Hollywood","Action"],["Hidden Secrets","Hollywood","Thriller"],
+["Singham Spirit","Bollywood","Action"],["Epic Love Story","Bollywood","Romance"],["The Chase","Hollywood","Action"],["Neon Future","Hollywood","Sci-Fi"],["The Family Legacy","Bollywood","Drama"],["The Conspiracy","Hollywood","Thriller"],["Victory March","Bollywood","Action"],["A New Beginning","Hollywood","Drama"]
+];
+const layouts=["Hero Glow","Split Drama","Diagonal Energy","Minimal Prestige","Vintage Cinema","Neon Edge","Epic Horizon"];
+const templates=names.map((n,i)=>({id:i,name:n[0],industry:n[1],genre:n[2],layout:layouts[i%layouts.length],palette:palettes[i%palettes.length]}));
+let selected=0,photo=null,posterReady=false;
+const grid=$("templateGrid"),canvas=$("poster"),ctx=canvas.getContext("2d");
+function buildGallery(filter="All"){
+ grid.innerHTML="";
+ const shown=templates.filter(t=>filter==="All"||t.industry===filter||t.genre===filter);
+ $("countLabel").textContent=shown.length+" styles";
+ shown.forEach(t=>{
+  const el=document.createElement("button");el.className="template"+(t.id===selected?" selected":"");el.type="button";
+  el.innerHTML=`<span class="swatch" style="--c1:${t.palette[0]};--c2:${t.palette[1]}"><span class="shape"></span><span class="mini-title">${t.name.toUpperCase()}</span></span><span class="template-name">${String(t.id+1).padStart(2,"0")}. ${t.name}</span><span class="template-cat">${t.industry} · ${t.genre}</span>`;
+  el.addEventListener("click",()=>{selected=t.id;document.querySelectorAll(".template").forEach(x=>x.classList.remove("selected"));el.classList.add("selected");if(photo)generate();});
+  grid.appendChild(el);
+ });
+}
+document.querySelectorAll(".filter").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");buildGallery(b.dataset.filter)}));
+function setFormat(){const f=$("format").value;if(f==="square"){canvas.width=1200;canvas.height=1200}else if(f==="landscape"){canvas.width=1600;canvas.height=900}else{canvas.width=900;canvas.height=1350}}
+$("format").addEventListener("change",()=>{if(photo)generate()});
+$("photo").addEventListener("change",e=>{
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ if(!file.type.startsWith("image/")){status("Please choose a valid image file.");return}
+ const objectUrl=URL.createObjectURL(file);const img=new Image();img.onload=()=>{photo=img;$("photoPreview").src=objectUrl;$("photoPreview").style.display="block";generate();setTimeout(()=>URL.revokeObjectURL(objectUrl),60000)};img.onerror=()=>{URL.revokeObjectURL(objectUrl);status("This image format could not be opened. Please use JPG or PNG.")};img.src=objectUrl;
+});
+function status(msg){$("status").textContent=msg}
+function fitText(text,maxWidth,start,min=22){let size=start;ctx.font=`900 ${size}px Arial`;while(ctx.measureText(text).width>maxWidth&&size>min){size-=2;ctx.font=`900 ${size}px Arial`}return size}
+function wrapText(text,maxWidth,fontSize,maxLines=3){ctx.font=`600 ${fontSize}px Arial`;const words=text.split(/\s+/),lines=[];let line="";for(const word of words){const test=line?line+" "+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else line=test}if(line)lines.push(line);return lines.slice(0,maxLines)}
+function drawCover(img,x,y,w,h){const scale=Math.max(w/img.width,h/img.height),sw=w/scale,sh=h/scale,sx=(img.width-sw)/2,sy=(img.height-sh)/2;ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h)}
+function generate(){
+ if(!photo){status("Please upload a photo first.");return}
+ try {
+ setFormat();const W=canvas.width,H=canvas.height,t=templates[selected],p=t.palette;
+ ctx.clearRect(0,0,W,H);ctx.fillStyle=p[0];ctx.fillRect(0,0,W,H);
+ const isLandscape=W>H*1.2,isSquare=Math.abs(W-H)<10;
+ const imgArea=isLandscape?{x:W*.30,y:0,w:W*.70,h:H*.83}:isSquare?{x:W*.08,y:H*.08,w:W*.84,h:H*.60}:{x:W*.06,y:H*.06,w:W*.88,h:H*.69};
+ ctx.save();ctx.beginPath();ctx.rect(imgArea.x,imgArea.y,imgArea.w,imgArea.h);ctx.clip();drawCover(photo,imgArea.x,imgArea.y,imgArea.w,imgArea.h);ctx.restore();
+ // Cinematic overlays and layout-specific treatment
+ let grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,"#00000005");grad.addColorStop(.48,"#00000015");grad.addColorStop(.72,p[0]+"dd");grad.addColorStop(1,p[0]);ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+ const layout=t.id%7;
+ if(layout===1){ctx.fillStyle=p[1]+"55";ctx.beginPath();ctx.moveTo(W*.68,0);ctx.lineTo(W,H*.05);ctx.lineTo(W,H*.8);ctx.lineTo(W*.45,H*.8);ctx.closePath();ctx.fill()}
+ if(layout===2){ctx.fillStyle=p[1]+"77";ctx.beginPath();ctx.moveTo(0,H*.15);ctx.lineTo(W*.32,0);ctx.lineTo(W*.12,H*.72);ctx.lineTo(0,H*.84);ctx.closePath();ctx.fill()}
+ if(layout===3){ctx.strokeStyle=p[2];ctx.lineWidth=Math.max(3,W*.004);ctx.strokeRect(W*.055,H*.045,W*.89,H*.91)}
+ if(layout===4){ctx.fillStyle="#d8b87918";ctx.fillRect(0,0,W,H);for(let i=0;i<55;i++){ctx.fillStyle="#fff";ctx.globalAlpha=.04;ctx.fillRect(Math.random()*W,Math.random()*H,2,2)}ctx.globalAlpha=1}
+ if(layout===5){for(let i=0;i<5;i++){ctx.strokeStyle=p[2]+"66";ctx.lineWidth=2+i;ctx.beginPath();ctx.arc(W*.5,H*.42,W*(.22+i*.06),0,Math.PI*2);ctx.stroke()}}
+ if(layout===6){const hg=ctx.createLinearGradient(0,H*.42,0,H*.85);hg.addColorStop(0,"#0000");hg.addColorStop(1,p[1]+"cc");ctx.fillStyle=hg;ctx.fillRect(0,H*.4,W,H*.45)}
+ // dramatic side vignette
+ const v=ctx.createRadialGradient(W*.5,H*.38,W*.15,W*.5,H*.42,W*.8);v.addColorStop(.5,"#0000");v.addColorStop(1,"#000000a8");ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
+ const title=($("movieName").value.trim()||"UNTITLED").toUpperCase(),tag=$("tagline").value.trim().toUpperCase(),date=$("releaseDate").value;
+ const margin=W*.09,baseY=isLandscape?H*.72:isSquare?H*.79:H*.79;
+ ctx.textAlign="center";ctx.shadowColor="#000";ctx.shadowBlur=W*.018;ctx.fillStyle=p[2];ctx.font=`700 ${Math.round(W*.022)}px Arial`;ctx.fillText("A "+t.industry.toUpperCase()+" CINEMATIC EXPERIENCE",W/2,baseY-H*.10);
+ const titleLines=wrapText(title,W*.86,Math.round(W*.105),2);let ty=baseY;
+ titleLines.forEach((line,i)=>{const fs=fitText(line,W*.88,W*.105,Math.round(W*.055));ctx.font=`900 ${fs}px Impact, Arial Black, Arial`;ctx.lineWidth=Math.max(2,W*.004);ctx.strokeStyle="#0009";ctx.strokeText(line,W/2,ty+i*fs*1.02);ctx.fillStyle="#fff";ctx.fillText(line,W/2,ty+i*fs*1.02)});
+ let after=ty+titleLines.length*W*.105;
+ ctx.shadowBlur=0;
+ if(tag){ctx.fillStyle="#fff";ctx.font=`600 ${Math.round(W*.026)}px Arial`;const lines=wrapText(tag,W*.82,Math.round(W*.026),2);lines.forEach((line,i)=>ctx.fillText(line,W/2,after+H*.035+i*W*.034));after+=H*.035+lines.length*W*.034}
+ ctx.fillStyle=p[2];ctx.font=`700 ${Math.round(W*.022)}px Arial`;ctx.fillText(($("credit").value.trim()||"COMING SOON").toUpperCase(),W/2,H*.925);
+ ctx.fillStyle="#fff";ctx.font=`700 ${Math.round(W*.025)}px Arial`;ctx.fillText(date?new Date(date+"T00:00:00").toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"}).toUpperCase():"COMING SOON",W/2,H*.965);
+ // fine cinematic frame / footer ornaments
+ ctx.strokeStyle=p[2]+"aa";ctx.lineWidth=Math.max(1,W*.0018);ctx.beginPath();ctx.moveTo(margin,H*.895);ctx.lineTo(W-margin,H*.895);ctx.stroke();
+ ctx.textAlign="left";ctx.shadowBlur=0;posterReady=true;["downloadBtn","copyBtn","shareBtn","emailBtn","downloadPngBtn"].forEach(id=>$(id).disabled=false);
+ status(`Generated design ${selected+1}: ${t.name} · ${t.industry} ${t.genre}. Select another design to create a new variation.`);
+ } catch(err) {
+   console.error("Poster generation error:",err);
+   posterReady=false;
+   status("Poster generation failed: "+(err && err.message ? err.message : "Unknown browser error")+". Please try a JPG or PNG photo.");
+ }
+}
+function blob(type="image/jpeg",quality=.94){return new Promise(resolve=>canvas.toBlob(resolve,type,quality))}
+function saveBlob(b,name){if(!b){status("Could not export the poster.");return}const url=URL.createObjectURL(b),a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500)}
+function filename(ext){const base=($("movieName").value.trim()||"cinematic-poster").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase()||"cinematic-poster";return base+"."+ext}
+$("generateBtn").addEventListener("click",generate);
+$("randomBtn").addEventListener("click",()=>{selected=Math.floor(Math.random()*templates.length);buildGallery(document.querySelector(".filter.active").dataset.filter);if(photo)generate();else status("Surprise style selected: "+templates[selected].name+". Upload your photo to generate it.")});
+$("downloadBtn").addEventListener("click",async()=>saveBlob(await blob("image/jpeg"),filename("jpg")));
+$("downloadPngBtn").addEventListener("click",async()=>saveBlob(await blob("image/png"),filename("png")));
+$("copyBtn").addEventListener("click",async()=>{try{const b=await blob("image/png");await navigator.clipboard.write([new ClipboardItem({"image/png":b})]);status("Poster copied to clipboard. Paste it into a supported app.");}catch(e){status("Copy is not available in this browser or page context. Use Download PNG instead.")}});
+$("shareBtn").addEventListener("click",async()=>{try{const b=await blob("image/png");const file=new File([b],filename("png"),{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:$("movieName").value||"My movie poster",text:$("tagline").value});status("Share sheet opened.")}else if(navigator.share){await navigator.share({title:$("movieName").value||"My movie poster",text:$("tagline").value});status("Share sheet opened. Download the image to attach it if needed.")}else status("Sharing is not supported here. Download the poster and share it manually.")}catch(e){if(e.name!=="AbortError")status("Sharing was cancelled or is unavailable. You can download the poster.")}});
+$("emailBtn").addEventListener("click",async()=>{const b=await blob("image/jpeg");saveBlob(b,filename("jpg"));const subject=encodeURIComponent("Movie poster: "+($("movieName").value||"My movie"));const body=encodeURIComponent("Please find my cinematic movie poster attached.\n\nMovie: "+$("movieName").value+"\nTagline: "+$("tagline").value+"\nRelease date: "+$("releaseDate").value+"\n\nAttach the downloaded poster to this email.");location.href=`mailto:?subject=${subject}&body=${body}`;status("Your email app should open. Attach the poster file that was just downloaded.")});
+buildGallery();
+})();
+</script>
+</body>
+</html>
