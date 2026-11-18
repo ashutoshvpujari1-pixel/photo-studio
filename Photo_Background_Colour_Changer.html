@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Change the background colour of passport-size and regular photos. Upload a photo, choose a colour and generate your new image.">
+<meta name="theme-color" content="#14213d">
+<title>Photo Background Colour Changer</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+<style>
+:root{--navy:#14213d;--blue:#2563eb;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--bg:#f4f7fb}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(120deg,#14213d,#243b67);color:#fff;padding:30px 18px;text-align:center}
+header h1{margin:0 0 9px;font-size:clamp(25px,4vw,36px)}header p{margin:0;color:#dbeafe;font-size:15px}
+main{max-width:1120px;margin:26px auto;padding:0 16px 40px}
+.layout{display:grid;grid-template-columns:minmax(280px,390px) 1fr;gap:20px;align-items:start}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 8px 28px #1720330b}
+h2{font-size:19px;margin:0 0 17px}.field{margin:0 0 20px}label{display:block;font-weight:700;font-size:14px;margin-bottom:9px}
+input[type=file]{width:100%;padding:12px;border:1px dashed #94a3b8;border-radius:10px;background:#f8fafc}
+.hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:7px}
+.palette{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+.swatch{height:42px;border:2px solid #e2e8f0;border-radius:9px;cursor:pointer;position:relative}
+.swatch.selected{outline:3px solid #2563eb;outline-offset:2px;border-color:#fff}
+.swatch:focus-visible{outline:3px solid #2563eb;outline-offset:3px}
+.colorline{display:flex;align-items:center;gap:12px;margin-top:13px}
+input[type=color]{width:52px;height:42px;padding:3px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+#colorHex{font-family:monospace;color:var(--muted);font-size:14px}
+button{border:0;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:700;cursor:pointer;transition:.15s}
+button:disabled{opacity:.45;cursor:not-allowed}
+.primary{background:var(--blue);color:#fff;width:100%;padding:15px;font-size:16px}.primary:hover:not(:disabled){background:#1d4ed8}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:17px}.actions button{background:#edf2ff;color:#1e40af}.actions button:hover:not(:disabled){background:#dbeafe}
+.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.preview-box{min-width:0}.preview-box h3{font-size:14px;margin:0 0 9px}
+.stage{min-height:300px;border:1px solid var(--line);border-radius:12px;background:repeating-conic-gradient(#f1f5f9 0% 25%,#fff 0% 50%) 50%/20px 20px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:10px}
+.stage img,.stage canvas{display:block;max-width:100%;max-height:440px;object-fit:contain}
+.empty{color:#94a3b8;text-align:center;font-size:14px;padding:30px}
+.status{margin-top:14px;min-height:20px;font-size:13px;color:var(--muted);line-height:1.5}
+.note{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:12px;border-radius:10px;font-size:12px;line-height:1.5;margin-top:17px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:0 16px 24px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.preview-grid{grid-template-columns:1fr 1fr}.stage{min-height:220px}}
+@media(max-width:480px){.preview-grid{grid-template-columns:1fr}.stage{min-height:190px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Photo Background Colour Changer</h1>
+  <p>Upload a passport-size or regular photo, choose a background colour and create your new photo.</p>
+</header>
+<main>
+<div class="layout">
+<section class="panel">
+  <h2>1. Upload and choose colour</h2>
+  <div class="field">
+    <label for="photoInput">Select your photo</label>
+    <input id="photoInput" type="file" accept="image/*">
+    <div class="hint">Use a clear photo with the person fully visible. JPG, PNG and WebP are supported.</div>
+  </div>
+  <div class="field">
+    <label>2. Select background colour</label>
+    <div class="palette" id="palette">
+      <button class="swatch selected" type="button" data-color="#ffffff" style="background:#ffffff" aria-label="White"></button>
+      <button class="swatch" type="button" data-color="#dbeafe" style="background:#dbeafe" aria-label="Light blue"></button>
+      <button class="swatch" type="button" data-color="#2563eb" style="background:#2563eb" aria-label="Blue"></button>
+      <button class="swatch" type="button" data-color="#16a34a" style="background:#16a34a" aria-label="Green"></button>
+      <button class="swatch" type="button" data-color="#dc2626" style="background:#dc2626" aria-label="Red"></button>
+      <button class="swatch" type="button" data-color="#f3e8d2" style="background:#f3e8d2" aria-label="Cream"></button>
+      <button class="swatch" type="button" data-color="#9ca3af" style="background:#9ca3af" aria-label="Grey"></button>
+      <button class="swatch" type="button" data-color="#f9a8d4" style="background:#f9a8d4" aria-label="Pink"></button>
+      <button class="swatch" type="button" data-color="#111827" style="background:#111827" aria-label="Black"></button>
+      <button class="swatch" type="button" data-color="#facc15" style="background:#facc15" aria-label="Yellow"></button>
+    </div>
+    <div class="colorline">
+      <input id="customColor" type="color" value="#ffffff" aria-label="Choose custom background colour">
+      <span id="colorHex">#FFFFFF</span>
+    </div>
+    <div class="hint">Choose a preset or use the colour picker for any custom colour.</div>
+  </div>
+  <button id="generateBtn" class="primary" disabled>Generate Photo</button>
+  <div class="status" id="status" role="status" aria-live="polite">Upload a photo to get started.</div>
+  <div class="note"><strong>How it works:</strong> The app uses an AI person-segmentation model to separate the foreground person from the background. An internet connection is required to load the model. For best results, use a well-lit photo with a clear contrast between the person and the background.</div>
+</section>
+<section class="panel">
+  <h2>3. Preview and save</h2>
+  <div class="preview-grid">
+    <div class="preview-box"><h3>Original photo</h3><div class="stage" id="originalStage"><div class="empty">Your uploaded photo will appear here.</div></div></div>
+    <div class="preview-box"><h3>Generated photo</h3><div class="stage" id="resultStage"><div class="empty">Your new background will appear here.</div></div></div>
+  </div>
+  <div class="actions">
+    <button id="downloadBtn" disabled>Download JPG</button>
+    <button id="copyBtn" disabled>Copy photo</button>
+    <button id="shareBtn" disabled>Share photo</button>
+    <button id="emailBtn" disabled>Email</button>
+  </div>
+  <div class="hint">Email opens your email application with a message. Attach the downloaded photo before sending. Copy and Share support depends on your browser and device.</div>
+</section>
+</div>
+</main>
+<footer>Photo Background Colour Changer · Your photo is processed in your browser.</footer>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
+<script>
+(() => {
+  const photoInput = document.getElementById('photoInput');
+  const generateBtn = document.getElementById('generateBtn');
+  const customColor = document.getElementById('customColor');
+  const colorHex = document.getElementById('colorHex');
+  const status = document.getElementById('status');
+  const originalStage = document.getElementById('originalStage');
+  const resultStage = document.getElementById('resultStage');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const shareBtn = document.getElementById('shareBtn');
+  const emailBtn = document.getElementById('emailBtn');
+
+  let selectedColor = '#ffffff';
+  let sourceImage = null;
+  let outputCanvas = null;
+  let segmentation = null;
+  let modelReady = false;
+  let busy = false;
+
+  function setStatus(message) { status.textContent = message; }
+  function setActions(enabled) {
+    [downloadBtn, copyBtn, shareBtn, emailBtn].forEach(button => button.disabled = !enabled);
+  }
+  function setColor(color) {
+    selectedColor = color;
+    customColor.value = color;
+    colorHex.textContent = color.toUpperCase();
+    document.querySelectorAll('.swatch').forEach(s => s.classList.toggle('selected', s.dataset.color.toLowerCase() === color.toLowerCase()));
+  }
+
+  document.querySelectorAll('.swatch').forEach(swatch => {
+    swatch.addEventListener('click', () => setColor(swatch.dataset.color));
+  });
+  customColor.addEventListener('input', () => {
+    selectedColor = customColor.value;
+    colorHex.textContent = selectedColor.toUpperCase();
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+  });
+
+  function initModel() {
+    if (segmentation || !window.SelfieSegmentation) return;
+    segmentation = new SelfieSegmentation({
+      locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+    });
+    segmentation.setOptions({ modelSelection: 1 });
+    segmentation.onResults(handleResults);
+    modelReady = true;
+  }
+
+  photoInput.addEventListener('change', () => {
+    const file = photoInput.files && photoInput.files[0];
+    sourceImage = null;
+    outputCanvas = null;
+    setActions(false);
+    resultStage.innerHTML = '<div class="empty">Generate your photo to see the result.</div>';
+    if (!file) {
+      generateBtn.disabled = true;
+      originalStage.innerHTML = '<div class="empty">Your uploaded photo will appear here.</div>';
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      setStatus('Please choose a valid image file.');
+      generateBtn.disabled = true;
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      sourceImage = img;
+      originalStage.replaceChildren(img.cloneNode());
+      const preview = originalStage.querySelector('img');
+      preview.src = url;
+      generateBtn.disabled = false;
+      setStatus('Photo loaded. Select a colour and click Generate Photo.');
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      setStatus('Could not open this image. Please try another photo.');
+      generateBtn.disabled = true;
+    };
+    img.src = url;
+  });
+
+  function handleResults(results) {
+    if (!sourceImage) return;
+    const w = sourceImage.naturalWidth || sourceImage.width;
+    const h = sourceImage.naturalHeight || sourceImage.height;
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+    // Paint the selected solid colour, then retain only the segmented foreground.
+    ctx.fillStyle = selectedColor;
+    ctx.fillRect(0, 0, w, h);
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.drawImage(results.segmentationMask, 0, 0, w, h);
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.drawImage(sourceImage, 0, 0, w, h);
+    ctx.globalCompositeOperation = 'source-over';
+
+    // The mask is applied to the original photo in a second canvas for natural foreground colours.
+    const finalCanvas = document.createElement('canvas');
+    finalCanvas.width = w; finalCanvas.height = h;
+    const fctx = finalCanvas.getContext('2d');
+    fctx.fillStyle = selectedColor;
+    fctx.fillRect(0, 0, w, h);
+    fctx.globalCompositeOperation = 'destination-out';
+    fctx.drawImage(results.segmentationMask, 0, 0, w, h);
+    fctx.globalCompositeOperation = 'destination-over';
+    fctx.drawImage(sourceImage, 0, 0, w, h);
+    fctx.globalCompositeOperation = 'source-over';
+
+    // Correct compositing: original image clipped by person mask over the chosen colour.
+    const fg = document.createElement('canvas');
+    fg.width = w; fg.height = h;
+    const gctx = fg.getContext('2d');
+    gctx.drawImage(sourceImage, 0, 0, w, h);
+    gctx.globalCompositeOperation = 'destination-in';
+    gctx.drawImage(results.segmentationMask, 0, 0, w, h);
+    fctx.clearRect(0, 0, w, h);
+    fctx.fillStyle = selectedColor;
+    fctx.fillRect(0, 0, w, h);
+    fctx.drawImage(fg, 0, 0);
+
+    outputCanvas = finalCanvas;
+    resultStage.replaceChildren(finalCanvas);
+    setActions(true);
+    busy = false;
+    generateBtn.disabled = false;
+    generateBtn.textContent = 'Generate Photo';
+    setStatus('Done! Your photo background has been changed. You can now save or share it.');
+  }
+
+  generateBtn.addEventListener('click', async () => {
+    if (!sourceImage || busy) return;
+    busy = true;
+    generateBtn.disabled = true;
+    generateBtn.textContent = 'Generating…';
+    setActions(false);
+    setStatus('Loading the person-segmentation model and processing your photo…');
+    try {
+      if (!window.SelfieSegmentation) throw new Error('The AI model library could not be loaded. Check your internet connection and reload this page.');
+      initModel();
+      await segmentation.send({ image: sourceImage });
+    } catch (err) {
+      busy = false;
+      generateBtn.disabled = false;
+      generateBtn.textContent = 'Generate Photo';
+      setStatus('Generation failed: ' + (err.message || 'Please try again.'));
+    }
+  });
+
+  function canvasBlob() {
+    return new Promise((resolve, reject) => {
+      if (!outputCanvas) return reject(new Error('Generate a photo first.'));
+      outputCanvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Could not create image file.')), 'image/jpeg', 0.95);
+    });
+  }
+  downloadBtn.addEventListener('click', async () => {
+    try {
+      const blob = await canvasBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'photo-background-changed.jpg';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    } catch (e) { setStatus(e.message); }
+  });
+  copyBtn.addEventListener('click', async () => {
+    try {
+      const blob = await canvasBlob();
+      if (!navigator.clipboard || !window.ClipboardItem) throw new Error('Image copy is not supported in this browser. Use Download instead.');
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      setStatus('Photo copied to clipboard.');
+    } catch (e) { setStatus('Copy failed: ' + e.message); }
+  });
+  shareBtn.addEventListener('click', async () => {
+    try {
+      const blob = await canvasBlob();
+      const file = new File([blob], 'photo-background-changed.jpg', { type: 'image/jpeg' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'My edited photo', text: 'Photo with a changed background colour' });
+      } else if (navigator.share) {
+        await navigator.share({ title: 'My edited photo', text: 'I created this photo using Photo Background Colour Changer.' });
+      } else {
+        throw new Error('Photo sharing is not supported in this browser. Use Download instead.');
+      }
+    } catch (e) {
+      if (e.name !== 'AbortError') setStatus('Share unavailable: ' + e.message);
+    }
+  });
+  emailBtn.addEventListener('click', () => {
+    const subject = encodeURIComponent('My photo with changed background');
+    const body = encodeURIComponent('Hi,\n\nI have created a photo with a changed background colour. Please find the downloaded photo attached.\n\n');
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  });
+
+  if (!window.SelfieSegmentation) {
+    setStatus('The photo tool is ready. If the AI model does not load, check your internet connection.');
+  }
+})();
+</script>
+</body>
+</html>
