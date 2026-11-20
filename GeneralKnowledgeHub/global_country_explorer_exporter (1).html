@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Country Explorer & Exporter</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+    <!-- jsPDF & AutoTable for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <!-- PptxGenJS for PowerPoint Generation -->
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 font-sans antialiased transition-colors duration-200 min-h-screen flex flex-col">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                    <i class="fa-solid fa-earth-americas text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">
+                        Global Country Explorer
+                    </h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
+                        Demographics, Geography, Currencies & Exporter
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Controls: Data Source Badge & Theme Toggle -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <span id="data-source-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    <i class="fa-solid fa-circle-check text-[10px]"></i> 195 / 195 Sovereign Nations Loaded
+                </span>
+                <button id="unit-toggle" onclick="toggleAreaUnit()" title="Switch Land Area Unit (km² / mi²)" class="px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition">
+                    Unit: <span id="unit-label" class="text-blue-600 dark:text-blue-400">km²</span>
+                </button>
+                <button id="theme-toggle" aria-label="Toggle Dark Mode" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:inline text-amber-400"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Global Summary KPI Cards -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-flag text-lg"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">Displayed Countries</p>
+                    <p id="stat-count" class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">0</p>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-users text-lg"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">Appx. Total Population</p>
+                    <p id="stat-pop" class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white truncate">0</p>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-map text-lg"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">Total Land Area</p>
+                    <p id="stat-area" class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white truncate">0 km²</p>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-globe text-lg"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">Continents Covered</p>
+                    <p id="stat-continents" class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">7</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Global Export & Action Toolbar -->
+        <section class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-file-export text-blue-600 dark:text-blue-400"></i>
+                        Export & Share Filtered Dataset (<span id="export-count-label">0</span> countries)
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Download reports, copy formatted summaries, or share via email/link.
+                    </p>
+                </div>
+
+                <!-- Action Buttons Grid -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- 1) Download PDF -->
+                    <button onclick="exportPDF()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition active:scale-95">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span>PDF</span>
+                    </button>
+
+                    <!-- 2) Download PPTX -->
+                    <button onclick="exportPPTX()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-orange-600 hover:bg-orange-700 text-white shadow-sm transition active:scale-95">
+                        <i class="fa-solid fa-file-powerpoint"></i>
+                        <span>PPTX</span>
+                    </button>
+
+                    <!-- 3) Copy All -->
+                    <button onclick="copyAllDetails()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white shadow-sm transition active:scale-95">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Copy All</span>
+                    </button>
+
+                    <!-- 4) Share -->
+                    <button onclick="shareData()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition active:scale-95">
+                        <i class="fa-solid fa-share-nodes"></i>
+                        <span>Share</span>
+                    </button>
+
+                    <!-- 5) Email -->
+                    <button onclick="openEmailModal()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition active:scale-95">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>Email</span>
+                    </button>
+
+                    <!-- 6) Download Details Dropdown (CSV / JSON / TXT) -->
+                    <div class="relative inline-block text-left" id="download-dropdown-wrapper">
+                        <button onclick="toggleDownloadMenu()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition active:scale-95">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Download Details</span>
+                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        </button>
+                        <div id="download-menu" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-xl shadow-lg bg-white dark:bg-slate-800 ring-1 ring-black/5 dark:ring-white/10 z-40 overflow-hidden">
+                            <div class="py-1">
+                                <button onclick="downloadFile('csv')" class="w-full text-left px-4 py-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2.5">
+                                    <i class="fa-solid fa-file-csv text-emerald-600 w-4"></i> Download CSV (.csv)
+                                </button>
+                                <button onclick="downloadFile('json')" class="w-full text-left px-4 py-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2.5">
+                                    <i class="fa-solid fa-file-code text-amber-500 w-4"></i> Download JSON (.json)
+                                </button>
+                                <button onclick="downloadFile('txt')" class="w-full text-left px-4 py-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2.5">
+                                    <i class="fa-solid fa-file-lines text-blue-500 w-4"></i> Download Text (.txt)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search, Continent Filter & Sort Controls -->
+        <section class="space-y-3">
+            <!-- Continent Filter Pills with Exact Sovereign Counts -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" id="continent-pills">
+                <button data-continent="All" class="continent-btn active px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-blue-600 text-white shadow-sm whitespace-nowrap transition">
+                    All [195]
+                </button>
+                <button data-continent="Africa" class="continent-btn px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 whitespace-nowrap transition">
+                    Africa [54]
+                </button>
+                <button data-continent="Asia" class="continent-btn px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 whitespace-nowrap transition">
+                    Asia [48]
+                </button>
+                <button data-continent="Europe" class="continent-btn px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 whitespace-nowrap transition">
+                    Europe [44]
+                </button>
+                <button data-continent="North America" class="continent-btn px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 whitespace-nowrap transition">
+                    North America [23]
+                </button>
+                <button data-continent="South America" class="continent-btn px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 whitespace-nowrap transition">
+                    South America [12]
+                </button>
+                <button data-continent="Oceania" class="continent-btn px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 whitespace-nowrap transition">
+                    Oceania [14]
+                </button>
+            </div>
+
+            <!-- Search Bar, Sort Dropdown, and View Toggle -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="search-input" placeholder="Search all 195 nations by name, UN status, currency, language, or continent..." 
+                        class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    <button id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <select id="sort-select" class="px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="name-asc">Sort: Name (A – Z)</option>
+                        <option value="name-desc">Sort: Name (Z – A)</option>
+                        <option value="pop-desc">Population (High to Low)</option>
+                        <option value="pop-asc">Population (Low to High)</option>
+                        <option value="area-desc">Area (Largest – Smallest)</option>
+                        <option value="area-asc">Area (Smallest – Largest)</option>
+                    </select>
+
+                    <!-- View Switcher (Table vs Grid) -->
+                    <div class="inline-flex rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1">
+                        <button id="view-table-btn" onclick="setView('table')" title="Data Table View" class="px-3 py-1.5 rounded-lg text-sm bg-blue-600 text-white transition">
+                            <i class="fa-solid fa-table-list"></i>
+                        </button>
+                        <button id="view-grid-btn" onclick="setView('grid')" title="Card Grid View" class="px-3 py-1.5 rounded-lg text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                            <i class="fa-solid fa-grip"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Empty Search State -->
+        <div id="empty-state" class="hidden bg-white dark:bg-slate-800 rounded-2xl p-12 text-center border border-slate-200 dark:border-slate-700">
+            <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-compass"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">No countries found</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
+                No sovereign nations matched your search or continent filter. Try clearing your filters to view all 195 countries.
+            </p>
+            <button onclick="resetFilters()" class="mt-4 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition">
+                Reset All Filters
+            </button>
+        </div>
+
+        <!-- Table View Container (Default) -->
+        <section id="countries-table-container" class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto max-h-[72vh]">
+                <table class="w-full text-left border-collapse">
+                    <thead class="sticky top-0 z-10 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300 shadow-xs">
+                        <tr>
+                            <th class="py-3.5 px-4 w-12">#</th>
+                            <th class="py-3.5 px-4">Country & UN Status</th>
+                            <th class="py-3.5 px-4">Continent</th>
+                            <th class="py-3.5 px-4 text-right">Appx. Population</th>
+                            <th class="py-3.5 px-4 text-right">Land Size (<span id="th-area-unit">km²</span>)</th>
+                            <th class="py-3.5 px-4">Currency (Name, Code, Symbol)</th>
+                            <th class="py-3.5 px-4">Spoken Languages</th>
+                            <th class="py-3.5 px-4 text-right">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="countries-table-body" class="divide-y divide-slate-200 dark:divide-slate-700 text-sm"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Grid View Container -->
+        <section id="countries-grid" class="hidden grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></section>
+
+        <!-- Status Bar -->
+        <div id="pagination-bar" class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1 pb-6">
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                Displaying <span id="showing-total" class="font-semibold text-slate-800 dark:text-slate-200">195</span> of 195 sovereign countries (193 UN Member States + 2 UN Observer States)
+            </p>
+            <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                <i class="fa-solid fa-arrow-up mr-1"></i> Back to Top
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+            <p>Global Country Explorer & Exporter &bull; Complete 195 Sovereign Nations Reference</p>
+            <p>Covers all 193 UN Member States + Holy See (Vatican City) &amp; State of Palestine.</p>
+        </div>
+    </footer>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- 1. Country Detail Modal -->
+    <div id="country-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-2xl w-full border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden">
+            <!-- Modal Header -->
+            <div class="relative bg-gradient-to-r from-blue-600 to-indigo-700 p-6">
+                <button onclick="closeCountryModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="flex items-center gap-4">
+                    <div id="modal-flag-emoji" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center text-4xl sm:text-5xl shadow-inner border border-white/25 shrink-0">
+                        🌍
+                    </div>
+                    <div class="text-white min-w-0">
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <span id="modal-continent-badge" class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-md">Continent</span>
+                            <span id="modal-un-badge" class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/30 border border-emerald-300/40">UN Member</span>
+                        </div>
+                        <h2 id="modal-name" class="text-2xl sm:text-3xl font-bold leading-tight truncate">Country Name</h2>
+                        <p id="modal-iso" class="text-xs sm:text-sm text-blue-100 opacity-90">ISO Alpha-2: --</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700/60">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Approximate Population</p>
+                        <p id="modal-population" class="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">-</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700/60">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Land Size (km² &amp; mi²)</p>
+                        <p id="modal-area" class="text-base font-bold text-purple-600 dark:text-purple-400 mt-0.5">-</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700/60">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5">
+                            <i class="fa-solid fa-coins text-amber-500"></i> Currency (Name, ISO 4217 Code &amp; Symbol)
+                        </p>
+                        <p id="modal-currencies" class="text-sm font-semibold text-slate-900 dark:text-white mt-1">-</p>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700/60">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5">
+                            <i class="fa-solid fa-language text-blue-500"></i> Spoken Languages
+                        </p>
+                        <p id="modal-languages" class="text-sm font-semibold text-slate-900 dark:text-white mt-1">-</p>
+                    </div>
+                </div>
+
+                <!-- Single Country Action Buttons -->
+                <div class="pt-3 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex flex-wrap gap-2">
+                        <button id="modal-copy-btn" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white transition">
+                            <i class="fa-solid fa-copy"></i> Copy
+                        </button>
+                        <button id="modal-share-btn" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white transition">
+                            <i class="fa-solid fa-share-nodes"></i> Share
+                        </button>
+                        <button id="modal-email-btn" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition">
+                            <i class="fa-solid fa-envelope"></i> Email
+                        </button>
+                        <button id="modal-txt-btn" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white transition">
+                            <i class="fa-solid fa-file-lines"></i> .TXT
+                        </button>
+                        <button id="modal-json-btn" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white transition">
+                            <i class="fa-solid fa-file-code"></i> .JSON
+                        </button>
+                    </div>
+                    <button onclick="closeCountryModal()" class="px-4 py-2 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Share Modal (Fallback / Rich Share Dialog) -->
+    <div id="share-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-share-nodes text-blue-600"></i> Share Country Data
+                </h3>
+                <button onclick="closeShareModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+                Copy the shareable summary or link below to send via any messaging app.
+            </p>
+            <div>
+                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Formatted Summary</label>
+                <textarea id="share-text-box" rows="5" readonly class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-700 dark:text-slate-300 focus:outline-none"></textarea>
+            </div>
+            <div class="flex items-center justify-end gap-2 pt-2">
+                <button onclick="copyShareText()" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-copy"></i> Copy Shareable Text
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Email Modal -->
+    <div id="email-modal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-700 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-envelope text-indigo-600"></i> Email Country Report
+                </h3>
+                <button onclick="closeEmailModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Recipient Email (Optional)</label>
+                    <input type="email" id="email-to" placeholder="colleague@example.com" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Subject</label>
+                    <input type="text" id="email-subject" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Email Body Preview</label>
+                    <textarea id="email-body" rows="6" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center justify-end gap-2 pt-2">
+                <button onclick="copyEmailBody()" class="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-sm font-medium transition">
+                    <i class="fa-solid fa-copy mr-1"></i> Copy Text
+                </button>
+                <a id="mailto-trigger" href="#" target="_blank" class="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium text-center flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-paper-plane"></i> Open Email Client
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        /**
+         * Global State Management
+         */
+        let allCountries = [];
+        let filteredCountries = [];
+        let selectedContinent = 'All';
+        let searchQuery = '';
+        let sortOption = 'name-asc';
+        let currentView = 'table'; // 'table' | 'grid'
+        let areaUnit = 'km2';      // 'km2' | 'mi2'
+
+        /**
+         * Complete, Verified Dataset of ALL 195 Sovereign Countries in the World
+         * (193 UN Member States + 2 UN Observer States: Holy See & State of Palestine)
+         * Continent Breakdown: Africa (54), Asia (48), Europe (44), North America (23), South America (12), Oceania (14) = 195 Total
+         * Schema per entry: [Name, Continent, AppxPopulation, AreaKm2, Currency, Languages, ISO2, UNStatus]
+         */
+        const SOVEREIGN_195_RAW = [
+            // ================= AFRICA (54) =================
+            ["Algeria", "Africa", 45606480, 2381741, "Algerian dinar (DZD, د.ج)", "Arabic, Tamazight, French", "DZ", "UN Member"],
+            ["Angola", "Africa", 36684202, 1246700, "Angolan kwanza (AOA, Kz)", "Portuguese", "AO", "UN Member"],
+            ["Benin", "Africa", 13712828, 114763, "West African CFA franc (XOF, Fr)", "French, Fon, Yoruba", "BJ", "UN Member"],
+            ["Botswana", "Africa", 2675352, 581730, "Botswana pula (BWP, P)", "English, Tswana", "BW", "UN Member"],
+            ["Burkina Faso", "Africa", 23251485, 274200, "West African CFA franc (XOF, Fr)", "Mooré, French, Fula", "BF", "UN Member"],
+            ["Burundi", "Africa", 13238559, 27834, "Burundian franc (BIF, Fr)", "Kirundi, French, English", "BI", "UN Member"],
+            ["Cabo Verde", "Africa", 598682, 4033, "Cape Verdean escudo (CVE, Esc)", "Portuguese, Cape Verdean Creole", "CV", "UN Member"],
+            ["Cameroon", "Africa", 28647293, 475442, "Central African CFA franc (XAF, Fr)", "English, French", "CM", "UN Member"],
+            ["Central African Republic", "Africa", 5742315, 622984, "Central African CFA franc (XAF, Fr)", "French, Sango", "CF", "UN Member"],
+            ["Chad", "Africa", 18278568, 1284000, "Central African CFA franc (XAF, Fr)", "French, Arabic", "TD", "UN Member"],
+            ["Comoros", "Africa", 852075, 1862, "Comorian franc (KMF, Fr)", "Comorian, Arabic, French", "KM", "UN Member"],
+            ["Congo (Republic of the)", "Africa", 6106869, 342000, "Central African CFA franc (XAF, Fr)", "French, Kituba, Lingala", "CG", "UN Member"],
+            ["Côte d'Ivoire", "Africa", 28873034, 322463, "West African CFA franc (XOF, Fr)", "French, Dioula, Baoulé", "CI", "UN Member"],
+            ["Democratic Republic of the Congo", "Africa", 102262808, 2344858, "Congolese franc (CDF, Fr)", "French, Lingala, Kituba, Swahili, Tshiluba", "CD", "UN Member"],
+            ["Djibouti", "Africa", 1136455, 23200, "Djiboutian franc (DJF, Fr)", "French, Arabic, Somali, Afar", "DJ", "UN Member"],
+            ["Egypt", "Africa", 112716598, 1002450, "Egyptian pound (EGP, £)", "Arabic", "EG", "UN Member"],
+            ["Equatorial Guinea", "Africa", 1714671, 28051, "Central African CFA franc (XAF, Fr)", "Spanish, French, Portuguese", "GQ", "UN Member"],
+            ["Eritrea", "Africa", 3748901, 117600, "Eritrean nakfa (ERN, Nfk)", "Tigrinya, Arabic, English", "ER", "UN Member"],
+            ["Eswatini", "Africa", 1210822, 17364, "Swazi lilangeni (SZL, L)", "English, Swazi", "SZ", "UN Member"],
+            ["Ethiopia", "Africa", 126527060, 1104300, "Ethiopian birr (ETB, Br)", "Amharic, Oromo, Tigrinya, Somali", "ET", "UN Member"],
+            ["Gabon", "Africa", 2436566, 267668, "Central African CFA franc (XAF, Fr)", "French", "GA", "UN Member"],
+            ["Gambia", "Africa", 2773168, 11295, "Gambian dalasi (GMD, D)", "English, Mandinka, Wolof, Fula", "GM", "UN Member"],
+            ["Ghana", "Africa", 34121985, 238533, "Ghanaian cedi (GHS, ₵)", "English, Akan, Ewe, Ga", "GH", "UN Member"],
+            ["Guinea", "Africa", 14190612, 245857, "Guinean franc (GNF, Fr)", "French, Fula, Maninka, Susu", "GN", "UN Member"],
+            ["Guinea-Bissau", "Africa", 2150842, 36125, "West African CFA franc (XOF, Fr)", "Portuguese, Guinea-Bissau Creole", "GW", "UN Member"],
+            ["Kenya", "Africa", 55100586, 580367, "Kenyan shilling (KES, Sh)", "English, Swahili", "KE", "UN Member"],
+            ["Lesotho", "Africa", 2330318, 30355, "Lesotho loti (LSL, L)", "Sesotho, English", "LS", "UN Member"],
+            ["Liberia", "Africa", 5418377, 111369, "Liberian dollar (LRD, $)", "English", "LR", "UN Member"],
+            ["Libya", "Africa", 6888388, 1759540, "Libyan dinar (LYD, ل.د)", "Arabic", "LY", "UN Member"],
+            ["Madagascar", "Africa", 30325732, 587041, "Malagasy ariary (MGA, Ar)", "Malagasy, French", "MG", "UN Member"],
+            ["Malawi", "Africa", 20931751, 118484, "Malawian kwacha (MWK, MK)", "English, Chichewa", "MW", "UN Member"],
+            ["Mali", "Africa", 23293698, 1240192, "West African CFA franc (XOF, Fr)", "Bambara, Fula, French", "ML", "UN Member"],
+            ["Mauritania", "Africa", 4862989, 1030700, "Mauritanian ouguiya (MRU, UM)", "Arabic, French", "MR", "UN Member"],
+            ["Mauritius", "Africa", 1261041, 2040, "Mauritian rupee (MUR, ₨)", "English, French, Mauritian Creole", "MU", "UN Member"],
+            ["Morocco", "Africa", 37840044, 446550, "Moroccan dirham (MAD, د.م.)", "Arabic, Tamazight, French", "MA", "UN Member"],
+            ["Mozambique", "Africa", 33897354, 801590, "Mozambican metical (MZN, MT)", "Portuguese, Makhuwa, Tsonga", "MZ", "UN Member"],
+            ["Namibia", "Africa", 2604172, 825615, "Namibian dollar (NAD, $)", "English, Oshiwambo, Afrikaans, German", "NA", "UN Member"],
+            ["Niger", "Africa", 27202843, 1267000, "West African CFA franc (XOF, Fr)", "Hausa, Zarma, French", "NE", "UN Member"],
+            ["Nigeria", "Africa", 223804632, 923768, "Nigerian naira (NGN, ₦)", "English, Hausa, Yoruba, Igbo", "NG", "UN Member"],
+            ["Rwanda", "Africa", 14094683, 26338, "Rwandan franc (RWF, Fr)", "Kinyarwanda, French, English, Swahili", "RW", "UN Member"],
+            ["São Tomé and Príncipe", "Africa", 231856, 964, "São Tomé and Príncipe dobra (STN, Db)", "Portuguese", "ST", "UN Member"],
+            ["Senegal", "Africa", 17763163, 196722, "West African CFA franc (XOF, Fr)", "French, Wolof, Pulaar, Serer", "SN", "UN Member"],
+            ["Seychelles", "Africa", 119773, 452, "Seychellois rupee (SCR, ₨)", "Seychellois Creole, English, French", "SC", "UN Member"],
+            ["Sierra Leone", "Africa", 8791092, 71740, "Sierra Leonean leone (SLE, Le)", "English, Krio", "SL", "UN Member"],
+            ["Somalia", "Africa", 18143378, 637657, "Somali shilling (SOS, Sh)", "Somali, Arabic", "SO", "UN Member"],
+            ["South Africa", "Africa", 60414495, 1221037, "South African rand (ZAR, R)", "Zulu, Xhosa, Afrikaans, English, Sepedi, Setswana", "ZA", "UN Member"],
+            ["South Sudan", "Africa", 11088796, 619745, "South Sudanese pound (SSP, £)", "English, Arabic, Dinka, Nuer", "SS", "UN Member"],
+            ["Sudan", "Africa", 48109006, 1886068, "Sudanese pound (SDG, ج.س.)", "Arabic, English", "SD", "UN Member"],
+            ["Tanzania", "Africa", 67438106, 945087, "Tanzanian shilling (TZS, Sh)", "Swahili, English", "TZ", "UN Member"],
+            ["Togo", "Africa", 9053799, 56785, "West African CFA franc (XOF, Fr)", "French, Ewe, Kabiyé", "TG", "UN Member"],
+            ["Tunisia", "Africa", 12458223, 163610, "Tunisian dinar (TND, د.ت)", "Arabic, French", "TN", "UN Member"],
+            ["Uganda", "Africa", 48582334, 241550, "Ugandan shilling (UGX, Sh)", "English, Swahili, Luganda", "UG", "UN Member"],
+            ["Zambia", "Africa", 20569737, 752612, "Zambian kwacha (ZMW, ZK)", "English, Bemba, Nyanja, Tonga", "ZM", "UN Member"],
+            ["Zimbabwe", "Africa", 16665409, 390757, "Zimbabwe Gold (ZWG, ZiG)", "English, Shona, Sindebele", "ZW", "UN Member"],
+
+            // ================= ASIA (48) =================
+            ["Afghanistan", "Asia", 42239854, 652230, "Afghan afghani (AFN, ؋)", "Pashto, Dari", "AF", "UN Member"],
+            ["Armenia", "Asia", 2777970, 29743, "Armenian dram (AMD, ֏)", "Armenian", "AM", "UN Member"],
+            ["Azerbaijan", "Asia", 10412651, 86600, "Azerbaijani manat (AZN, ₼)", "Azerbaijani", "AZ", "UN Member"],
+            ["Bahrain", "Asia", 1485509, 765, "Bahraini dinar (BHD, .د.ب)", "Arabic", "BH", "UN Member"],
+            ["Bangladesh", "Asia", 172954319, 147570, "Bangladeshi taka (BDT, ৳)", "Bengali", "BD", "UN Member"],
+            ["Bhutan", "Asia", 787424, 38394, "Bhutanese ngultrum (BTN, Nu.)", "Dzongkha", "BT", "UN Member"],
+            ["Brunei", "Asia", 452524, 5765, "Brunei dollar (BND, $)", "Malay, English", "BN", "UN Member"],
+            ["Cambodia", "Asia", 16944826, 181035, "Cambodian riel (KHR, ៛)", "Khmer", "KH", "UN Member"],
+            ["China", "Asia", 1411750000, 9706961, "Chinese yuan (CNY, ¥)", "Mandarin Chinese", "CN", "UN Member"],
+            ["Cyprus", "Asia", 1260138, 9251, "Euro (EUR, €)", "Greek, Turkish", "CY", "UN Member"],
+            ["Georgia", "Asia", 3728282, 69700, "Georgian lari (GEL, ₾)", "Georgian", "GE", "UN Member"],
+            ["India", "Asia", 1428627663, 3287590, "Indian rupee (INR, ₹)", "Hindi, English, Bengali, Telugu, Marathi, Tamil", "IN", "UN Member"],
+            ["Indonesia", "Asia", 277534122, 1904569, "Indonesian rupiah (IDR, Rp)", "Indonesian, Javanese, Sundanese", "ID", "UN Member"],
+            ["Iran", "Asia", 89172767, 1648195, "Iranian rial (IRR, ﷼)", "Persian (Farsi)", "IR", "UN Member"],
+            ["Iraq", "Asia", 45504560, 438317, "Iraqi dinar (IQD, ع.د)", "Arabic, Kurdish", "IQ", "UN Member"],
+            ["Israel", "Asia", 9756700, 22072, "Israeli new shekel (ILS, ₪)", "Hebrew, Arabic", "IL", "UN Member"],
+            ["Japan", "Asia", 124516650, 377930, "Japanese yen (JPY, ¥)", "Japanese", "JP", "UN Member"],
+            ["Jordan", "Asia", 11337052, 89342, "Jordanian dinar (JOD, د.ا)", "Arabic", "JO", "UN Member"],
+            ["Kazakhstan", "Asia", 19879000, 2724900, "Kazakhstani tenge (KZT, ₸)", "Kazakh, Russian", "KZ", "UN Member"],
+            ["Kuwait", "Asia", 4310108, 17818, "Kuwaiti dinar (KWD, د.ك)", "Arabic", "KW", "UN Member"],
+            ["Kyrgyzstan", "Asia", 7100000, 199951, "Kyrgyzstani som (KGS, с)", "Kyrgyz, Russian", "KG", "UN Member"],
+            ["Laos", "Asia", 7633779, 236800, "Lao kip (LAK, ₭)", "Lao", "LA", "UN Member"],
+            ["Lebanon", "Asia", 5353930, 10452, "Lebanese pound (LBP, ل.ل)", "Arabic, French", "LB", "UN Member"],
+            ["Malaysia", "Asia", 34308525, 330803, "Malaysian ringgit (MYR, RM)", "Malay, English, Mandarin, Tamil", "MY", "UN Member"],
+            ["Maldives", "Asia", 521021, 300, "Maldivian rufiyaa (MVR, .ރ)", "Dhivehi", "MV", "UN Member"],
+            ["Mongolia", "Asia", 3447157, 1564110, "Mongolian tögrög (MNT, ₮)", "Mongolian", "MN", "UN Member"],
+            ["Myanmar", "Asia", 54577997, 676578, "Myanmar kyat (MMK, Ks)", "Burmese", "MM", "UN Member"],
+            ["Nepal", "Asia", 30896590, 147181, "Nepalese rupee (NPR, ₨)", "Nepali, Maithili, Bhojpuri", "NP", "UN Member"],
+            ["North Korea", "Asia", 26160821, 120538, "North Korean won (KPW, ₩)", "Korean", "KP", "UN Member"],
+            ["Oman", "Asia", 4644384, 309500, "Omani rial (OMR, ر.ع.)", "Arabic", "OM", "UN Member"],
+            ["Pakistan", "Asia", 240485658, 881912, "Pakistani rupee (PKR, ₨)", "Urdu, English, Punjabi, Sindhi, Pashto", "PK", "UN Member"],
+            ["Philippines", "Asia", 117337368, 300000, "Philippine peso (PHP, ₱)", "Filipino (Tagalog), English, Cebuano", "PH", "UN Member"],
+            ["Qatar", "Asia", 2716391, 11586, "Qatari riyal (QAR, ر.ق)", "Arabic", "QA", "UN Member"],
+            ["Saudi Arabia", "Asia", 36947025, 2149690, "Saudi riyal (SAR, ر.س)", "Arabic", "SA", "UN Member"],
+            ["Singapore", "Asia", 5917600, 728, "Singapore dollar (SGD, $)", "English, Malay, Mandarin, Tamil", "SG", "UN Member"],
+            ["South Korea", "Asia", 51712619, 100210, "South Korean won (KRW, ₩)", "Korean", "KR", "UN Member"],
+            ["Sri Lanka", "Asia", 21893579, 65610, "Sri Lankan rupee (LKR, Rs)", "Sinhala, Tamil", "LK", "UN Member"],
+            ["State of Palestine", "Asia", 5371230, 6220, "Israeli new shekel (ILS, ₪) / Jordanian dinar (JOD)", "Arabic", "PS", "UN Observer"],
+            ["Syria", "Asia", 23227014, 185180, "Syrian pound (SYP, £)", "Arabic", "SY", "UN Member"],
+            ["Tajikistan", "Asia", 10143543, 143100, "Tajikistani somoni (TJS, ЅМ)", "Tajik, Russian", "TJ", "UN Member"],
+            ["Thailand", "Asia", 71801279, 513120, "Thai baht (THB, ฿)", "Thai", "TH", "UN Member"],
+            ["Timor-Leste", "Asia", 1360596, 14874, "United States dollar (USD, $)", "Tetum, Portuguese", "TL", "UN Member"],
+            ["Turkey", "Asia", 85816199, 783562, "Turkish lira (TRY, ₺)", "Turkish, Kurdish", "TR", "UN Member"],
+            ["Turkmenistan", "Asia", 6516100, 488100, "Turkmenistan manat (TMT, m)", "Turkmen, Russian", "TM", "UN Member"],
+            ["United Arab Emirates", "Asia", 9516871, 83600, "United Arab Emirates dirham (AED, د.إ)", "Arabic", "AE", "UN Member"],
+            ["Uzbekistan", "Asia", 36412350, 447400, "Uzbekistani soʻm (UZS, so'm)", "Uzbek, Russian", "UZ", "UN Member"],
+            ["Vietnam", "Asia", 98858950, 331212, "Vietnamese đồng (VND, ₫)", "Vietnamese", "VN", "UN Member"],
+            ["Yemen", "Asia", 34449825, 527968, "Yemeni rial (YER, ﷼)", "Arabic", "YE", "UN Member"],
+
+            // ================= EUROPE (44) =================
+            ["Albania", "Europe", 2793592, 28748, "Albanian lek (ALL, L)", "Albanian", "AL", "UN Member"],
+            ["Andorra", "Europe", 80088, 468, "Euro (EUR, €)", "Catalan", "AD", "UN Member"],
+            ["Austria", "Europe", 9132383, 83871, "Euro (EUR, €)", "German", "AT", "UN Member"],
+            ["Belarus", "Europe", 9178298, 207600, "Belarusian ruble (BYN, Br)", "Belarusian, Russian", "BY", "UN Member"],
+            ["Belgium", "Europe", 11822592, 30528, "Euro (EUR, €)", "Dutch, French, German", "BE", "UN Member"],
+            ["Bosnia and Herzegovina", "Europe", 3210847, 51209, "Bosnia and Herzegovina convertible mark (BAM, KM)", "Bosnian, Croatian, Serbian", "BA", "UN Member"],
+            ["Bulgaria", "Europe", 6447710, 110879, "Bulgarian lev (BGN, лв)", "Bulgarian", "BG", "UN Member"],
+            ["Croatia", "Europe", 3853200, 56594, "Euro (EUR, €)", "Croatian", "HR", "UN Member"],
+            ["Czechia (Czech Republic)", "Europe", 10873689, 78865, "Czech koruna (CZK, Kč)", "Czech", "CZ", "UN Member"],
+            ["Denmark", "Europe", 5946952, 43094, "Danish krone (DKK, kr)", "Danish", "DK", "UN Member"],
+            ["Estonia", "Europe", 1366491, 45227, "Euro (EUR, €)", "Estonian", "EE", "UN Member"],
+            ["Finland", "Europe", 5584264, 338424, "Euro (EUR, €)", "Finnish, Swedish", "FI", "UN Member"],
+            ["France", "Europe", 68170228, 551695, "Euro (EUR, €)", "French", "FR", "UN Member"],
+            ["Germany", "Europe", 84482267, 357114, "Euro (EUR, €)", "German", "DE", "UN Member"],
+            ["Greece", "Europe", 10361295, 131990, "Euro (EUR, €)", "Greek", "GR", "UN Member"],
+            ["Holy See (Vatican City)", "Europe", 764, 0.44, "Euro (EUR, €)", "Italian, Latin", "VA", "UN Observer"],
+            ["Hungary", "Europe", 9589872, 93028, "Hungarian forint (HUF, Ft)", "Hungarian", "HU", "UN Member"],
+            ["Iceland", "Europe", 393600, 103000, "Icelandic króna (ISK, kr)", "Icelandic", "IS", "UN Member"],
+            ["Ireland", "Europe", 5262382, 70273, "Euro (EUR, €)", "English, Irish", "IE", "UN Member"],
+            ["Italy", "Europe", 58761146, 301336, "Euro (EUR, €)", "Italian", "IT", "UN Member"],
+            ["Latvia", "Europe", 1881750, 64559, "Euro (EUR, €)", "Latvian", "LV", "UN Member"],
+            ["Liechtenstein", "Europe", 39584, 160, "Swiss franc (CHF, Fr.)", "German", "LI", "UN Member"],
+            ["Lithuania", "Europe", 2871897, 65300, "Euro (EUR, €)", "Lithuanian", "LT", "UN Member"],
+            ["Luxembourg", "Europe", 668606, 2586, "Euro (EUR, €)", "Luxembourgish, French, German", "LU", "UN Member"],
+            ["Malta", "Europe", 553214, 316, "Euro (EUR, €)", "Maltese, English", "MT", "UN Member"],
+            ["Moldova", "Europe", 2486891, 33846, "Moldovan leu (MDL, L)", "Romanian", "MD", "UN Member"],
+            ["Monaco", "Europe", 36297, 2.02, "Euro (EUR, €)", "French", "MC", "UN Member"],
+            ["Montenegro", "Europe", 616177, 13812, "Euro (EUR, €)", "Montenegrin, Serbian", "ME", "UN Member"],
+            ["Netherlands", "Europe", 17879488, 41850, "Euro (EUR, €)", "Dutch", "NL", "UN Member"],
+            ["North Macedonia", "Europe", 1826247, 25713, "Macedonian denar (MKD, ден)", "Macedonian, Albanian", "MK", "UN Member"],
+            ["Norway", "Europe", 5519594, 323802, "Norwegian krone (NOK, kr)", "Norwegian, Sámi", "NO", "UN Member"],
+            ["Poland", "Europe", 36685849, 312679, "Polish złoty (PLN, zł)", "Polish", "PL", "UN Member"],
+            ["Portugal", "Europe", 10525347, 92090, "Euro (EUR, €)", "Portuguese", "PT", "UN Member"],
+            ["Romania", "Europe", 19056116, 238391, "Romanian leu (RON, lei)", "Romanian", "RO", "UN Member"],
+            ["Russia", "Europe", 143826130, 17098242, "Russian ruble (RUB, ₽)", "Russian", "RU", "UN Member"],
+            ["San Marino", "Europe", 33642, 61, "Euro (EUR, €)", "Italian", "SM", "UN Member"],
+            ["Serbia", "Europe", 6618026, 88361, "Serbian dinar (RSD, дин.)", "Serbian", "RS", "UN Member"],
+            ["Slovakia", "Europe", 5426740, 49037, "Euro (EUR, €)", "Slovak", "SK", "UN Member"],
+            ["Slovenia", "Europe", 2120937, 20273, "Euro (EUR, €)", "Slovene", "SI", "UN Member"],
+            ["Spain", "Europe", 48373336, 505992, "Euro (EUR, €)", "Spanish, Catalan, Galician, Basque", "ES", "UN Member"],
+            ["Sweden", "Europe", 10536632, 450295, "Swedish krona (SEK, kr)", "Swedish", "SE", "UN Member"],
+            ["Switzerland", "Europe", 8849852, 41284, "Swiss franc (CHF, Fr.)", "German, French, Italian, Romansh", "CH", "UN Member"],
+            ["Ukraine", "Europe", 37000000, 603500, "Ukrainian hryvnia (UAH, ₴)", "Ukrainian", "UA", "UN Member"],
+            ["United Kingdom", "Europe", 67736802, 242900, "British pound (GBP, £)", "English, Welsh, Scottish Gaelic", "GB", "UN Member"],
+
+            // ================= NORTH AMERICA (23) =================
+            ["Antigua and Barbuda", "North America", 94298, 442, "Eastern Caribbean dollar (XCD, $)", "English", "AG", "UN Member"],
+            ["Bahamas", "North America", 412623, 13943, "Bahamian dollar (BSD, $)", "English", "BS", "UN Member"],
+            ["Barbados", "North America", 281995, 430, "Barbadian dollar (BBD, $)", "English", "BB", "UN Member"],
+            ["Belize", "North America", 410825, 22966, "Belize dollar (BZD, $)", "English, Spanish, Kriol", "BZ", "UN Member"],
+            ["Canada", "North America", 40097761, 9984670, "Canadian dollar (CAD, $)", "English, French", "CA", "UN Member"],
+            ["Costa Rica", "North America", 5212173, 51100, "Costa Rican colón (CRC, ₡)", "Spanish", "CR", "UN Member"],
+            ["Cuba", "North America", 11194449, 109884, "Cuban peso (CUP, $)", "Spanish", "CU", "UN Member"],
+            ["Dominica", "North America", 73040, 751, "Eastern Caribbean dollar (XCD, $)", "English", "DM", "UN Member"],
+            ["Dominican Republic", "North America", 11332972, 48671, "Dominican peso (DOP, $)", "Spanish", "DO", "UN Member"],
+            ["El Salvador", "North America", 6364943, 21041, "United States dollar (USD, $)", "Spanish", "SV", "UN Member"],
+            ["Grenada", "North America", 126183, 344, "Eastern Caribbean dollar (XCD, $)", "English", "GD", "UN Member"],
+            ["Guatemala", "North America", 17602431, 108889, "Guatemalan quetzal (GTQ, Q)", "Spanish, Mayan languages", "GT", "UN Member"],
+            ["Haiti", "North America", 11724763, 27750, "Haitian gourde (HTG, G)", "French, Haitian Creole", "HT", "UN Member"],
+            ["Honduras", "North America", 10593798, 112492, "Honduran lempira (HNL, L)", "Spanish", "HN", "UN Member"],
+            ["Jamaica", "North America", 2825544, 10991, "Jamaican dollar (JMD, $)", "English, Jamaican Patois", "JM", "UN Member"],
+            ["Mexico", "North America", 128455567, 1964375, "Mexican peso (MXN, $)", "Spanish, Nahuatl, Yucatec Maya", "MX", "UN Member"],
+            ["Nicaragua", "North America", 7046310, 130373, "Nicaraguan córdoba (NIO, C$)", "Spanish", "NI", "UN Member"],
+            ["Panama", "North America", 4468087, 75417, "Panamanian balboa (PAB, B/.) / USD", "Spanish", "PA", "UN Member"],
+            ["Saint Kitts and Nevis", "North America", 47755, 261, "Eastern Caribbean dollar (XCD, $)", "English", "KN", "UN Member"],
+            ["Saint Lucia", "North America", 180251, 616, "Eastern Caribbean dollar (XCD, $)", "English", "LC", "UN Member"],
+            ["Saint Vincent and the Grenadines", "North America", 103698, 389, "Eastern Caribbean dollar (XCD, $)", "English", "VC", "UN Member"],
+            ["Trinidad and Tobago", "North America", 1534937, 5130, "Trinidad and Tobago dollar (TTD, $)", "English", "TT", "UN Member"],
+            ["United States", "North America", 334914895, 9372610, "United States dollar (USD, $)", "English, Spanish", "US", "UN Member"],
+
+            // ================= SOUTH AMERICA (12) =================
+            ["Argentina", "South America", 46654581, 2780400, "Argentine peso (ARS, $)", "Spanish", "AR", "UN Member"],
+            ["Bolivia", "South America", 12388571, 1098581, "Bolivian boliviano (BOB, Bs.)", "Spanish, Quechua, Aymara, Guaraní", "BO", "UN Member"],
+            ["Brazil", "South America", 216422446, 8515767, "Brazilian real (BRL, R$)", "Portuguese", "BR", "UN Member"],
+            ["Chile", "South America", 19629590, 756102, "Chilean peso (CLP, $)", "Spanish", "CL", "UN Member"],
+            ["Colombia", "South America", 52085168, 1141748, "Colombian peso (COP, $)", "Spanish", "CO", "UN Member"],
+            ["Ecuador", "South America", 18190484, 276841, "United States dollar (USD, $)", "Spanish, Quechua", "EC", "UN Member"],
+            ["Guyana", "South America", 813834, 214969, "Guyanese dollar (GYD, $)", "English, Guyanese Creole", "GY", "UN Member"],
+            ["Paraguay", "South America", 6861524, 406752, "Paraguayan guaraní (PYG, ₲)", "Spanish, Guaraní", "PY", "UN Member"],
+            ["Peru", "South America", 34352719, 1285216, "Peruvian sol (PEN, S/.)", "Spanish, Quechua, Aymara", "PE", "UN Member"],
+            ["Suriname", "South America", 623236, 163820, "Surinamese dollar (SRD, $)", "Dutch, Sranan Tongo", "SR", "UN Member"],
+            ["Uruguay", "South America", 3423108, 181034, "Uruguayan peso (UYU, $)", "Spanish", "UY", "UN Member"],
+            ["Venezuela", "South America", 28838499, 916445, "Venezuelan bolívar (VES, Bs.S)", "Spanish", "VE", "UN Member"],
+
+            // ================= OCEANIA (14) =================
+            ["Australia", "Oceania", 26638544, 7692024, "Australian dollar (AUD, $)", "English", "AU", "UN Member"],
+            ["Fiji", "Oceania", 936375, 18272, "Fijian dollar (FJD, $)", "English, Fijian, Fiji Hindi", "FJ", "UN Member"],
+            ["Kiribati", "Oceania", 133515, 811, "Australian dollar (AUD, $)", "English, Gilbertese", "KI", "UN Member"],
+            ["Marshall Islands", "Oceania", 41996, 181, "United States dollar (USD, $)", "Marshallese, English", "MH", "UN Member"],
+            ["Micronesia", "Oceania", 115224, 702, "United States dollar (USD, $)", "English", "FM", "UN Member"],
+            ["Nauru", "Oceania", 12780, 21, "Australian dollar (AUD, $)", "Nauruan, English", "NR", "UN Member"],
+            ["New Zealand", "Oceania", 5223100, 270467, "New Zealand dollar (NZD, $)", "English, Māori, NZ Sign Language", "NZ", "UN Member"],
+            ["Palau", "Oceania", 18058, 459, "United States dollar (USD, $)", "Palauan, English", "PW", "UN Member"],
+            ["Papua New Guinea", "Oceania", 10329931, 462840, "Papua New Guinean kina (PGK, K)", "Tok Pisin, English, Hiri Motu", "PG", "UN Member"],
+            ["Samoa", "Oceania", 225681, 2842, "Samoan tālā (WST, T)", "Samoan, English", "WS", "UN Member"],
+            ["Solomon Islands", "Oceania", 740424, 28896, "Solomon Islands dollar (SBD, $)", "English, Pijin", "SB", "UN Member"],
+            ["Tonga", "Oceania", 107773, 747, "Tongan paʻanga (TOP, T$)", "Tongan, English", "TO", "UN Member"],
+            ["Tuvalu", "Oceania", 11396, 26, "Australian dollar (AUD, $)", "Tuvaluan, English", "TV", "UN Member"],
+            ["Vanuatu", "Oceania", 334506, 12189, "Vanuatu vatu (VUV, Vt)", "Bislama, English, French", "VU", "UN Member"]
+        ];
+
+        /**
+         * Convert ISO 3166-1 alpha-2 code into Unicode Flag Emoji
+         */
+        function isoToFlagEmoji(iso2) {
+            if (!iso2 || iso2.length !== 2) return '🏳️';
+            return iso2
+                .toUpperCase()
+                .replace(/./g, char => String.fromCodePoint(127397 + char.charCodeAt(0)));
+        }
+
+        /**
+         * Initialization on Window Load
+         */
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadAll195Countries();
+            setupEventListeners();
+            applyFiltersAndRender();
+        });
+
+        function loadAll195Countries() {
+            allCountries = SOVEREIGN_195_RAW.map(([name, continent, population, area, currencies, languages, cca2, unStatus]) => ({
+                name,
+                continent,
+                population,
+                area,
+                currencies,
+                languages,
+                cca2,
+                unStatus,
+                flagEmoji: isoToFlagEmoji(cca2)
+            }));
+        }
+
+        /**
+         * Theme & Area Unit Handling
+         */
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        function toggleAreaUnit() {
+            areaUnit = areaUnit === 'km2' ? 'mi2' : 'km2';
+            document.getElementById('unit-label').textContent = areaUnit === 'km2' ? 'km²' : 'mi²';
+            document.getElementById('th-area-unit').textContent = areaUnit === 'km2' ? 'km²' : 'mi²';
+            updateKPIs();
+            renderCountries();
+            showToast(`Switched area unit to ${areaUnit === 'km2' ? 'Square Kilometers (km²)' : 'Square Miles (mi²)'}`, 'info');
+        }
+
+        /**
+         * Event Listeners for Search, Continent Filtering, and Sorting
+         */
+        function setupEventListeners() {
+            const searchInput = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search');
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value.trim().toLowerCase();
+                clearBtn.classList.toggle('hidden', searchQuery.length === 0);
+                applyFiltersAndRender();
+            });
+
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                searchQuery = '';
+                clearBtn.classList.add('hidden');
+                applyFiltersAndRender();
+            });
+
+            document.querySelectorAll('.continent-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.continent-btn').forEach(b => {
+                        b.classList.remove('bg-blue-600', 'text-white', 'active');
+                        b.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-700');
+                    });
+                    btn.classList.remove('bg-white', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-700');
+                    btn.classList.add('bg-blue-600', 'text-white', 'active');
+
+                    selectedContinent = btn.getAttribute('data-continent');
+                    applyFiltersAndRender();
+                });
+            });
+
+            document.getElementById('sort-select').addEventListener('change', (e) => {
+                sortOption = e.target.value;
+                applyFiltersAndRender();
+            });
+
+            document.addEventListener('click', (e) => {
+                const wrapper = document.getElementById('download-dropdown-wrapper');
+                const menu = document.getElementById('download-menu');
+                if (wrapper && !wrapper.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('clear-search').classList.add('hidden');
+            searchQuery = '';
+            selectedContinent = 'All';
+            document.querySelectorAll('.continent-btn').forEach(b => {
+                const isAll = b.getAttribute('data-continent') === 'All';
+                b.className = isAll
+                    ? 'continent-btn active px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-blue-600 text-white shadow-sm whitespace-nowrap transition'
+                    : 'continent-btn px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 whitespace-nowrap transition';
+            });
+            applyFiltersAndRender();
+        }
+
+        /**
+         * Filter, Sort & Update KPIs + UI
+         */
+        function applyFiltersAndRender() {
+            filteredCountries = allCountries.filter(c => {
+                const matchesContinent = selectedContinent === 'All' || c.continent === selectedContinent;
+                if (!matchesContinent) return false;
+
+                if (!searchQuery) return true;
+                return (
+                    c.name.toLowerCase().includes(searchQuery) ||
+                    c.continent.toLowerCase().includes(searchQuery) ||
+                    c.currencies.toLowerCase().includes(searchQuery) ||
+                    c.languages.toLowerCase().includes(searchQuery) ||
+                    c.unStatus.toLowerCase().includes(searchQuery) ||
+                    c.cca2.toLowerCase().includes(searchQuery)
+                );
+            });
+
+            filteredCountries.sort((a, b) => {
+                switch (sortOption) {
+                    case 'name-asc': return a.name.localeCompare(b.name);
+                    case 'name-desc': return b.name.localeCompare(a.name);
+                    case 'pop-desc': return b.population - a.population;
+                    case 'pop-asc': return a.population - b.population;
+                    case 'area-desc': return b.area - a.area;
+                    case 'area-asc': return a.area - b.area;
+                    default: return 0;
+                }
+            });
+
+            updateKPIs();
+            renderCountries();
+        }
+
+        function updateKPIs() {
+            const count = filteredCountries.length;
+            const totalPop = filteredCountries.reduce((sum, c) => sum + c.population, 0);
+            const totalAreaKm = filteredCountries.reduce((sum, c) => sum + c.area, 0);
+            const displayArea = areaUnit === 'km2' ? totalAreaKm : totalAreaKm * 0.386102;
+            const unitSuffix = areaUnit === 'km2' ? 'km²' : 'mi²';
+
+            const uniqueContinents = new Set(filteredCountries.map(c => c.continent));
+
+            document.getElementById('stat-count').textContent = `${count} / 195`;
+            document.getElementById('export-count-label').textContent = count.toLocaleString();
+            document.getElementById('stat-pop').textContent = formatCompactNumber(totalPop);
+            document.getElementById('stat-area').textContent = `${formatCompactNumber(displayArea)} ${unitSuffix}`;
+            document.getElementById('stat-continents').textContent = uniqueContinents.size;
+        }
+
+        /**
+         * Formatting Helpers
+         */
+        function formatCompactNumber(num) {
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+            return Math.round(num).toLocaleString();
+        }
+
+        function formatAreaSingleUnit(sqKm) {
+            if (areaUnit === 'km2') {
+                return sqKm < 10 ? `${sqKm.toFixed(2)} km²` : `${Math.round(sqKm).toLocaleString()} km²`;
+            } else {
+                const sqMi = sqKm * 0.386102;
+                return sqMi < 10 ? `${sqMi.toFixed(2)} mi²` : `${Math.round(sqMi).toLocaleString()} mi²`;
+            }
+        }
+
+        function formatAreaBothUnits(sqKm) {
+            const sqMi = sqKm * 0.386102;
+            const kmText = sqKm < 10 ? `${sqKm.toFixed(2)} km²` : `${Math.round(sqKm).toLocaleString()} km²`;
+            const miText = sqMi < 10 ? `${sqMi.toFixed(2)} mi²` : `${Math.round(sqMi).toLocaleString()} mi²`;
+            return `${kmText} (${miText})`;
+        }
+
+        function escapeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        /**
+         * View Mode Switcher
+         */
+        function setView(view) {
+            currentView = view;
+            const gridBtn = document.getElementById('view-grid-btn');
+            const tableBtn = document.getElementById('view-table-btn');
+
+            if (view === 'table') {
+                tableBtn.className = 'px-3 py-1.5 rounded-lg text-sm bg-blue-600 text-white transition';
+                gridBtn.className = 'px-3 py-1.5 rounded-lg text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition';
+            } else {
+                gridBtn.className = 'px-3 py-1.5 rounded-lg text-sm bg-blue-600 text-white transition';
+                tableBtn.className = 'px-3 py-1.5 rounded-lg text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition';
+            }
+            renderCountries();
+        }
+
+        /**
+         * Render All Matching Countries (Table or Card Grid)
+         */
+        function renderCountries() {
+            const gridEl = document.getElementById('countries-grid');
+            const tableContainerEl = document.getElementById('countries-table-container');
+            const tableBodyEl = document.getElementById('countries-table-body');
+            const emptyEl = document.getElementById('empty-state');
+            const paginationEl = document.getElementById('pagination-bar');
+
+            if (filteredCountries.length === 0) {
+                gridEl.classList.add('hidden');
+                gridEl.classList.remove('grid');
+                tableContainerEl.classList.add('hidden');
+                paginationEl.classList.add('hidden');
+                emptyEl.classList.remove('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            paginationEl.classList.remove('hidden');
+            document.getElementById('showing-total').textContent = filteredCountries.length;
+
+            if (currentView === 'table') {
+                gridEl.classList.add('hidden');
+                gridEl.classList.remove('grid');
+                tableContainerEl.classList.remove('hidden');
+
+                tableBodyEl.innerHTML = filteredCountries.map((country, idx) => {
+                    const isObserver = country.unStatus !== 'UN Member';
+                    const statusBadge = isObserver
+                        ? `<span class="ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">UN Observer</span>`
+                        : '';
+                    return `
+                        <tr onclick="openCountryModal(${idx})" class="cursor-pointer hover:bg-blue-50/60 dark:hover:bg-slate-700/50 transition">
+                            <td class="py-3 px-4 text-xs font-mono text-slate-400">${idx + 1}</td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-xl leading-none select-none">${country.flagEmoji}</span>
+                                    <div>
+                                        <span class="font-semibold text-slate-900 dark:text-white">${escapeHTML(country.name)}</span>
+                                        ${statusBadge}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4 whitespace-nowrap">
+                                <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                                    ${escapeHTML(country.continent)}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 whitespace-nowrap text-right font-medium tabular-nums">${country.population.toLocaleString()}</td>
+                            <td class="py-3 px-4 whitespace-nowrap text-right text-xs font-medium tabular-nums">${formatAreaSingleUnit(country.area)}</td>
+                            <td class="py-3 px-4 max-w-[230px] text-xs text-slate-700 dark:text-slate-300">${escapeHTML(country.currencies)}</td>
+                            <td class="py-3 px-4 max-w-[210px] text-xs text-slate-700 dark:text-slate-300">${escapeHTML(country.languages)}</td>
+                            <td class="py-3 px-4 whitespace-nowrap text-right">
+                                <button onclick="event.stopPropagation(); openCountryModal(${idx})" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-600 text-slate-700 hover:text-white dark:bg-slate-700 dark:hover:bg-blue-600 dark:text-slate-200 text-xs font-medium transition">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tableContainerEl.classList.add('hidden');
+                gridEl.classList.remove('hidden');
+                gridEl.classList.add('grid');
+
+                gridEl.innerHTML = filteredCountries.map((country, idx) => {
+                    const isObserver = country.unStatus !== 'UN Member';
+                    return `
+                        <article onclick="openCountryModal(${idx})" class="cursor-pointer bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md hover:border-blue-400/70 dark:hover:border-blue-500/70 transition-all duration-200 flex flex-col justify-between overflow-hidden group">
+                            <div class="p-5 space-y-4">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-700/70 flex items-center justify-center text-2xl shrink-0">
+                                            ${country.flagEmoji}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h3 class="text-base font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+                                                ${idx + 1}. ${escapeHTML(country.name)}
+                                            </h3>
+                                            <p class="text-[11px] font-medium ${isObserver ? 'text-amber-600 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400'}">
+                                                ${escapeHTML(country.unStatus)} &bull; ISO: ${escapeHTML(country.cca2)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 shrink-0">
+                                        ${escapeHTML(country.continent)}
+                                    </span>
+                                </div>
+
+                                <div class="space-y-2 text-xs sm:text-sm pt-1">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <span class="text-slate-500 dark:text-slate-400 shrink-0"><i class="fa-solid fa-users w-4 text-emerald-500"></i> Population:</span>
+                                        <span class="font-semibold text-slate-800 dark:text-slate-200 text-right">${country.population.toLocaleString()}</span>
+                                    </div>
+                                    <div class="flex items-start justify-between gap-2">
+                                        <span class="text-slate-500 dark:text-slate-400 shrink-0"><i class="fa-solid fa-ruler-combined w-4 text-purple-500"></i> Land Size:</span>
+                                        <span class="font-semibold text-slate-800 dark:text-slate-200 text-right">${formatAreaSingleUnit(country.area)}</span>
+                                    </div>
+                                    <div class="flex items-start justify-between gap-2">
+                                        <span class="text-slate-500 dark:text-slate-400 shrink-0"><i class="fa-solid fa-coins w-4 text-amber-500"></i> Currency:</span>
+                                        <span class="font-medium text-slate-800 dark:text-slate-200 text-right line-clamp-1" title="${escapeHTML(country.currencies)}">${escapeHTML(country.currencies)}</span>
+                                    </div>
+                                    <div class="flex items-start justify-between gap-2">
+                                        <span class="text-slate-500 dark:text-slate-400 shrink-0"><i class="fa-solid fa-language w-4 text-blue-500"></i> Languages:</span>
+                                        <span class="font-medium text-slate-800 dark:text-slate-200 text-right line-clamp-1" title="${escapeHTML(country.languages)}">${escapeHTML(country.languages)}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="px-5 py-3 bg-slate-50/80 dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-2">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 group-hover:underline flex items-center gap-1">
+                                    Inspect Profile <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </span>
+                                <div class="flex items-center gap-1" onclick="event.stopPropagation()">
+                                    <button onclick="copySingleCountry(${idx})" title="Copy Country Details" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-slate-700 transition">
+                                        <i class="fa-solid fa-copy text-xs"></i>
+                                    </button>
+                                    <button onclick="shareSingleCountry(${idx})" title="Share Country" class="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 hover:bg-slate-200/70 dark:hover:bg-slate-700 transition">
+                                        <i class="fa-solid fa-share-nodes text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+            }
+        }
+
+        /**
+         * Country Detail Modal Actions
+         */
+        function openCountryModal(filteredIndex) {
+            const c = filteredCountries[filteredIndex];
+            if (!c) return;
+
+            document.getElementById('modal-flag-emoji').textContent = c.flagEmoji;
+            document.getElementById('modal-continent-badge').textContent = c.continent;
+            document.getElementById('modal-un-badge').textContent = c.unStatus;
+            document.getElementById('modal-name').textContent = c.name;
+            document.getElementById('modal-iso').textContent = `ISO 3166-1 Alpha-2 Code: ${c.cca2}`;
+            document.getElementById('modal-population').textContent = c.population.toLocaleString();
+            document.getElementById('modal-area').textContent = formatAreaBothUnits(c.area);
+            document.getElementById('modal-currencies').textContent = c.currencies;
+            document.getElementById('modal-languages').textContent = c.languages;
+
+            document.getElementById('modal-copy-btn').onclick = () => copySingleCountry(filteredIndex);
+            document.getElementById('modal-share-btn').onclick = () => shareSingleCountry(filteredIndex);
+            document.getElementById('modal-email-btn').onclick = () => openEmailModal([c]);
+            document.getElementById('modal-txt-btn').onclick = () => downloadSingleCountryFile(c, 'txt');
+            document.getElementById('modal-json-btn').onclick = () => downloadSingleCountryFile(c, 'json');
+
+            document.getElementById('country-modal').classList.remove('hidden');
+        }
+
+        function closeCountryModal() {
+            document.getElementById('country-modal').classList.add('hidden');
+        }
+
+        function downloadSingleCountryFile(c, format) {
+            const safeName = c.name.replace(/[^a-z0-9]/gi, '_');
+            const content = format === 'json'
+                ? JSON.stringify(c, null, 2)
+                : formatCountryText(c);
+            const mime = format === 'json' ? 'application/json;charset=utf-8' : 'text/plain;charset=utf-8';
+            triggerBlobDownload(content, `${safeName}_Profile.${format}`, mime);
+            showToast(`Downloaded ${safeName}_Profile.${format}`, 'success');
+        }
+
+        /**
+         * Formatting Text for Copy / Share / Email / TXT
+         */
+        function formatCountryText(c) {
+            return [
+                `Country: ${c.flagEmoji} ${c.name} (${c.unStatus})`,
+                `Continent: ${c.continent}`,
+                `Appx. Population: ${c.population.toLocaleString()}`,
+                `Land Size: ${formatAreaBothUnits(c.area)}`,
+                `Currency: ${c.currencies}`,
+                `Spoken Languages: ${c.languages}`
+            ].join('\n');
+        }
+
+        function buildSummaryDatasetText(list) {
+            const header = `GLOBAL COUNTRY EXPLORER REPORT (${list.length} Sovereign Countries)\nGenerated: ${new Date().toLocaleDateString()}\n${'='.repeat(55)}\n\n`;
+            const body = list.map((c, i) => `${i + 1}. ${formatCountryText(c)}`).join('\n\n-------------------------------------------------------\n\n');
+            return header + body;
+        }
+
+        /**
+         * Clipboard Helper (iFrame-safe using document.execCommand('copy') + navigator.clipboard fallback)
+         */
+        async function copyTextToClipboard(text, successMsg = 'Copied to clipboard!') {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast(successMsg, 'success');
+                    document.body.removeChild(textarea);
+                    return;
+                }
+            } catch (err) {
+                // Fall back to navigator.clipboard
+            }
+            document.body.removeChild(textarea);
+
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast(successMsg, 'success');
+            } catch (err) {
+                showToast('Unable to copy text to clipboard.', 'error');
+            }
+        }
+
+        /**
+         * 1) Export as PDF (jsPDF + AutoTable)
+         */
+        function exportPDF(dataset = filteredCountries, filename = null) {
+            if (!dataset || dataset.length === 0) {
+                showToast('No country data available to export.', 'error');
+                return;
+            }
+            try {
+                showToast(`Generating multi-page PDF for ${dataset.length} countries...`, 'info');
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+
+                const totalPop = dataset.reduce((s, c) => s + c.population, 0);
+                const totalArea = dataset.reduce((s, c) => s + c.area, 0);
+
+                // Title Header
+                doc.setFillColor(30, 58, 138);
+                doc.rect(0, 0, doc.internal.pageSize.getWidth(), 62, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(17);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Global Country Explorer — Sovereign Nations Report', 36, 30);
+
+                doc.setFontSize(9.5);
+                doc.setFont('helvetica', 'normal');
+                const filterLabel = selectedContinent === 'All' ? 'All Continents (195 Sovereign States)' : selectedContinent;
+                doc.text(
+                    `Scope: ${filterLabel} | Countries: ${dataset.length} | Combined Pop: ${totalPop.toLocaleString()} | Total Area: ${Math.round(totalArea).toLocaleString()} km² | Generated: ${new Date().toLocaleDateString()}`,
+                    36, 48
+                );
+
+                const tableRows = dataset.map((c, idx) => [
+                    idx + 1,
+                    c.unStatus === 'UN Observer' ? `${c.name} (UN Observer)` : c.name,
+                    c.continent,
+                    c.population.toLocaleString(),
+                    formatAreaSingleUnit(c.area),
+                    c.currencies,
+                    c.languages
+                ]);
+
+                doc.autoTable({
+                    startY: 74,
+                    head: [['No.', 'Country', 'Continent', 'Appx. Population', `Land Size (${areaUnit === 'km2' ? 'km²' : 'mi²'})`, 'Currency', 'Spoken Languages']],
+                    body: tableRows,
+                    theme: 'striped',
+                    headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold', fontSize: 8.5 },
+                    bodyStyles: { fontSize: 7.8, textColor: [30, 41, 59], cellPadding: 4 },
+                    columnStyles: {
+                        0: { halign: 'center', cellWidth: 28 },
+                        1: { fontStyle: 'bold', cellWidth: 115 },
+                        2: { cellWidth: 75 },
+                        3: { halign: 'right', cellWidth: 80 },
+                        4: { halign: 'right', cellWidth: 80 },
+                        5: { cellWidth: 185 },
+                        6: { cellWidth: 'auto' }
+                    },
+                    margin: { left: 36, right: 36 }
+                });
+
+                const outName = filename || `Global_Countries_${selectedContinent.replace(/\s+/g, '_')}_${dataset.length}.pdf`;
+                doc.save(outName);
+                showToast('PDF downloaded successfully!', 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('Error generating PDF file.', 'error');
+            }
+        }
+
+        /**
+         * 2) Export as PowerPoint Presentation (PptxGenJS)
+         * Includes Cover Slide + Continent Breakdown Summary Slide + Paginated Data Slides
+         */
+        function exportPPTX(dataset = filteredCountries, filename = null) {
+            if (!dataset || dataset.length === 0) {
+                showToast('No country data available to export.', 'error');
+                return;
+            }
+            try {
+                showToast(`Building PowerPoint presentation for ${dataset.length} countries...`, 'info');
+                const pptx = new PptxGenJS();
+                pptx.layout = 'LAYOUT_16x9';
+                pptx.author = 'Global Country Explorer';
+                pptx.title = 'Global Country Explorer — 195 Sovereign Nations';
+
+                // Slide 1: Cover Slide
+                const coverSlide = pptx.addSlide();
+                coverSlide.background = { color: '1E3A8A' };
+                coverSlide.addText('Global Country Explorer', {
+                    x: 0.8, y: 1.6, w: '85%', fontSize: 40, bold: true, color: 'FFFFFF', fontFace: 'Arial'
+                });
+                coverSlide.addText('Complete Directory of Sovereign Countries (193 UN Members + 2 UN Observer States)', {
+                    x: 0.8, y: 2.45, w: '85%', fontSize: 17, color: 'DBEAFE', fontFace: 'Arial'
+                });
+                const totalPop = dataset.reduce((s, c) => s + c.population, 0);
+                const totalArea = dataset.reduce((s, c) => s + c.area, 0);
+                coverSlide.addText(
+                    `Filter Scope: ${selectedContinent} | Countries Included: ${dataset.length}\nCombined Appx. Population: ${totalPop.toLocaleString()}\nTotal Land Area: ${Math.round(totalArea).toLocaleString()} km² (${Math.round(totalArea * 0.386102).toLocaleString()} mi²)\nGenerated on ${new Date().toLocaleDateString()}`,
+                    { x: 0.8, y: 3.4, w: '85%', fontSize: 14, color: '93C5FD', fontFace: 'Arial', lineSpacing: 22 }
+                );
+
+                // Slide 2: Continent Breakdown Summary Slide
+                const summarySlide = pptx.addSlide();
+                summarySlide.background = { color: 'F8FAFC' };
+                summarySlide.addText('Continent Breakdown Summary', {
+                    x: 0.6, y: 0.45, w: 10, fontSize: 22, bold: true, color: '1E293B', fontFace: 'Arial'
+                });
+                summarySlide.addText('Aggregate count, population, and land area across continents in the exported dataset:', {
+                    x: 0.6, y: 0.9, w: 11, fontSize: 12, color: '475569', fontFace: 'Arial'
+                });
+
+                const continentsOrder = ['Africa', 'Asia', 'Europe', 'North America', 'South America', 'Oceania'];
+                const summaryRows = [
+                    [
+                        { text: 'Continent', options: { bold: true, fill: '1E3A8A', color: 'FFFFFF' } },
+                        { text: 'Sovereign Countries', options: { bold: true, fill: '1E3A8A', color: 'FFFFFF', align: 'right' } },
+                        { text: 'Appx. Combined Population', options: { bold: true, fill: '1E3A8A', color: 'FFFFFF', align: 'right' } },
+                        { text: 'Total Land Area (km²)', options: { bold: true, fill: '1E3A8A', color: 'FFFFFF', align: 'right' } },
+                        { text: 'Total Land Area (mi²)', options: { bold: true, fill: '1E3A8A', color: 'FFFFFF', align: 'right' } }
+                    ],
+                    ...continentsOrder.map((cont, i) => {
+                        const group = dataset.filter(c => c.continent === cont);
+                        const cPop = group.reduce((s, c) => s + c.population, 0);
+                        const cArea = group.reduce((s, c) => s + c.area, 0);
+                        const fill = i % 2 === 0 ? 'FFFFFF' : 'EFF6FF';
+                        return [
+                            { text: cont, options: { bold: true, fill } },
+                            { text: group.length.toString(), options: { fill, align: 'right' } },
+                            { text: cPop.toLocaleString(), options: { fill, align: 'right' } },
+                            { text: `${Math.round(cArea).toLocaleString()} km²`, options: { fill, align: 'right' } },
+                            { text: `${Math.round(cArea * 0.386102).toLocaleString()} mi²`, options: { fill, align: 'right' } }
+                        ];
+                    }),
+                    [
+                        { text: 'TOTAL', options: { bold: true, fill: 'DBEAFE', color: '1E3A8A' } },
+                        { text: dataset.length.toString(), options: { bold: true, fill: 'DBEAFE', color: '1E3A8A', align: 'right' } },
+                        { text: totalPop.toLocaleString(), options: { bold: true, fill: 'DBEAFE', color: '1E3A8A', align: 'right' } },
+                        { text: `${Math.round(totalArea).toLocaleString()} km²`, options: { bold: true, fill: 'DBEAFE', color: '1E3A8A', align: 'right' } },
+                        { text: `${Math.round(totalArea * 0.386102).toLocaleString()} mi²`, options: { bold: true, fill: 'DBEAFE', color: '1E3A8A', align: 'right' } }
+                    ]
+                ];
+
+                summarySlide.addTable(summaryRows, {
+                    x: 0.6, y: 1.4, w: 12.1,
+                    fontSize: 12,
+                    fontFace: 'Arial',
+                    color: '1E293B',
+                    border: { type: 'solid', color: 'CBD5E1', pt: 0.75 },
+                    colW: [2.5, 2.0, 2.8, 2.4, 2.4]
+                });
+
+                // Paginated Country Data Slides (10 rows per slide)
+                const rowsPerSlide = 10;
+                for (let i = 0; i < dataset.length; i += rowsPerSlide) {
+                    const chunk = dataset.slice(i, i + rowsPerSlide);
+                    const slide = pptx.addSlide();
+                    slide.background = { color: 'F8FAFC' };
+
+                    slide.addText(`Sovereign Nations Directory (${i + 1}–${i + chunk.length} of ${dataset.length})`, {
+                        x: 0.5, y: 0.35, w: 11, fontSize: 17, bold: true, color: '1E293B', fontFace: 'Arial'
+                    });
+
+                    const rows = [
+                        [
+                            { text: '#', options: { bold: true, fill: '2563EB', color: 'FFFFFF', align: 'center' } },
+                            { text: 'Country', options: { bold: true, fill: '2563EB', color: 'FFFFFF' } },
+                            { text: 'Continent', options: { bold: true, fill: '2563EB', color: 'FFFFFF' } },
+                            { text: 'Population', options: { bold: true, fill: '2563EB', color: 'FFFFFF', align: 'right' } },
+                            { text: `Land Size (${areaUnit === 'km2' ? 'km²' : 'mi²'})`, options: { bold: true, fill: '2563EB', color: 'FFFFFF', align: 'right' } },
+                            { text: 'Currency', options: { bold: true, fill: '2563EB', color: 'FFFFFF' } },
+                            { text: 'Spoken Languages', options: { bold: true, fill: '2563EB', color: 'FFFFFF' } }
+                        ],
+                        ...chunk.map((c, rIdx) => {
+                            const fill = rIdx % 2 === 0 ? 'FFFFFF' : 'EFF6FF';
+                            return [
+                                { text: (i + rIdx + 1).toString(), options: { fill, align: 'center' } },
+                                { text: c.name, options: { bold: true, fill } },
+                                { text: c.continent, options: { fill } },
+                                { text: c.population.toLocaleString(), options: { fill, align: 'right' } },
+                                { text: formatAreaSingleUnit(c.area), options: { fill, align: 'right' } },
+                                { text: c.currencies, options: { fill } },
+                                { text: c.languages, options: { fill } }
+                            ];
+                        })
+                    ];
+
+                    slide.addTable(rows, {
+                        x: 0.5, y: 0.85, w: 12.3,
+                        fontSize: 9.5,
+                        fontFace: 'Arial',
+                        color: '1E293B',
+                        border: { type: 'solid', color: 'CBD5E1', pt: 0.5 },
+                        colW: [0.5, 2.1, 1.4, 1.5, 1.5, 2.7, 2.6]
+                    });
+                }
+
+                const outName = filename || `Global_Countries_${selectedContinent.replace(/\s+/g, '_')}_${dataset.length}.pptx`;
+                pptx.writeFile({ fileName: outName });
+                showToast('PowerPoint (PPTX) downloaded!', 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('Error generating PPTX presentation.', 'error');
+            }
+        }
+
+        /**
+         * 3) Copy All Details (Formatted TSV + Plain Text Summary)
+         */
+        function copyAllDetails() {
+            if (filteredCountries.length === 0) {
+                showToast('No countries to copy.', 'error');
+                return;
+            }
+            const header = ['No.', 'Country', 'UN Status', 'Continent', 'Appx. Population', 'Land Size (km²)', 'Land Size (mi²)', 'Currency', 'Spoken Languages'].join('\t');
+            const rows = filteredCountries.map((c, i) => [
+                i + 1,
+                c.name,
+                c.unStatus,
+                c.continent,
+                c.population.toLocaleString(),
+                c.area.toLocaleString(),
+                Math.round(c.area * 0.386102).toLocaleString(),
+                c.currencies,
+                c.languages
+            ].join('\t'));
+            const tsvText = [header, ...rows].join('\n');
+            copyTextToClipboard(tsvText, `Copied all ${filteredCountries.length} countries to clipboard!`);
+        }
+
+        function copySingleCountry(filteredIndex) {
+            const c = filteredCountries[filteredIndex];
+            if (!c) return;
+            copyTextToClipboard(formatCountryText(c), `Copied ${c.name} details!`);
+        }
+
+        /**
+         * 4) Share via Web Share API or Fallback Share Modal
+         */
+        async function shareData(dataset = filteredCountries) {
+            if (!dataset || dataset.length === 0) {
+                showToast('No data to share.', 'error');
+                return;
+            }
+            const totalPop = dataset.reduce((s, c) => s + c.population, 0);
+            const sample = dataset.slice(0, 12).map((c, i) => `${i + 1}. ${c.flagEmoji} ${c.name} (${c.continent}) — Pop: ${formatCompactNumber(c.population)}, Currency: ${c.currencies}`).join('\n');
+            const moreNote = dataset.length > 12 ? `\n...and ${dataset.length - 12} more sovereign nations.` : '';
+            const shareText = `Global Country Explorer (${dataset.length} Sovereign Countries | Combined Pop: ${formatCompactNumber(totalPop)}):\n\n${sample}${moreNote}`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Global Country Explorer — 195 Sovereign Nations',
+                        text: shareText
+                    });
+                    showToast('Shared successfully!', 'success');
+                    return;
+                } catch (err) {
+                    // Fallback to custom share dialog in sandboxed iframes
+                }
+            }
+
+            document.getElementById('share-text-box').value = shareText;
+            document.getElementById('share-modal').classList.remove('hidden');
+        }
+
+        function shareSingleCountry(filteredIndex) {
+            const c = filteredCountries[filteredIndex];
+            if (!c) return;
+            const text = formatCountryText(c);
+            if (navigator.share) {
+                navigator.share({ title: `${c.name} — Sovereign Country Profile`, text }).catch(() => {
+                    document.getElementById('share-text-box').value = text;
+                    document.getElementById('share-modal').classList.remove('hidden');
+                });
+            } else {
+                document.getElementById('share-text-box').value = text;
+                document.getElementById('share-modal').classList.remove('hidden');
+            }
+        }
+
+        function closeShareModal() {
+            document.getElementById('share-modal').classList.add('hidden');
+        }
+
+        function copyShareText() {
+            const text = document.getElementById('share-text-box').value;
+            copyTextToClipboard(text, 'Shareable summary copied to clipboard!');
+        }
+
+        /**
+         * 5) Email Details (Pre-populated Modal + Mailto Link)
+         */
+        function openEmailModal(dataset = filteredCountries) {
+            if (!dataset || dataset.length === 0) {
+                showToast('No data available to email.', 'error');
+                return;
+            }
+            const subject = dataset.length === 1
+                ? `Country Profile: ${dataset[0].name} (${dataset[0].continent})`
+                : `Global Country Explorer Report (${dataset.length} Sovereign Countries - ${selectedContinent})`;
+
+            const limitList = dataset.slice(0, 30);
+            let body = buildSummaryDatasetText(limitList);
+            if (dataset.length > 30) {
+                body += `\n\n[Note: Showing first 30 of ${dataset.length} sovereign countries to fit email URL limits. Use "Copy All" or "Download Details" for all ${dataset.length} entries.]`;
+            }
+
+            document.getElementById('email-subject').value = subject;
+            document.getElementById('email-body').value = body;
+            updateMailtoHref();
+
+            document.getElementById('email-to').oninput = updateMailtoHref;
+            document.getElementById('email-subject').oninput = updateMailtoHref;
+            document.getElementById('email-body').oninput = updateMailtoHref;
+
+            document.getElementById('email-modal').classList.remove('hidden');
+        }
+
+        function updateMailtoHref() {
+            const to = encodeURIComponent(document.getElementById('email-to').value.trim());
+            const subject = encodeURIComponent(document.getElementById('email-subject').value);
+            const body = encodeURIComponent(document.getElementById('email-body').value);
+            document.getElementById('mailto-trigger').href = `mailto:${to}?subject=${subject}&body=${body}`;
+        }
+
+        function closeEmailModal() {
+            document.getElementById('email-modal').classList.add('hidden');
+        }
+
+        function copyEmailBody() {
+            const subject = document.getElementById('email-subject').value;
+            const body = document.getElementById('email-body').value;
+            copyTextToClipboard(`Subject: ${subject}\n\n${body}`, 'Email content copied to clipboard!');
+        }
+
+        /**
+         * 6) Download Details as CSV / JSON / TXT
+         */
+        function toggleDownloadMenu() {
+            document.getElementById('download-menu').classList.toggle('hidden');
+        }
+
+        function triggerBlobDownload(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadFile(format) {
+            document.getElementById('download-menu').classList.add('hidden');
+            if (filteredCountries.length === 0) {
+                showToast('No countries to download.', 'error');
+                return;
+            }
+
+            let content = '';
+            let mimeType = 'text/plain;charset=utf-8';
+            const prefix = `Global_Countries_${selectedContinent.replace(/\s+/g, '_')}_${filteredCountries.length}`;
+            const filename = `${prefix}.${format}`;
+
+            if (format === 'csv') {
+                const headers = ['No.', 'Country', 'UN Status', 'ISO Alpha-2', 'Continent', 'Appx. Population', 'Land Size (km²)', 'Land Size (mi²)', 'Currency', 'Spoken Languages'];
+                const rows = filteredCountries.map((c, idx) => [
+                    idx + 1,
+                    `"${c.name.replace(/"/g, '""')}"`,
+                    `"${c.unStatus}"`,
+                    `"${c.cca2}"`,
+                    `"${c.continent}"`,
+                    c.population,
+                    c.area,
+                    Math.round(c.area * 0.386102),
+                    `"${c.currencies.replace(/"/g, '""')}"`,
+                    `"${c.languages.replace(/"/g, '""')}"`
+                ].join(','));
+                content = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+                mimeType = 'text/csv;charset=utf-8';
+            } else if (format === 'json') {
+                const cleanData = filteredCountries.map((c, idx) => ({
+                    index: idx + 1,
+                    country: c.name,
+                    un_status: c.unStatus,
+                    iso_alpha2: c.cca2,
+                    continent: c.continent,
+                    approximate_population: c.population,
+                    land_size_sq_km: c.area,
+                    land_size_sq_mi: Math.round(c.area * 0.386102),
+                    currency: c.currencies,
+                    spoken_languages: c.languages
+                }));
+                content = JSON.stringify(cleanData, null, 2);
+                mimeType = 'application/json;charset=utf-8';
+            } else {
+                content = buildSummaryDatasetText(filteredCountries);
+            }
+
+            triggerBlobDownload(content, filename, mimeType);
+            showToast(`Downloaded ${filename}`, 'success');
+        }
+
+        /**
+         * Toast Notification System
+         */
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            const colors = {
+                success: 'bg-emerald-600 text-white',
+                error: 'bg-rose-600 text-white',
+                info: 'bg-slate-800 text-white dark:bg-slate-700'
+            };
+            const icons = {
+                success: 'fa-circle-check',
+                error: 'fa-circle-exclamation',
+                info: 'fa-circle-info'
+            };
+
+            toast.className = `${colors[type] || colors.info} px-4 py-3 rounded-xl shadow-lg text-xs sm:text-sm font-medium flex items-center gap-2.5 pointer-events-auto transform transition-all duration-300 translate-y-2 opacity-0`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i> <span>${escapeHTML(message)}</span>`;
+
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Learning Hub - Number Explorer</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+        }
+        /* Custom scrollbar for tables */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg py-6 px-4">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/10 p-3 rounded-2xl backdrop-blur-md">
+                    <i class="fa-solid fa-calculator text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">Math Learning Hub</h1>
+                    <p class="text-blue-100 text-sm">Explore properties, tables, and fun math facts!</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md text-sm font-medium">
+                <i class="fa-regular fa-lightbulb text-yellow-300"></i>
+                <span>Type any number to begin</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl w-full mx-auto p-4 sm:p-6 flex-grow space-y-6">
+        
+        <!-- Input Card -->
+        <section class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 transition-all hover:shadow-md">
+            <label for="numberInput" class="block text-sm font-semibold text-slate-700 mb-2">Enter a Whole Number:</label>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-grow">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-hashtag"></i>
+                    </span>
+                    <input type="number" id="numberInput" placeholder="e.g. 7, 12, 144..." 
+                           class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-lg font-medium transition-all"
+                           value="7">
+                </div>
+                <button onclick="exploreNumber()" class="gradient-bg text-white px-8 py-3.5 rounded-2xl font-semibold shadow-lg shadow-indigo-500/20 hover:opacity-95 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-compass"></i>
+                    <span>Explore Number</span>
+                </button>
+            </div>
+            <!-- Quick suggestion buttons -->
+            <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+                <span class="text-slate-400 font-medium">Try quick numbers:</span>
+                <button onclick="setNumber(5)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-medium transition">5</button>
+                <button onclick="setNumber(12)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-medium transition">12</button>
+                <button onclick="setNumber(17)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-medium transition">17 (Prime)</button>
+                <button onclick="setNumber(25)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-medium transition">25 (Square)</button>
+                <button onclick="setNumber(64)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-medium transition">64</button>
+            </div>
+        </section>
+
+        <!-- Notification Banner / Message Box -->
+        <div id="msgBox" class="hidden p-4 rounded-2xl text-sm font-medium flex items-center gap-3 transition-all">
+            <i id="msgIcon" class="fa-solid fa-info-circle text-lg"></i>
+            <span id="msgText">Notification message here</span>
+        </div>
+
+        <!-- Results Section Container (Hidden until calculated) -->
+        <div id="resultsContainer" class="space-y-6">
+
+            <!-- Badges & Quick Stats -->
+            <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Odd/Even Card -->
+                <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div id="parityIconBg" class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold">
+                        <i id="parityIcon" class="fa-solid"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Parity</p>
+                        <p id="parityResult" class="text-lg font-bold text-slate-800">-</p>
+                    </div>
+                </div>
+
+                <!-- Prime/Composite Card -->
+                <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div id="primeIconBg" class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold">
+                        <i id="primeIcon" class="fa-solid"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Classification</p>
+                        <p id="primeResult" class="text-lg font-bold text-slate-800">-</p>
+                    </div>
+                </div>
+
+                <!-- Digit Sum Card -->
+                <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div class="bg-purple-50 text-purple-600 w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-plus-minus"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Digit Sum</p>
+                        <p id="digitSumResult" class="text-lg font-bold text-slate-800">-</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detailed Educational Facts Grid -->
+            <section class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-indigo-600"></i>
+                    <span>Student Learning Facts</span>
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
+                        <p class="text-xs text-slate-500 font-medium mb-1">Square ($n^2$)</p>
+                        <p id="squareResult" class="text-xl font-bold text-indigo-600">-</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
+                        <p class="text-xs text-slate-500 font-medium mb-1">Cube ($n^3$)</p>
+                        <p id="cubeResult" class="text-xl font-bold text-indigo-600">-</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
+                        <p class="text-xs text-slate-500 font-medium mb-1">Square Root ($\sqrt{n}$)</p>
+                        <p id="sqrtResult" class="text-xl font-bold text-indigo-600">-</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-center">
+                        <p class="text-xs text-slate-500 font-medium mb-1">Divisors Count</p>
+                        <p id="factorsCountResult" class="text-xl font-bold text-indigo-600">-</p>
+                    </div>
+                </div>
+                <div class="mt-4 bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row justify-between gap-3 text-sm">
+                    <div>
+                        <span class="font-semibold text-indigo-900">All Factors / Divisors: </span>
+                        <span id="factorsList" class="text-indigo-700 font-medium">-</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-indigo-900">Multiples (1st 5): </span>
+                        <span id="multiplesList" class="text-indigo-700 font-medium">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Multiplication Table (1 to 20) -->
+            <section class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-table text-indigo-600"></i>
+                        <span id="tableTitle">Multiplication Table (1 to 20)</span>
+                    </h3>
+                    <span class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-medium w-fit">Interactive Study Grid</span>
+                </div>
+                
+                <div class="overflow-x-auto rounded-2xl border border-slate-100">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 uppercase text-xs tracking-wider border-b border-slate-100">
+                                <th class="py-3 px-4 font-semibold">Multiplier</th>
+                                <th class="py-3 px-4 font-semibold">Operation</th>
+                                <th class="py-3 px-4 font-semibold">Result</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-slate-100 text-sm font-medium text-slate-700">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Action Toolbar (Copy, Download, Email, Share) -->
+            <section class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-share-nodes text-indigo-600"></i>
+                    <span>Export & Share Options</span>
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="copyToClipboard()" class="p-3 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 rounded-2xl font-semibold border border-slate-200 hover:border-indigo-200 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Copy</span>
+                    </button>
+                    <button onclick="downloadFile()" class="p-3 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 rounded-2xl font-semibold border border-slate-200 hover:border-indigo-200 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Download</span>
+                    </button>
+                    <button onclick="emailDetails()" class="p-3 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 rounded-2xl font-semibold border border-slate-200 hover:border-indigo-200 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-regular fa-envelope"></i>
+                        <span>Email</span>
+                    </button>
+                    <button onclick="shareContent()" class="p-3 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 rounded-2xl font-semibold border border-slate-200 hover:border-indigo-200 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-share-nodes"></i>
+                        <span>Share</span>
+                    </button>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-xs text-slate-400 border-t border-slate-200 mt-12 bg-white">
+        <p>Math Learning Hub &bull; Designed for Students & Educators</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Helper to set number directly from quick pills
+        function setNumber(num) {
+            document.getElementById('numberInput').value = num;
+            exploreNumber();
+        }
+
+        // Custom notification box instead of alert()
+        function showNotification(message, type = 'success') {
+            const box = document.getElementById('msgBox');
+            const icon = document.getElementById('msgIcon');
+            const text = document.getElementById('msgText');
+
+            box.className = "p-4 rounded-2xl text-sm font-medium flex items-center gap-3 transition-all shadow-sm";
+            if (type === 'success') {
+                box.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+                icon.className = "fa-solid fa-circle-check text-lg text-emerald-600";
+            } else {
+                box.classList.add('bg-amber-50', 'text-amber-800', 'border', 'border-amber-200');
+                icon.className = "fa-solid fa-triangle-exclamation text-lg text-amber-600";
+            }
+            text.textContent = message;
+            box.classList.remove('hidden');
+
+            setTimeout(() => {
+                box.classList.add('hidden');
+            }, 4000);
+        }
+
+        // Prime checker function
+        function isPrime(n) {
+            if (n <= 1) return false;
+            if (n <= 3) return true;
+            if (n % 2 === 0 || n % 3 === 0) return false;
+            for (let i = 5; i * i <= n; i += 6) {
+                if (n % i === 0 || n % (i + 2) === 0) return false;
+            }
+            return true;
+        }
+
+        // Factors finder function
+        function getFactors(n) {
+            const factors = [];
+            for (let i = 1; i <= Math.abs(n); i++) {
+                if (n % i === 0) {
+                    factors.push(i);
+                }
+            }
+            return factors;
+        }
+
+        // Sum of digits
+        function getDigitSum(n) {
+            const absStr = Math.abs(n).toString();
+            let sum = 0;
+            for (let char of absStr) {
+                sum += parseInt(char, 10);
+            }
+            return sum;
+        }
+
+        // Core explore function
+        function exploreNumber() {
+            const inputVal = document.getElementById('numberInput').value;
+            
+            // Validation
+            if (inputVal === "" || isNaN(inputVal)) {
+                showNotification("Please enter a valid number.", "warning");
+                return;
+            }
+
+            const n = parseInt(inputVal, 10);
+
+            // Parity Check
+            const isEven = n % 2 === 0;
+            const parityResult = document.getElementById('parityResult');
+            const parityIcon = document.getElementById('parityIcon');
+            const parityIconBg = document.getElementById('parityIconBg');
+
+            if (isEven) {
+                parityResult.textContent = "Even Number";
+                parityIcon.className = "fa-solid fa-2";
+                parityIconBg.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold bg-blue-50 text-blue-600";
+            } else {
+                parityResult.textContent = "Odd Number";
+                parityIcon.className = "fa-solid fa-1";
+                parityIconBg.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold bg-amber-50 text-amber-600";
+            }
+
+            // Prime Check
+            const primeResult = document.getElementById('primeResult');
+            const primeIcon = document.getElementById('primeIcon');
+            const primeIconBg = document.getElementById('primeIconBg');
+
+            if (n > 1 && isPrime(n)) {
+                primeResult.textContent = "Prime Number";
+                primeIcon.className = "fa-solid fa-shield-halved";
+                primeIconBg.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold bg-emerald-50 text-emerald-600";
+            } else if (n === 1) {
+                primeResult.textContent = "Neither Prime nor Composite";
+                primeIcon.className = "fa-solid fa-circle-question";
+                primeIconBg.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold bg-slate-100 text-slate-500";
+            } else if (n <= 0) {
+                primeResult.textContent = "Negative / Zero";
+                primeIcon.className = "fa-solid fa-ban";
+                primeIconBg.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold bg-rose-50 text-rose-600";
+            } else {
+                primeResult.textContent = "Composite Number";
+                primeIcon.className = "fa-solid fa-shapes";
+                primeIconBg.className = "w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold bg-orange-50 text-orange-600";
+            }
+
+            // Digit sum
+            document.getElementById('digitSumResult').textContent = getDigitSum(n);
+
+            // Educational metrics
+            document.getElementById('squareResult').textContent = n * n;
+            document.getElementById('cubeResult').textContent = n * n * n;
+            document.getElementById('sqrtResult').textContent = n >= 0 ? Math.sqrt(n).toFixed(2) : "N/A (Negative)";
+
+            // Factors & Multiples
+            const factors = getFactors(n);
+            document.getElementById('factorsCountResult').textContent = factors.length;
+            document.getElementById('factorsList').textContent = factors.join(', ');
+
+            const multiples = [n * 1, n * 2, n * 3, n * 4, n * 5];
+            document.getElementById('multiplesList').textContent = multiples.join(', ');
+
+            // Build Multiplication Table (1 to 20)
+            document.getElementById('tableTitle').textContent = `Multiplication Table for ${n} (1 to 20)`;
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = "";
+
+            for (let i = 1; i <= 20; i++) {
+                const tr = document.createElement('tr');
+                tr.className = i % 2 === 0 ? "bg-slate-50/50 hover:bg-slate-100/80 transition" : "bg-white hover:bg-slate-100/80 transition";
+                
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-semibold text-slate-800">${n} × ${i}</td>
+                    <td class="py-3 px-4 text-slate-500">Multiplication factor ${i}</td>
+                    <td class="py-3 px-4 font-bold text-indigo-600">${n * i}</td>
+                `;
+                tableBody.appendChild(tr);
+            }
+
+            showNotification(`Successfully analyzed number ${n}!`, "success");
+        }
+
+        // Generate full report text for export
+        function generateReportText() {
+            const inputVal = document.getElementById('numberInput').value;
+            const n = parseInt(inputVal, 10);
+            if (isNaN(n)) return "";
+
+            let report = `=== MATH LEARNING HUB REPORT ===\n`;
+            report += `Analyzed Number: ${n}\n`;
+            report += `Parity: ${n % 2 === 0 ? 'Even' : 'Odd'}\n`;
+            report += `Classification: ${n > 1 && isPrime(n) ? 'Prime' : 'Composite/Special'}\n`;
+            report += `Square: ${n * n} | Cube: ${n * n * n}\n`;
+            report += `Factors: ${getFactors(n).join(', ')}\n\n`;
+            report += `--- MULTIPLICATION TABLE (1 to 20) ---\n`;
+            for (let i = 1; i <= 20; i++) {
+                report += `${n} × ${i} = ${n * i}\n`;
+            }
+            report += `==================================`;
+            return report;
+        }
+
+        // 1. Copy to Clipboard (using safe fallback)
+        function copyToClipboard() {
+            const text = generateReportText();
+            if (!text) {
+                showNotification("No data to copy!", "warning");
+                return;
+            }
+            
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showNotification("Table and details copied to clipboard!", "success");
+            } catch (err) {
+                showNotification("Failed to copy text.", "warning");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // 2. Download as text file
+        function downloadFile() {
+            const text = generateReportText();
+            const n = document.getElementById('numberInput').value;
+            if (!text) {
+                showNotification("No data to download!", "warning");
+                return;
+            }
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Math_Table_Report_${n}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showNotification(`Downloaded Math_Table_Report_${n}.txt successfully!`, "success");
+        }
+
+        // 3. Email via mailto link
+        function emailDetails() {
+            const n = document.getElementById('numberInput').value;
+            const text = generateReportText();
+            if (!text) {
+                showNotification("No data to email!", "warning");
+                return;
+            }
+            const subject = encodeURIComponent(`Math Learning Hub Report: Number ${n}`);
+            const body = encodeURIComponent(text);
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+            showNotification("Opening email client...", "success");
+        }
+
+        // 4. Web Share API with fallback
+        async function shareContent() {
+            const n = document.getElementById('numberInput').value;
+            const text = generateReportText();
+            if (!text) {
+                showNotification("No data to share!", "warning");
+                return;
+            }
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: `Math Report for ${n}`,
+                        text: text,
+                    });
+                    showNotification("Successfully shared!", "success");
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        copyToClipboard();
+                    }
+                }
+            } else {
+                copyToClipboard();
+                showNotification("Web Share not supported. Copied to clipboard instead!", "success");
+            }
+        }
+
+        // Initial trigger on load
+        window.onload = function() {
+            exploreNumber();
+        };
+    </script>
+</body>
+</html>

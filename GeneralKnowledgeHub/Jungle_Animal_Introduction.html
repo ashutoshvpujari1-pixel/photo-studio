@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="An interactive jungle introduction for children. Meet jungle animals and hear them introduce themselves using voice.">
+<title>Welcome to the Jungle | Animal Voice Adventure</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+<style>
+:root{--deep:#123d2b;--leaf:#1f6b43;--lime:#b9e769;--cream:#fff9e9;--gold:#ffca62}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#183526;background:linear-gradient(180deg,#d9f3c6 0,#f8f5dc 45%,#e4f2d8 100%)}
+header{padding:30px 18px 34px;text-align:center;color:white;background:linear-gradient(120deg,rgba(5,49,31,.94),rgba(24,103,57,.86)),radial-gradient(circle at 80% 20%,#8dcf54,#164b32);position:relative;overflow:hidden}
+header:before{content:"🌿  🌴       🍃       🌳       🌿";display:block;font-size:clamp(25px,5vw,48px);opacity:.9;margin-bottom:8px}
+h1{font-size:clamp(30px,5vw,54px);margin:8px 0;color:#fff3b8;text-shadow:0 3px 0 #17472e}
+header p{font-size:clamp(15px,2vw,19px);margin:8px auto;max-width:720px;line-height:1.5}
+main{max-width:1200px;margin:auto;padding:20px 16px 48px}
+.intro{background:#fffdf3;border:2px solid #d4e8b2;border-radius:20px;padding:18px;text-align:center;box-shadow:0 8px 22px #244b2515}
+.intro h2{margin:2px 0 8px;color:var(--deep)}.intro p{margin:0;line-height:1.55}
+.controls{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin:18px 0}
+button,select,input{font:inherit;border-radius:12px;border:1px solid #b6d29a;padding:11px 14px}
+button{cursor:pointer;font-weight:700;background:var(--leaf);color:white;border:0;box-shadow:0 3px 0 #12452b;transition:.15s}
+button:hover{filter:brightness(1.08);transform:translateY(-1px)}button:disabled{opacity:.5;cursor:not-allowed}
+button.secondary{background:#f0f7df;color:#245336;border:1px solid #b6d29a;box-shadow:none}
+button.gold{background:#e9a92f;color:#3b2a0c;box-shadow:0 3px 0 #b67a18}
+#status{min-height:24px;text-align:center;color:#315b3c;font-weight:700;margin:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:16px;margin-top:20px}
+.animal{background:#fffef7;border:1px solid #d6e6c2;border-radius:18px;overflow:hidden;box-shadow:0 6px 18px #244b2510;display:flex;flex-direction:column;transition:.2s}
+.animal.active{outline:4px solid #f2bd4e;transform:translateY(-3px)}
+.animal-art{height:142px;display:grid;place-items:center;font-size:88px;background:linear-gradient(145deg,#d8f0bd,#f6edc4);position:relative}
+.animal-art:after{content:"";position:absolute;bottom:0;left:0;right:0;height:13px;background:linear-gradient(90deg,#79ad50,#a9cf6a,#5f9b48);opacity:.65}
+.animal-content{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.animal h3{margin:0;color:#174b31;font-size:20px}.kind{font-size:12px;color:#65806a;text-transform:uppercase;letter-spacing:.7px;font-weight:700}
+.animal p{font-size:14px;line-height:1.45;margin:0;flex:1;color:#425c48}
+.animal .actions{display:flex;gap:7px;margin-top:5px}.animal .actions button{flex:1;padding:9px 7px;font-size:13px}
+footer{text-align:center;padding:22px;color:#4b694e;font-size:13px}
+@media(max-width:500px){.controls>*{width:100%}.animal .actions button{font-size:12px}}
+</style>
+</head>
+<body>
+<header>
+<h1>🌴 Welcome to the Jungle! 🐾</h1>
+<p>Come along on a magical jungle adventure. One by one, meet the animals and listen as each friendly creature introduces itself!</p>
+</header>
+<main>
+<section class="intro">
+<h2>🎤 The Jungle Animal Parade</h2>
+<p>Press <b>Start Jungle Show</b> to invite every animal to the stage. Each animal will appear, say hello and share a fun fact. You can also choose any animal and hear its introduction again.</p>
+</section>
+<div class="controls">
+<button class="gold" id="startShow">▶ Start Jungle Show</button>
+<button class="secondary" id="pauseShow">⏸ Pause</button>
+<button class="secondary" id="stopShow">⏹ Stop</button>
+<select id="language" aria-label="Voice language">
+<option value="en">English voice</option><option value="hi">Hindi voice</option>
+</select>
+<select id="voice" aria-label="Choose voice"><option value="">Default available voice</option></select>
+<input id="search" type="search" placeholder="Search an animal..." aria-label="Search animals">
+</div>
+<div id="status" aria-live="polite">The jungle is waiting for you. Press Start Jungle Show!</div>
+<section class="grid" id="animalGrid" aria-label="Jungle animals"></section>
+</main>
+<footer>Made for curious explorers • Voice uses your browser's built-in text-to-speech feature.</footer>
+<script>
+const animals = [
+{name:"Lion",emoji:"🦁",kind:"Mammal · Grassland",en:"Hello! I am Leo the Lion. I am known as the king of the jungle. I live in groups called prides, and my mighty roar can be heard from far away. Welcome to my home!",hi:"नमस्ते! मैं शेर हूँ। मुझे जंगल का राजा कहा जाता है। मैं झुंड में रहता हूँ और मेरी दहाड़ बहुत दूर तक सुनाई देती है। मेरे घर में आपका स्वागत है!"},
+{name:"Elephant",emoji:"🐘",kind:"Mammal · Forest",en:"Hello, friends! I am Ellie the Elephant. I have a long trunk, big ears and a wonderful memory. I use my trunk to drink water, pick up food and greet my friends.",hi:"नमस्ते दोस्तों! मैं हाथी हूँ। मेरी लंबी सूँड़ और बड़े कान हैं। मैं अपनी सूँड़ से पानी पीता हूँ, खाना उठाता हूँ और दोस्तों का अभिवादन करता हूँ।"},
+{name:"Tiger",emoji:"🐅",kind:"Mammal · Forest",en:"Grrrreetings! I am Tara the Tiger. My orange coat has beautiful black stripes. I am a powerful swimmer and I usually enjoy living alone in the forest.",hi:"नमस्कार! मैं बाघ हूँ। मेरे नारंगी शरीर पर काली धारियाँ हैं। मैं बहुत अच्छा तैर सकता हूँ और आमतौर पर जंगल में अकेले रहता हूँ।"},
+{name:"Monkey",emoji:"🐒",kind:"Mammal · Trees",en:"Hey there! I am Momo the Monkey. I love climbing trees, swinging from branches and eating fruit. I am curious, playful and quick on my feet!",hi:"नमस्ते! मैं बंदर हूँ। मुझे पेड़ों पर चढ़ना, डालियों पर झूलना और फल खाना पसंद है। मैं चंचल और बहुत फुर्तीला हूँ!"},
+{name:"Giraffe",emoji:"🦒",kind:"Mammal · Savanna",en:"Hi! I am Gia the Giraffe. I am the tallest land animal. My long neck helps me reach tasty leaves high up in the trees. Can you stretch as tall as me?",hi:"नमस्ते! मैं जिराफ़ हूँ। मैं धरती पर रहने वाला सबसे ऊँचा जानवर हूँ। मेरी लंबी गर्दन मुझे पेड़ों की ऊँची पत्तियाँ खाने में मदद करती है।"},
+{name:"Zebra",emoji:"🦓",kind:"Mammal · Savanna",en:"Hello! I am Ziggy the Zebra. My black and white stripes make me special. Every zebra has its own unique stripe pattern, just like a fingerprint!",hi:"नमस्ते! मैं ज़ेब्रा हूँ। मेरे शरीर पर काली और सफेद धारियाँ हैं। हर ज़ेब्रा की धारियों का पैटर्न अलग होता है!"},
+{name:"Bear",emoji:"🐻",kind:"Mammal · Forest",en:"Hello! I am Benny the Bear. I have thick fur and strong paws. I enjoy looking for berries, plants and other food. Some bears are excellent swimmers too!",hi:"नमस्ते! मैं भालू हूँ। मेरे घने बाल और मज़बूत पंजे हैं। मुझे बेर और दूसरे खाद्य पदार्थ ढूँढ़ना पसंद है। कुछ भालू बहुत अच्छे तैराक भी होते हैं!"},
+{name:"Fox",emoji:"🦊",kind:"Mammal · Woodland",en:"Good day! I am Felix the Fox. I have pointed ears, a bushy tail and sharp senses. I am clever and love exploring my surroundings.",hi:"नमस्ते! मैं लोमड़ी हूँ। मेरे नुकीले कान और घनी पूँछ है। मेरी सूँघने और सुनने की शक्ति तेज़ है और मुझे नई जगहें खोजना पसंद है।"},
+{name:"Deer",emoji:"🦌",kind:"Mammal · Forest",en:"Hello, I am Daisy the Deer. I am gentle and quick. I nibble on leaves, grass and shoots. Some male deer grow beautiful antlers.",hi:"नमस्ते! मैं हिरण हूँ। मैं कोमल और तेज़ दौड़ने वाला जानवर हूँ। मैं पत्तियाँ, घास और कोमल टहनियाँ खाता हूँ।"},
+{name:"Wolf",emoji:"🐺",kind:"Mammal · Woodland",en:"Awoo! I am Willow the Wolf. I live and work with my pack. We communicate with howls and help one another find food and stay safe.",hi:"आऊऊ! मैं भेड़िया हूँ। मैं अपने झुंड के साथ रहता हूँ। हम हुआँ-हुआँ की आवाज़ से एक-दूसरे से बात करते हैं और मिलकर रहते हैं।"},
+{name:"Gorilla",emoji:"🦍",kind:"Mammal · Rainforest",en:"Hello! I am Gus the Gorilla. I am strong, but I am usually peaceful. I live in family groups and eat mostly leaves, stems and fruit.",hi:"नमस्ते! मैं गोरिल्ला हूँ। मैं ताकतवर हूँ, लेकिन आमतौर पर शांत रहता हूँ। मैं अपने परिवार के साथ रहता हूँ और ज़्यादातर पत्तियाँ, तने और फल खाता हूँ।"},
+{name:"Crocodile",emoji:"🐊",kind:"Reptile · River",en:"Hello from the river! I am Coco the Crocodile. I have a long tail, strong jaws and eyes that peek above the water. I am a reptile and love watery habitats.",hi:"नदी से नमस्ते! मैं मगरमच्छ हूँ। मेरी लंबी पूँछ और मज़बूत जबड़े हैं। मैं पानी में रहता हूँ और मेरी आँखें पानी के ऊपर दिखाई दे सकती हैं।"},
+{name:"Snake",emoji:"🐍",kind:"Reptile · Forest",en:"Sss hello! I am Sammy the Snake. I have no legs, so I slither along the ground. I use my tongue to collect scents from the air around me.",hi:"नमस्ते! मैं साँप हूँ। मेरे पैर नहीं होते, इसलिए मैं रेंगकर चलता हूँ। मैं अपनी जीभ से आसपास की गंध पहचानने में मदद पाता हूँ।"},
+{name:"Parrot",emoji:"🦜",kind:"Bird · Rainforest",en:"Squawk! I am Polly the Parrot. I have colourful feathers, a curved beak and strong feet for holding branches. Some parrots can copy sounds they hear!",hi:"नमस्ते! मैं तोता हूँ। मेरे रंग-बिरंगे पंख, मुड़ी हुई चोंच और मज़बूत पंजे हैं। कुछ तोते सुनी हुई आवाज़ों की नकल कर सकते हैं!"},
+{name:"Owl",emoji:"🦉",kind:"Bird · Woodland",en:"Hoo hoo! I am Oliver the Owl. I have large eyes and excellent hearing. Many owls are active at night, when they quietly search for food.",hi:"हू हू! मैं उल्लू हूँ। मेरी बड़ी आँखें और सुनने की अच्छी क्षमता है। कई उल्लू रात में जागते हैं और चुपचाप भोजन खोजते हैं।"},
+{name:"Peacock",emoji:"🦚",kind:"Bird · Forest",en:"Namaste! I am Piku the Peacock. I am famous for my colourful tail feathers. I spread them out like a beautiful fan during my courtship display.",hi:"नमस्ते! मैं मोर हूँ। मैं अपने रंग-बिरंगे पंखों के लिए प्रसिद्ध हूँ। नृत्य करते समय मैं अपने पंख पंखे की तरह फैलाता हूँ।"},
+{name:"Rabbit",emoji:"🐇",kind:"Mammal · Meadow",en:"Hello! I am Ruby the Rabbit. I have long ears, strong back legs and a fluffy tail. I love nibbling grass and hopping around.",hi:"नमस्ते! मैं खरगोश हूँ। मेरे लंबे कान, मज़बूत पिछले पैर और मुलायम पूँछ है। मुझे घास खाना और उछल-कूद करना पसंद है।"},
+{name:"Panda",emoji:"🐼",kind:"Mammal · Bamboo forest",en:"Hi! I am Bao the Panda. My black and white fur makes me easy to recognise. Bamboo is my favourite food, and I spend many hours eating it.",hi:"नमस्ते! मैं पांडा हूँ। मेरा काला-सफेद शरीर मुझे खास बनाता है। बाँस मेरा पसंदीदा भोजन है और मैं कई घंटे इसे खाने में बिताता हूँ।"},
+{name:"Hippo",emoji:"🦛",kind:"Mammal · River",en:"Hello! I am Hazel the Hippo. I spend much of my day in water to keep cool. I may look slow, but I can move surprisingly quickly!",hi:"नमस्ते! मैं दरियाई घोड़ा हूँ। गर्मी से बचने के लिए मैं दिन का बहुत समय पानी में बिताता हूँ। मैं दिखने में भारी हूँ, लेकिन तेज़ चल सकता हूँ!"},
+{name:"Kangaroo",emoji:"🦘",kind:"Mammal · Grassland",en:"G'day! I am Kiki the Kangaroo. I move by hopping with my powerful back legs, and a mother kangaroo carries her baby in a pouch.",hi:"नमस्ते! मैं कंगारू हूँ। मैं अपने मज़बूत पिछले पैरों से छलाँग लगाता हूँ। माँ कंगारू अपने बच्चे को पेट की थैली में रखती है।"}
+];
+const grid=document.getElementById('animalGrid'), statusEl=document.getElementById('status');
+let current=-1, queue=[], queueIndex=0, paused=false;
+function selectedText(a){return a[document.getElementById('language').value]||a.en}
+function render(){
+ const term=document.getElementById('search').value.trim().toLowerCase();
+ grid.innerHTML='';
+ animals.forEach((a,i)=>{
+  if(!a.name.toLowerCase().includes(term))return;
+  const card=document.createElement('article');card.className='animal'+(i===current?' active':'');card.id='animal-'+i;
+  card.innerHTML=`<div class="animal-art" role="img" aria-label="${a.name}">${a.emoji}</div><div class="animal-content"><div class="kind">${a.kind}</div><h3>${a.name}</h3><p>${a.en}</p><div class="actions"><button type="button" data-play="${i}">🔊 Meet me</button><button type="button" class="secondary" data-stop>Stop</button></div></div>`;
+  grid.appendChild(card);
+ });
+}
+function speak(text,onend){
+ if(!('speechSynthesis'in window)){statusEl.textContent='Sorry, speech synthesis is not supported in this browser.';return}
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(text);
+ const lang=document.getElementById('language').value;
+ u.lang=lang==='hi'?'hi-IN':'en-IN';u.rate=.91;u.pitch=1.03;
+ const chosen=document.getElementById('voice').value;
+ const voices=speechSynthesis.getVoices();
+ if(chosen){const v=voices.find(x=>x.name===chosen);if(v)u.voice=v}
+ u.onend=()=>{if(onend)onend()};
+ u.onerror=()=>{statusEl.textContent='Voice playback could not start. Try another browser voice.'};
+ speechSynthesis.speak(u);
+}
+function playAnimal(i,advance=false){
+ current=i;render();const a=animals[i];
+ statusEl.textContent=`Now introducing: ${a.name}!`;
+ document.getElementById('animal-'+i)?.scrollIntoView({behavior:'smooth',block:'center'});
+ speak(selectedText(a),()=>{if(advance&&queueIndex<queue.length-1){queueIndex++;setTimeout(()=>playAnimal(queue[queueIndex],true),650)}else if(advance){statusEl.textContent='🎉 The jungle parade is complete. Thank you for visiting!';current=-1;render()}});
+}
+function startShow(){if(!('speechSynthesis'in window)){statusEl.textContent='Your browser does not support voice playback.';return}queue=animals.map((_,i)=>i);queueIndex=0;paused=false;playAnimal(queue[0],true)}
+function populateVoices(){
+ const sel=document.getElementById('voice'), old=sel.value;
+ const lang=document.getElementById('language').value;
+ const voices=speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith(lang));
+ sel.innerHTML='<option value="">Default available voice</option>';
+ voices.forEach(v=>{const o=document.createElement('option');o.value=v.name;o.textContent=`${v.name} (${v.lang})`;sel.appendChild(o)});
+ if([...sel.options].some(o=>o.value===old))sel.value=old;
+}
+grid.addEventListener('click',e=>{const p=e.target.closest('[data-play]'),s=e.target.closest('[data-stop]');if(p)playAnimal(Number(p.dataset.play));if(s){speechSynthesis.cancel();current=-1;render();statusEl.textContent='Voice stopped.'}});
+document.getElementById('startShow').addEventListener('click',startShow);
+document.getElementById('pauseShow').addEventListener('click',()=>{if(!('speechSynthesis'in window))return;if(speechSynthesis.speaking&&!speechSynthesis.paused){speechSynthesis.pause();paused=true;statusEl.textContent='Show paused. Press Start Jungle Show to replay from the beginning, or resume in your browser controls.'}else if(speechSynthesis.paused){speechSynthesis.resume();paused=false;statusEl.textContent='Show resumed.'}});
+document.getElementById('stopShow').addEventListener('click',()=>{speechSynthesis.cancel();queue=[];current=-1;render();statusEl.textContent='The jungle show has stopped.'});
+document.getElementById('search').addEventListener('input',render);
+document.getElementById('language').addEventListener('change',()=>{populateVoices();if(current>=0)playAnimal(current)});
+if('speechSynthesis'in window){speechSynthesis.onvoiceschanged=populateVoices;populateVoices()}
+render();
+</script>
+</body>
+</html>

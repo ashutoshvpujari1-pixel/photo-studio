@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriBharat - Indian Agricultural Directory</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        agri: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            table {
+                font-size: 11px !important;
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            th, td {
+                border: 1px solid #cbd5e1 !important;
+                padding: 6px 8px !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-50 text-slate-800 font-sans antialiased flex flex-col justify-between">
+
+    <!-- Toast Notification Box -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toast-message" class="text-sm font-medium">Notification message</span>
+    </div>
+
+    <!-- Main Container -->
+    <div class="flex-grow">
+        <!-- Header / Navigation -->
+        <header class="bg-gradient-to-r from-agri-900 via-agri-800 to-emerald-900 text-white shadow-xl no-print">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-emerald-500/20 p-3 rounded-2xl border border-emerald-400/30 backdrop-blur-sm">
+                            <i class="fa-solid fa-seedling text-emerald-400 text-3xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">AgriBharat <span class="text-emerald-400 font-light">Directory</span></h1>
+                            <p class="text-xs sm:text-sm text-emerald-200">Comprehensive map of crops, vegetables, fruits & spices across Indian states & districts</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons Bar -->
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <button onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl font-medium text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-900/30 transition transform active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-file-pdf"></i> Download PDF
+                        </button>
+                        <button onclick="copyInfo()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-xl font-medium text-xs sm:text-sm flex items-center gap-2 border border-slate-700 shadow-md transition transform active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-copy"></i> Copy Data
+                        </button>
+                        <button onclick="shareInfo()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-xl font-medium text-xs sm:text-sm flex items-center gap-2 border border-slate-700 shadow-md transition transform active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-share-nodes"></i> Share
+                        </button>
+                        <button onclick="emailInfo()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-xl font-medium text-xs sm:text-sm flex items-center gap-2 border border-slate-700 shadow-md transition transform active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-envelope"></i> Email
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Filters & Search Toolbar -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 no-print">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+                
+                <!-- Search Input -->
+                <div class="lg:col-span-5 relative">
+                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="searchInput" oninput="filterData()" placeholder="Search by city, state, crop, fruit, vegetable..." 
+                        class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+                </div>
+
+                <!-- Category Filters -->
+                <div class="lg:col-span-5 flex flex-wrap gap-1.5 items-center">
+                    <button onclick="setCategory('All')" id="cat-All" class="cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold bg-emerald-600 text-white transition shadow-sm">All</button>
+                    <button onclick="setCategory('Cereals')" id="cat-Cereals" class="cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Cereals</button>
+                    <button onclick="setCategory('Fruits')" id="cat-Fruits" class="cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Fruits</button>
+                    <button onclick="setCategory('Vegetables')" id="cat-Vegetables" class="cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Vegetables</button>
+                    <button onclick="setCategory('Spices & Cash Crops')" id="cat-Spices & Cash Crops" class="cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Spices & Cash</button>
+                    <button onclick="setCategory('Plantation')" id="cat-Plantation" class="cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Plantation</button>
+                </div>
+
+                <!-- View Switcher & Counter -->
+                <div class="lg:col-span-2 flex justify-between lg:justify-end items-center gap-4">
+                    <span id="resultCount" class="text-xs font-medium text-slate-500">Showing all</span>
+                    <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+                        <button onclick="setViewMode('card')" id="cardViewBtn" class="p-2 rounded-lg text-emerald-600 bg-white shadow-sm transition text-xs" title="Card View">
+                            <i class="fa-solid fa-grip"></i>
+                        </button>
+                        <button onclick="setViewMode('table')" id="tableViewBtn" class="p-2 rounded-lg text-slate-500 hover:text-slate-800 transition text-xs" title="Table View">
+                            <i class="fa-solid fa-table-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Area -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-8">
+            
+            <!-- Hidden Print Header -->
+            <div class="hidden print-only mb-6 text-center">
+                <h1 class="text-3xl font-bold">AgriBharat - Comprehensive Agricultural Directory of India</h1>
+                <p class="text-sm text-slate-600">Generated on <span id="printDate"></span></p>
+                <hr class="my-4">
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fa-solid fa-seedling"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800">No agricultural regions found</h3>
+                <p class="text-sm text-slate-500 mt-1">Try adjusting your search query or category filter.</p>
+                <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-semibold hover:bg-emerald-500 transition">Reset Filters</button>
+            </div>
+
+            <!-- Card Grid View -->
+            <div id="cardViewContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated -->
+            </div>
+
+            <!-- Table View -->
+            <div id="tableViewContainer" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100/75 border-b border-slate-200 text-slate-700 text-xs font-semibold uppercase tracking-wider">
+                                <th class="p-4">City / District</th>
+                                <th class="p-4">State</th>
+                                <th class="p-4">Category</th>
+                                <th class="p-4">Key Produce (Crops, Veg, Fruits, Spices)</th>
+                                <th class="p-4">Soil & Climate</th>
+                                <th class="p-4">Season</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-slate-100 text-sm text-slate-700">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <p>&copy; 2026 AgriBharat. Comprehensive Agricultural Database of India.</p>
+            <div class="flex items-center gap-4">
+                <span>Covering All States & Union Territories</span>
+                <span>•</span>
+                <span class="text-emerald-600 font-medium">Atmanirbhar Krishi</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Comprehensive agricultural dataset covering all major states and districts of India
+        const agriData = [
+            // Maharashtra
+            { city: "Nashik", state: "Maharashtra", category: "Fruits", produce: "Grapes, Pomegranates, Onions, Tomatoes, Strawberries", soil: "Black Cotton Soil, Well-drained alluvial", season: "Rabi & Kharif" },
+            { city: "Nagpur", state: "Maharashtra", category: "Fruits", produce: "Oranges (Nagpur Mandarin), Cotton, Soybean, Jowar", soil: "Deep Clayey, Laterite & Regur", season: "Kharif & Zaid" },
+            { city: "Pune", state: "Maharashtra", category: "Vegetables", produce: "Sugarcane, Onion, Potato, Flower crops, Bajra, Grapes", soil: "Loamy & Black Cotton Soil", season: "All Season" },
+            { city: "Kolhapur", state: "Maharashtra", category: "Cereals", produce: "Sugarcane, Jaggery, Rice, Soybean, Groundnut", soil: "Rich Alluvial & Lateritic", season: "Kharif" },
+            { city: "Solapur", state: "Maharashtra", category: "Fruits", produce: "Pomegranate, Jowar, Turover, Grapes, Bajra", soil: "Arid Dry Loam & Medium Black", season: "Rabi" },
+            { city: "Jalgaon", state: "Maharashtra", category: "Fruits", produce: "Bananas, Cotton, Wheat, Chickpea", soil: "Fertile Tapi Basin Alluvium", season: "All Season" },
+            
+            // Punjab
+            { city: "Ludhiana", state: "Punjab", category: "Cereals", produce: "Wheat, Paddy (Rice), Maize, Rapeseed, Mustard", soil: "Alluvial, Highly Fertile Loam", season: "Rabi & Kharif" },
+            { city: "Amritsar", state: "Punjab", category: "Cereals", produce: "Wheat, Rice, Barley, Potato, Vegetables", soil: "Coarse Alluvial Soil", season: "Rabi & Kharif" },
+            { city: "Jalandhar", state: "Punjab", category: "Vegetables", produce: "Potato, Peas, Wheat, Paddy, Dairy fodder", soil: "Sandy Loam to Clayey Loam", season: "Rabi" },
+            { city: "Patiala", state: "Punjab", category: "Cereals", produce: "Wheat, Paddy, Cotton, Sunflower", soil: "Alluvial Plain Loam", season: "Kharif & Rabi" },
+
+            // Haryana
+            { city: "Karnal", state: "Punjab / Haryana", category: "Cereals", produce: "Basmati Rice, Wheat, Sugarcane, Sunflower", soil: "Indo-Gangetic Alluvial", season: "Kharif & Rabi" },
+            { city: "Hisar", state: "Haryana", category: "Spices & Cash Crops", produce: "Cotton, Mustard, Pearl Millet (Bajra), Gram", soil: "Desert & Sierozem Soils", season: "Kharif & Rabi" },
+            { city: "Panipat", state: "Haryana", category: "Cereals", produce: "Paddy, Wheat, Sugarcane, Vegetables", soil: "Alluvial Loam", season: "All Season" },
+
+            // Uttar Pradesh
+            { city: "Varanasi", state: "Uttar Pradesh", category: "Vegetables", produce: "Green Peas, Mango, Amla, Guava, Potato, Wheat", soil: "Gangetic Alluvial Plains", season: "Rabi & Kharif" },
+            { city: "Meerut", state: "Uttar Pradesh", category: "Spices & Cash Crops", produce: "Sugarcane, Wheat, Jaggery, Potato, Mustard", soil: "Rich Calcium-rich Alluvial", season: "Rabi & Kharif" },
+            { city: "Lucknow", state: "Uttar Pradesh", category: "Fruits", produce: "Dasheri Mangoes, Guava, Melon, Paddy, Wheat", soil: "Alluvial Silt Loam", season: "Summer & Kharif" },
+            { city: "Allahabad (Prayagraj)", state: "Uttar Pradesh", category: "Fruits", produce: "Guava, Amla, Watermelon, Wheat, Rice", soil: "Sandy Alluvial Doab", season: "Winter & Summer" },
+            { city: "Gorakhpur", state: "Uttar Pradesh", category: "Cereals", produce: "Paddy, Wheat, Sugarcane, Lentils", soil: "Terai Moist Alluvial", season: "Kharif & Rabi" },
+            { city: "Kanpur", state: "Uttar Pradesh", category: "Spices & Cash Crops", produce: "Tobacco, Cotton, Wheat, Paddy, Pulses", soil: "Central Gangetic Alluvium", season: "All Season" },
+
+            // Madhya Pradesh
+            { city: "Indore", state: "Madhya Pradesh", category: "Spices & Cash Crops", produce: "Soybean, Wheat, Gram, Garlic, Coriander", soil: "Black Cotton Soil", season: "Kharif & Rabi" },
+            { city: "Bhopal", state: "Madhya Pradesh", category: "Cereals", produce: "Wheat, Soybean, Paddy, Maize, Chickpea", soil: "Mixed Red & Black Soil", season: "Kharif & Rabi" },
+            { city: "Jabalpur", state: "Madhya Pradesh", category: "Cereals", produce: "Paddy, Wheat, Peas, Mustard, Lentils", soil: "Alluvial and Laterite patches", season: "Kharif & Rabi" },
+            { city: "Gwalior", state: "Madhya Pradesh", category: "Spices & Cash Crops", produce: "Mustard, Sesame, Wheat, Bajra",_soil: "Alluvial Sandy Loam", season: "Rabi" },
+
+            // Gujarat
+            { city: "Anand", state: "Gujarat", category: "Plantation", produce: "Tobacco, Banana, Potato, Dairy/Milk products, Cumin", soil: "Gorat (Sandy Loam) & Alluvial", season: "All Season" },
+            { city: "Surat", state: "Gujarat", category: "Fruits", produce: "Sapodilla (Chikoo), Mango (Alphonso/Kesar), Banana, Cotton", soil: "Coastal Alluvial & Deep Black", season: "All Season" },
+            { city: "Junagadh", state: "Gujarat", category: "Spices & Cash Crops", produce: "Groundnut, Cotton, Sesame, Mango (Kesar)", soil: "Medium Black & Coastal Saline", season: "Kharif" },
+            { city: "Mehsana", state: "Gujarat", category: "Vegetables", produce: "Cumin, Fennel, Potato, Mustard, Castor seed", soil: "Sandy Alluvial", season: "Rabi" },
+
+            // Karnataka
+            { city: "Mysuru", state: "Karnataka", category: "Plantation", produce: "Sandalwood, Coffee, Mulberry (Silk), Ragi, Sugarcane", soil: "Red Loam & Clayey", season: "All Season" },
+            { city: "Belagavi", state: "Karnataka", category: "Cereals", produce: "Sugarcane, Maize, Jowar, Tobacco, Paddy", soil: "Red Lateritic and Deep Black", season: "Kharif & Rabi" },
+            { city: "Chikkamagaluru", state: "Karnataka", category: "Plantation", produce: "Arabica & Robusta Coffee, Pepper, Cardamom, Tea", soil: "Rich Forest Loam & Laterite", season: "Monsoon / Year-round" },
+            { city: "Bengaluru Rural", state: "Karnataka", category: "Vegetables", produce: "Ragi, Tomato, Potato, Grapes, Floriculture", soil: "Red Sandy Clay", season: "All Season" },
+
+            // Tamil Nadu
+            { city: "Thanjavur", state: "Tamil Nadu", category: "Cereals", produce: "Paddy (Rice bowl of TN), Banana, Coconut, Sugarcane", soil: "Cauvery Delta Alluvial Silt", season: "Kharif (Kuruvai/Samba)" },
+            { city: "Coimbatore", state: "Tamil Nadu", category: "Spices & Cash Crops", produce: "Cotton, Turmeric, Coconut, Tea, Vegetables", soil: "Red Loam and Black Cotton", season: "All Season" },
+            { city: "Nilgiris (Ooty)", state: "Tamil Nadu", category: "Vegetables", produce: "Tea, Carrot, Potato, Cabbage, Temperate Fruits", soil: "Mountainous Laterite & Forest Humus", season: "Year-round" },
+            { city: "Madurai", state: "Tamil Nadu", category: "Fruits", produce: "Jasmine flowers, Mango, Banana, Paddy, Millets", soil: "Red Sandy Loam", season: "All Season" },
+
+            // Kerala
+            { city: "Wayanad", state: "Kerala", category: "Spices & Cash Crops", produce: "Black Pepper, Cardamom, Coffee, Ginger, Vanilla", soil: "Forest Laterite Loam", season: "Monsoon & Post-Monsoon" },
+            { city: "Kozhikode", state: "Kerala", category: "Plantation", produce: "Coconut, Spices (Pepper, Ginger), Rubber, Cashew", soil: "Coastal Sandy and Laterite", season: "Year-round" },
+            { city: "Idukki", state: "Kerala", category: "Spices & Cash Crops", produce: "Cardamom, Pepper, Tea, Coffee, Rubber", soil: "High Altitude Forest Soil", season: "All Season" },
+            { city: "Palakkad", state: "Kerala", category: "Cereals", produce: "Paddy, Coconut, Rubber, Banana, Vegetables", soil: "Alluvial River Valley and Laterite", season: "Kharif & Rabi" },
+
+            // Andhra Pradesh & Telangana
+            { city: "Guntur", state: "Andhra Pradesh", category: "Spices & Cash Crops", produce: "Red Chillies, Cotton, Tobacco, Paddy, Turmeric", soil: "Black Cotton & Delta Alluvial", season: "Kharif & Rabi" },
+            { city: "Vijayawada", state: "Andhra Pradesh", category: "Fruits", produce: "Mangoes (Banganapalli), Banana, Citrus, Paddy", soil: "Krishna River Alluvial", season: "Summer & Kharif" },
+            { city: "Warangal", state: "Telangana", category: "Spices & Cash Crops", produce: "Cotton, Chilli, Paddy, Maize, Turmeric", soil: "Red Sandy Loam & Chalkas", season: "Kharif" },
+            { city: "Nizamabad", state: "Telangana", category: "Spices & Cash Crops", produce: "Turmeric, Paddy, Sugarcane, Maize", soil: "Godavari Alluvial and Red Loam", season: "Kharif & Rabi" },
+
+            // West Bengal
+            { city: "Darjeeling", state: "West Bengal", category: "Plantation", produce: "Darjeeling Tea, Cardamom, Oranges, Ginger", soil: "Mountainous Brown Forest Soil", season: "Spring to Autumn" },
+            { city: "Bardhaman", state: "West Bengal", category: "Cereals", produce: "Paddy (Rice bowl of WB), Potatoes, Jute, Vegetables", soil: "Damodar Alluvial Silt", season: "Kharif & Rabi" },
+            { city: "Malda", state: "West Bengal", category: "Fruits", produce: "Mango (Langra, Himsagar), Jute, Mulberry (Silk), Paddy", soil: "Gangetic Alluvial", season: "Summer & Monsoon" },
+            { city: "Hooghly", state: "West Bengal", category: "Vegetables", produce: "Potato, Jute, Paddy, Vegetables, Betel vine", soil: "New Alluvial Loam", season: "Rabi & Kharif" },
+
+            // Bihar
+            { city: "Muzaffarpur", state: "Bihar", category: "Fruits", produce: "Shahi Litchi, Tobacco, Wheat, Maize, Paddy", soil: "Calcarious Alluvial Soil", season: "Summer & Kharif" },
+            { city: "Patna", state: "Bihar", category: "Cereals", produce: "Paddy, Wheat, Maize, Pulses, Vegetables", soil: "Gangetic Floodplain Alluvium", season: "Kharif & Rabi" },
+            { city: "Nalanda", state: "Bihar", category: "Vegetables", produce: "Potato, Onion, Garlic, Paddy, Wheat", soil: "Fertile Loamy Alluvium", season: "All Season" },
+
+            // Rajasthan
+            { city: "Jodhpur", state: "Rajasthan", category: "Spices & Cash Crops", produce: "Cumin (Jeera), Coriander, Isabgol, Bajra, Guar", soil: "Desert Sandy Soil", season: "Rabi & Kharif" },
+            { city: "Kota", state: "Rajasthan", category: "Spices & Cash Crops", produce: "Coriander (Dhania), Garlic, Soybean, Wheat", soil: "Medium Black Soil", season: "Rabi" },
+            { city: "Sri Ganganagar", state: "Rajasthan", category: "Spices & Cash Crops", produce: "Cotton, Wheat, Kinnow (Citrus), Mustard, Barley", soil: "Indira Gandhi Canal Alluvial Silt", season: "Rabi & Kharif" },
+            { city: "Ajmer", state: "Rajasthan", category: "Cereals", produce: "Maize, Bajra, Barley, Mustard, Rose (Pushkar)", soil: "Sandy Loam to Grey Brown", season: "Kharif & Rabi" },
+
+            // Odisha
+            { city: "Cuttack", state: "Odisha", category: "Cereals", produce: "Paddy, Pulses, Jute, Coconut, Turmeric", soil: "Mahanadi Delta Alluvium", season: "Kharif" },
+            { city: "Koraput", state: "Odisha", category: "Cereals", produce: "Organic Coffee, Finger Millet (Ragi), Ginger, Paddy", soil: "Red Lateritic Hill Soil", season: "Kharif" },
+
+            // Assam & North-East
+            { city: "Guwahati / Dibrugarh", state: "Assam", category: "Plantation", produce: "Assam Tea, Rice, Jute, Rubber, Arecanut", soil: "Brahmaputra Valley Silt Alluvium", season: "Monsoon / Year-round" },
+            { city: "Shillong", state: "Meghalaya", category: "Fruits", produce: "Pineapple, Khasi Mandarin Orange, Potato, Strawberries", soil: "Acidic Forest Loam", season: "All Season" },
+            { city: "Imphal", state: "Manipur", category: "Cereals", produce: "Rice, Black Rice (Chak-hao), Pineapple, Ginger", soil: "Valley Alluvial & Hill Laterite", season: "Kharif" },
+            { city: "Aizawl", state: "Mizoram", category: "Fruits", produce: "Oranges, Passion Fruit, Ginger, Turmeric, Bamboo shoot", soil: "Mountainous Laterite", season: "All Season" },
+
+            // Himachal Pradesh & Uttarakhand
+            { city: "Shimla", state: "Himachal Pradesh", category: "Fruits", produce: "Apples, Cherries, Plums, Peaches, Potatoes", soil: "Mountain Podzol & Brown Hill Soil", season: "Summer & Autumn" },
+            { city: "Kullu", state: "Himachal Pradesh", category: "Fruits", produce: "Apples, Pears, Trout fish, Vegetables, Floriculture", soil: "Alpine and Valley Loam", season: "Summer & Autumn" },
+            { city: "Dehradun", state: "Uttarakhand", category: "Cereals", produce: "Basmati Rice, Litchi, Tea, Wheat, Mangoes", soil: "Dun Valley Gravelly Loam", season: "Kharif & Rabi" },
+            { city: "Nainital", state: "Uttarakhand", category: "Fruits", produce: "Peaches, Apples, Plums, Potatoes, Wheat", soil: "Hilly Brown Forest Soil", season: "Summer & Rabi" },
+
+            // Jammu & Kashmir
+            { city: "Srinagar", state: "Jammu & Kashmir", category: "Fruits", produce: "Kashmiri Apples, Saffron (Pampore), Walnuts, Cherries, Almonds", soil: "Karewa Lacustrine & Alluvial", season: "Autumn & Summer" },
+            { city: "Jammu", state: "Jammu & Kashmir", category: "Cereals", produce: "Basmati Rice, Wheat, Maize, Citrus fruits", soil: "Sub-montane Alluvial", season: "Kharif & Rabi" },
+
+            // Jharkhand & Chhattisgarh
+            { city: "Ranchi", state: "Jharkhand", category: "Vegetables", produce: "Off-season Vegetables (Tomato, Cabbage, Cauliflower), Lac, Paddy", soil: "Red and Laterite Soil", season: "All Season" },
+            { city: "Raipur", state: "Chhattisgarh", category: "Cereals", produce: "Paddy (Rice Bowl of CG), Kodo-Kutki millets, Maize, Pulses", soil: "Red and Yellow (Matasi/Dorsa)", season: "Kharif" },
+
+            // Goa & Gujarat Coast
+            { city: "Panaji", state: "Goa", category: "Plantation", produce: "Cashew nuts, Coconut, Arecanut, Rice, Mango (Mankurad)", soil: "Coastal Alluvial & Laterite", season: "All Season" },
+            { city: "Vadodara", state: "Gujarat", category: "Cereals", produce: "Tobacco, Cotton, Wheat, Paddy, Banana", soil: "Alluvial and Black Cotton", season: "All Season" }
+        ];
+
+        let currentCategory = 'All';
+        let currentView = 'card';
+        let filteredData = [...agriData];
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            renderData();
+            document.getElementById('printDate').innerText = new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+        });
+
+        // Set Category Filter
+        function setCategory(category) {
+            currentCategory = category;
+            
+            // Update button styles
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = "cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+            });
+            const activeBtn = document.getElementById(`cat-${category}`);
+            if(activeBtn) {
+                activeBtn.className = "cat-btn px-3.5 py-2 rounded-lg text-xs font-semibold bg-emerald-600 text-white transition shadow-sm";
+            }
+            
+            filterData();
+        }
+
+        // Set View Mode (Card vs Table)
+        function setViewMode(mode) {
+            currentView = mode;
+            const cardContainer = document.getElementById('cardViewContainer');
+            const tableContainer = document.getElementById('tableViewContainer');
+            const cardBtn = document.getElementById('cardViewBtn');
+            const tableBtn = document.getElementById('tableViewBtn');
+
+            if (mode === 'card') {
+                cardContainer.classList.remove('hidden');
+                tableContainer.classList.add('hidden');
+                cardBtn.className = "p-2 rounded-lg text-emerald-600 bg-white shadow-sm transition text-xs";
+                tableBtn.className = "p-2 rounded-lg text-slate-500 hover:text-slate-800 transition text-xs";
+            } else {
+                cardContainer.classList.add('hidden');
+                tableContainer.classList.remove('hidden');
+                tableBtn.className = "p-2 rounded-lg text-emerald-600 bg-white shadow-sm transition text-xs";
+                cardBtn.className = "p-2 rounded-lg text-slate-500 hover:text-slate-800 transition text-xs";
+            }
+        }
+
+        // Filter Data based on Search and Category
+        function filterData() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            filteredData = agriData.filter(item => {
+                const matchesCategory = (currentCategory === 'All' || item.category === currentCategory);
+                const matchesQuery = query === '' || 
+                    item.city.toLowerCase().includes(query) ||
+                    item.state.toLowerCase().includes(query) ||
+                    item.produce.toLowerCase().includes(query) ||
+                    item.soil.toLowerCase().includes(query) ||
+                    item.season.toLowerCase().includes(query);
+                
+                return matchesCategory && matchesQuery;
+            });
+
+            renderData();
+        }
+
+        // Reset Filters
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            setCategory('All');
+        }
+
+        // Render Data into DOM
+        function renderData() {
+            const cardContainer = document.getElementById('cardViewContainer');
+            const tableBody = document.getElementById('tableBody');
+            const emptyState = document.getElementById('emptyState');
+            const resultCount = document.getElementById('resultCount');
+
+            resultCount.innerText = `Showing ${filteredData.length} of ${agriData.length} entries`;
+
+            if (filteredData.length === 0) {
+                emptyState.classList.remove('hidden');
+                cardContainer.innerHTML = '';
+                tableBody.innerHTML = '';
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            // Render Cards
+            let cardHTML = '';
+            filteredData.forEach(item => {
+                let badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                if(item.category === 'Fruits') badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
+                if(item.category === 'Vegetables') badgeColor = 'bg-lime-50 text-lime-700 border-lime-200';
+                if(item.category === 'Spices & Cash Crops') badgeColor = 'bg-orange-50 text-orange-700 border-orange-200';
+                if(item.category === 'Plantation') badgeColor = 'bg-teal-50 text-teal-700 border-teal-200';
+
+                cardHTML += `
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start gap-2 mb-3">
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-900">${item.city}</h3>
+                                    <p class="text-xs font-semibold text-emerald-700 flex items-center gap-1 mt-0.5">
+                                        <i class="fa-solid fa-location-dot"></i> ${item.state}
+                                    </p>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full text-xs font-medium border ${badgeColor}">
+                                    ${item.category}
+                                </span>
+                            </div>
+
+                            <div class="space-y-3 mt-4 text-xs">
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                    <span class="text-slate-400 block font-medium mb-1 uppercase tracking-wider text-[10px]">Major Produce</span>
+                                    <p class="text-slate-800 font-semibold leading-relaxed">${item.produce}</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-slate-600">
+                                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                        <span class="text-slate-400 block text-[10px] uppercase font-medium">Soil & Climate</span>
+                                        <span class="font-medium text-slate-700">${item.soil}</span>
+                                    </div>
+                                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                        <span class="text-slate-400 block text-[10px] uppercase font-medium">Season</span>
+                                        <span class="font-medium text-slate-700">${item.season}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-3 border-t border-slate-100 flex justify-between items-center text-[11px] text-slate-400">
+                            <span>AgriBharat Verified</span>
+                            <button onclick="shareSingle('${item.city}', '${item.state}', '${item.produce}')" class="text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-share"></i> Share Region
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            cardContainer.innerHTML = cardHTML;
+
+            // Render Table
+            let tableHTML = '';
+            filteredData.forEach(item => {
+                tableHTML += `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="p-4 font-bold text-slate-900">${item.city}</td>
+                        <td class="p-4 font-medium text-emerald-700">${item.state}</td>
+                        <td class="p-4"><span class="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">${item.category}</span></td>
+                        <td class="p-4 font-semibold text-slate-800">${item.produce}</td>
+                        <td class="p-4 text-slate-600 text-xs">${item.soil}</td>
+                        <td class="p-4 text-slate-600 text-xs">${item.season}</td>
+                    </tr>
+                `;
+            });
+            tableBody.innerHTML = tableHTML;
+        }
+
+        // Toast notification helper
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+
+            msgEl.innerText = message;
+            if (type === 'success') {
+                iconEl.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+            } else {
+                iconEl.className = "fa-solid fa-circle-exclamation text-amber-400 text-lg";
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Action 1: Download PDF (triggers browser print with print CSS)
+        function downloadPDF() {
+            window.print();
+        }
+
+        // Action 2: Copy Information
+        function copyInfo() {
+            let textToCopy = "AGRIBHARAT - INDIAN AGRICULTURAL DIRECTORY\n\n";
+            filteredData.forEach(item => {
+                textToCopy += `City/District: ${item.city}, State: ${item.state}\nCategory: ${item.category}\nProduce: ${item.produce}\nSoil: ${item.soil} | Season: ${item.season}\n-------------------------------------------\n`;
+            });
+
+            // Use fallback mechanism for iFrame compatibility
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast(`Copied ${filteredData.length} agricultural regions to clipboard!`);
+            } catch (err) {
+                showToast('Failed to copy information', 'error');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // Action 3: Share Information using Web Share API with fallback
+        async function shareInfo() {
+            const shareText = `Explore agricultural production across India with AgriBharat! Currently viewing ${filteredData.length} regions. Check out major crops, fruits, and vegetables produced nationwide.`;
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'AgriBharat Agricultural Directory',
+                        text: shareText,
+                        url: window.location.href
+                    });
+                    showToast('Shared successfully!');
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        copyInfo();
+                        showToast('Copied summary to clipboard as fallback.');
+                    }
+                }
+            } else {
+                copyInfo();
+                showToast('Web Share not supported. Copied summary to clipboard!');
+            }
+        }
+
+        // Share single city
+        function shareSingle(city, state, produce) {
+            const text = `Agriculture in ${city}, ${state}: ${produce} (Via AgriBharat)`;
+            if (navigator.share) {
+                navigator.share({
+                    title: `${city} Agriculture - AgriBharat`,
+                    text: text,
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast(`Copied details for ${city} to clipboard!`);
+            }
+        }
+
+        // Action 4: Email Information
+        function emailInfo() {
+            let emailBody = "AGRIBHARAT AGRICULTURAL DIRECTORY SUMMARY\n\n";
+            filteredData.forEach(item => {
+                emailBody += `${item.city} (${item.state}) - [${item.category}]\nProduce: ${item.produce}\nSoil: ${item.soil} | Season: ${item.season}\n\n`;
+            });
+            const subject = encodeURIComponent("Indian Agricultural Production Directory - AgriBharat");
+            const body = encodeURIComponent(emailBody);
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+    </script>
+</body>
+</html>

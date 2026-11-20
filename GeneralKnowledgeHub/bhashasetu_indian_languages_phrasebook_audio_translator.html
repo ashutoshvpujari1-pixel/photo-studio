@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BhashaSetu — Everyday English to Indian Languages Translator & Audio Guide</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts supporting Inter & Major Indic Scripts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;600&family=Noto+Sans+Bengali:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Gujarati:wght@400;600&family=Noto+Sans+Gurmukhi:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&family=Noto+Sans+Oriya:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&display=swap" rel="stylesheet" />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans Devanagari', 'Noto Sans Bengali', 'Noto Sans Tamil', 'Noto Sans Telugu', 'Noto Sans Gujarati', 'Noto Sans Kannada', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'sans-serif'],
+            urdu: ['Noto Nastaliq Urdu', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col selection:bg-amber-200 selection:text-amber-950">
+
+  <!-- Toast Notification Banner (No alert() used anywhere) -->
+  <div id="toast-banner" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300 max-w-sm w-full">
+    <div class="bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl border border-slate-700 flex items-start gap-3">
+      <div id="toast-icon" class="mt-0.5 text-amber-400 shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <div class="text-sm leading-snug flex-1" id="toast-message">Notification</div>
+      <button onclick="hideToast()" class="text-slate-400 hover:text-white p-1 rounded-lg" aria-label="Close notification">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Top Navigation Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-500 to-emerald-600 flex items-center justify-center text-white font-extrabold text-lg shadow-md">
+          अ
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
+            BhashaSetu
+            <span class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+              12 Indian Languages
+            </span>
+          </h1>
+          <p class="text-xs text-slate-500">Day-to-day English phrases with native scripts, Romanization &amp; Voice</p>
+        </div>
+      </div>
+
+      <!-- Right Controls: Speech Speed + Voice Info + View Source Code -->
+      <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+        <!-- Speed Control -->
+        <div class="inline-flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200" role="group" aria-label="Audio Playback Speed">
+          <span class="text-xs font-medium text-slate-500 px-2 hidden md:inline">Speed:</span>
+          <button id="speed-normal" onclick="setSpeechRate(1.0)" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition bg-white text-slate-900 shadow-sm">
+            1.0x Normal
+          </button>
+          <button id="speed-slow" onclick="setSpeechRate(0.7)" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900">
+            0.7x Slow
+          </button>
+        </div>
+
+        <!-- View Source Code Button -->
+        <button onclick="openSourceModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition shadow-sm">
+          <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+          </svg>
+          <span>View Source Code</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- TTS Engine & Voice Availability Status Banner -->
+    <div id="voice-status-card" class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="flex items-start sm:items-center gap-3">
+        <div id="voice-status-dot" class="w-3 h-3 rounded-full bg-amber-400 mt-1.5 sm:mt-0 shrink-0 animate-pulse"></div>
+        <div>
+          <p id="voice-status-title" class="text-sm font-semibold text-slate-800">Checking browser speech voices...</p>
+          <p id="voice-status-desc" class="text-xs text-slate-500 mt-0.5">
+            Uses your browser's built-in Web Speech API. If an OS lacks a specific regional voice pack, fallback audio synthesis is attempted automatically.
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button onclick="toggleVoiceDiagnostics()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-2 rounded-xl transition">
+          Installed Voices (<span id="installed-voice-count">0</span>)
+        </button>
+      </div>
+    </div>
+
+    <!-- Collapsible Installed Voices Panel -->
+    <div id="voice-diagnostics-panel" class="hidden bg-slate-900 text-slate-200 rounded-2xl p-4 text-xs space-y-2 border border-slate-800">
+      <div class="flex items-center justify-between">
+        <span class="font-semibold text-amber-400">Detected Indian Language Voices on Your Device:</span>
+        <button onclick="toggleVoiceDiagnostics()" class="text-slate-400 hover:text-white underline">Hide</button>
+      </div>
+      <div id="voice-diagnostics-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1"></div>
+    </div>
+
+    <!-- Search, View Mode & Primary Language Filter Controls -->
+    <section class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+        <!-- Search Input -->
+        <div class="lg:col-span-5">
+          <label for="search-input" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+            Search English Phrase or Transliteration
+          </label>
+          <div class="relative">
+            <input
+              type="text"
+              id="search-input"
+              oninput="handleSearch(this.value)"
+              placeholder="e.g., Thank you, How much, Water, Hospital, Namaste..."
+              class="w-full pl-10 pr-9 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
+            />
+            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-700 p-1 rounded-lg" title="Clear search">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Target Language Selector -->
+        <div class="lg:col-span-4">
+          <label for="language-select" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+            Primary Target Language
+          </label>
+          <select
+            id="language-select"
+            onchange="setPrimaryLanguage(this.value)"
+            class="w-full py-2.5 px-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
+          >
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <!-- Display Mode Toggle -->
+        <div class="lg:col-span-3">
+          <span class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+            Layout View Mode
+          </span>
+          <div class="grid grid-cols-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
+            <button id="mode-focus" onclick="setViewMode('focus')" class="py-1.5 px-2 rounded-lg text-xs font-semibold transition bg-white text-slate-900 shadow-sm">
+              Single Focus
+            </button>
+            <button id="mode-all" onclick="setViewMode('all')" class="py-1.5 px-2 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900">
+              All 12 Grid
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="pt-1 border-t border-slate-100">
+        <div id="category-tabs" class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Counter & Quick Actions -->
+    <div class="flex flex-wrap items-center justify-between gap-2 px-1">
+      <p class="text-sm text-slate-600">
+        Showing <span id="phrase-count" class="font-bold text-slate-900">0</span> everyday phrases
+        <span id="active-lang-badge" class="ml-1 text-xs font-medium text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full"></span>
+      </p>
+      <div class="flex items-center gap-3">
+        <button onclick="stopAudio()" class="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-xl transition">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <rect x="5" y="5" width="10" height="10" rx="1.5"></rect>
+          </svg>
+          Stop Audio
+        </button>
+      </div>
+    </div>
+
+    <!-- Phrases List / Cards Container -->
+    <section id="phrases-container" class="space-y-4">
+      <!-- Populated dynamically -->
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <p>
+        <strong class="text-slate-700">BhashaSetu</strong> — Supporting Hindi, Marathi, Bengali, Tamil, Telugu, Gujarati, Kannada, Malayalam, Punjabi, Odia, Urdu &amp; Assamese.
+      </p>
+      <p>Powered by HTML5 Web Speech API (<code class="bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">window.speechSynthesis</code>)</p>
+    </div>
+  </footer>
+
+  <!-- View Source Code Modal -->
+  <div id="source-modal" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-4xl w-full max-h-[88vh] flex flex-col overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div>
+          <h2 class="text-base font-bold text-slate-900">Complete Single-File HTML &amp; JavaScript Source Code</h2>
+          <p class="text-xs text-slate-500">Copy and save as <code class="bg-slate-200 px-1 rounded">index.html</code> to run anywhere offline or online.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="copySourceCode()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white transition shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+            </svg>
+            Copy All Code
+          </button>
+          <button onclick="closeSourceModal()" class="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition" aria-label="Close modal">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="p-4 flex-1 overflow-auto bg-slate-950">
+        <textarea id="source-code-textarea" readonly class="w-full h-[60vh] bg-slate-950 text-emerald-300 font-mono text-xs leading-relaxed focus:outline-none resize-none"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic & Multilingual Dataset -->
+  <script>
+    /**
+     * 1. SUPPORTED INDIAN LANGUAGES METADATA
+     * Includes BCP-47 locale codes, native language names, script labels, and RTL flags.
+     */
+    const INDIAN_LANGUAGES = [
+      { code: 'hi', locale: 'hi-IN', name: 'Hindi', nativeName: 'हिन्दी', script: 'Devanagari', rtl: false },
+      { code: 'mr', locale: 'mr-IN', name: 'Marathi', nativeName: 'मराठी', script: 'Devanagari', rtl: false },
+      { code: 'bn', locale: 'bn-IN', name: 'Bengali', nativeName: 'বাংলা', script: 'Bengali', rtl: false },
+      { code: 'ta', locale: 'ta-IN', name: 'Tamil', nativeName: 'தமிழ்', script: 'Tamil', rtl: false },
+      { code: 'te', locale: 'te-IN', name: 'Telugu', nativeName: 'తెలుగు', script: 'Telugu', rtl: false },
+      { code: 'gu', locale: 'gu-IN', name: 'Gujarati', nativeName: 'ગુજરાતી', script: 'Gujarati', rtl: false },
+      { code: 'kn', locale: 'kn-IN', name: 'Kannada', nativeName: 'ಕನ್ನಡ', script: 'Kannada', rtl: false },
+      { code: 'ml', locale: 'ml-IN', name: 'Malayalam', nativeName: 'മലയാളം', script: 'Malayalam', rtl: false },
+      { code: 'pa', locale: 'pa-IN', name: 'Punjabi', nativeName: 'ਪੰਜਾਬੀ', script: 'Gurmukhi', rtl: false },
+      { code: 'or', locale: 'or-IN', name: 'Odia', nativeName: 'ଓଡ଼ିଆ', script: 'Odia', rtl: false },
+      { code: 'ur', locale: 'ur-IN', name: 'Urdu', nativeName: 'اردو', script: 'Perso-Arabic', rtl: true },
+      { code: 'as', locale: 'as-IN', name: 'Assamese', nativeName: 'অসমীয়া', script: 'Assamese', rtl: false }
+    ];
+
+    /**
+     * 2. CATEGORIES
+     */
+    const CATEGORIES = [
+      { id: 'all', label: 'All Phrases', icon: '✨' },
+      { id: 'greetings', label: 'Greetings & Politeness', icon: '🙏' },
+      { id: 'conversation', label: 'Everyday Conversation', icon: '💬' },
+      { id: 'travel', label: 'Travel & Directions', icon: '🧭' },
+      { id: 'dining', label: 'Dining & Shopping', icon: '🍛' },
+      { id: 'emergency', label: 'Emergency & Health', icon: '🏥' }
+    ];
+
+    /**
+     * 3. COMPREHENSIVE DATABASE OF 28 HIGH-FREQUENCY DAILY SENTENCES
+     * Each sentence contains native script (`t`) and Romanized transliteration (`r`) for all 12 languages.
+     */
+    const PHRASE_DATABASE = [
+      // --- GREETINGS & POLITENESS ---
+      {
+        id: 1,
+        category: 'greetings',
+        en: 'Hello / Greetings',
+        translations: {
+          hi: { t: 'नमस्ते', r: 'Namaste' },
+          mr: { t: 'नमस्कार', r: 'Namaskār' },
+          bn: { t: 'নমস্কার', r: 'Nomoshkar' },
+          ta: { t: 'வணக்கம்', r: 'Vaṇakkam' },
+          te: { t: 'నమస్కారం', r: 'Namaskāram' },
+          gu: { t: 'નમસ્તે', r: 'Namaste' },
+          kn: { t: 'ನಮಸ್ಕಾರ', r: 'Namaskāra' },
+          ml: { t: 'നമസ്കാരം', r: 'Namaskāram' },
+          pa: { t: 'ਸਤ ਸ੍ਰੀ ਅਕਾਲ', r: 'Sat Sri Akal' },
+          or: { t: 'ନମସ୍କାର', r: 'Namaskāra' },
+          ur: { t: 'آداب / السلام علیکم', r: 'Ādāb / Assalāmu Alaikum' },
+          as: { t: 'নমস্কাৰ', r: 'Nomoskar' }
+        }
+      },
+      {
+        id: 2,
+        category: 'greetings',
+        en: 'Good morning',
+        translations: {
+          hi: { t: 'सुप्रभात', r: 'Suprabhāt' },
+          mr: { t: 'शुभ सकाळ', r: 'Shubh sakāḷ' },
+          bn: { t: 'সুপ্রভাত', r: 'Shuprabhat' },
+          ta: { t: 'காலை வணக்கம்', r: 'Kālai vaṇakkam' },
+          te: { t: 'శుభోదయం', r: 'Śubhōdayaṁ' },
+          gu: { t: 'સુપ્રભાત', r: 'Suprabhāt' },
+          kn: { t: 'ಶುಭೋದಯ', r: 'Śubhōdaya' },
+          ml: { t: 'സുപ്രഭാതം', r: 'Suprabhātaṁ' },
+          pa: { t: 'ਸ਼ੁਭ ਸਵੇਰ', r: 'Shubh saver' },
+          or: { t: 'ଶୁଭ ସକାଳ', r: 'Śubha sakāḷa' },
+          ur: { t: 'صبح بخیر', r: 'Subah bakhair' },
+          as: { t: 'সুপ্ৰভাত', r: 'Suprobhat' }
+        }
+      },
+      {
+        id: 3,
+        category: 'greetings',
+        en: 'How are you?',
+        translations: {
+          hi: { t: 'आप कैसे हैं?', r: 'Āp kaise hain?' },
+          mr: { t: 'तुम्ही कसे आहात?', r: 'Tumhī kase āhāt?' },
+          bn: { t: 'আপনি কেমন আছেন?', r: 'Apni kemon achhen?' },
+          ta: { t: 'நீங்கள் எப்படி இருக்கிறீர்கள்?', r: 'Nīṅkaḷ eppaṭi irukkiṟīrkaḷ?' },
+          te: { t: 'మీరు ఎలా ఉన్నారు?', r: 'Mīru elā unnāru?' },
+          gu: { t: 'તમે કેમ છો?', r: 'Tame kem chho?' },
+          kn: { t: 'ನೀವು ಹೇಗಿದ್ದೀರಿ?', r: 'Nīvu hēgiddīri?' },
+          ml: { t: 'സുഖമാണോ?', r: 'Sukhamāṇō?' },
+          pa: { t: 'ਤੁਸੀਂ ਕਿਵੇਂ ਹੋ?', r: 'Tusīṁ kivēṁ hō?' },
+          or: { t: 'ଆପଣ କେମିତି ଅଛନ୍ତି?', r: 'Āpaṇa kemiti achanti?' },
+          ur: { t: 'آپ کیسے ہیں؟', r: 'Āp kaise hain?' },
+          as: { t: 'আপুনি কেনে আছে?', r: 'Apuni kene ase?' }
+        }
+      },
+      {
+        id: 4,
+        category: 'greetings',
+        en: 'I am fine, thank you.',
+        translations: {
+          hi: { t: 'मैं ठीक हूँ, धन्यवाद।', r: 'Main ṭhīk hūn, dhanyavād.' },
+          mr: { t: 'मी ठीक आहे, धन्यवाद.', r: 'Mī ṭhīk āhe, dhanyavād.' },
+          bn: { t: 'আমি ভালো আছি, ধন্যবাদ।', r: 'Ami bhalo achhi, dhonnobad.' },
+          ta: { t: 'நான் நலமாக இருக்கிறேன், நன்றி.', r: 'Nāṉ nalamāka irukkiṟēṉ, naṉṟi.' },
+          te: { t: 'నేను బాగున్నాను, ధన్యవాదాలు.', r: 'Nēnu bāgunnānu, dhanyavādālu.' },
+          gu: { t: 'હું મજામાં છું, આભાર.', r: 'Huṁ majāmāṁ chhuṁ, ābhār.' },
+          kn: { t: 'ನಾನು ಚೆನ್ನಾಗಿದ್ದೇನೆ, ಧನ್ಯವಾದಗಳು.', r: 'Nānu cennāgiddēne, dhanyavādagaḷu.' },
+          ml: { t: 'എനിക്ക് സുഖമാണ്, നന്ദി.', r: 'Enikk sukhamāṇ, nandi.' },
+          pa: { t: 'ਮੈਂ ਠੀਕ ਹਾਂ, ਧੰਨਵਾਦ।', r: 'Maiṁ ṭhīk hāṁ, dhanvād.' },
+          or: { t: 'ମୁଁ ଭଲ ଅଛି, ଧନ୍ୟବାଦ।', r: 'Muṁ bhala achi, dhanyabāda.' },
+          ur: { t: 'میں ٹھیک ہوں، شکریہ۔', r: 'Main ṭhīk hūn, shukriya.' },
+          as: { t: 'মই ভালে আছোঁ, ধন্যবাদ।', r: 'Moi bhale aso, dhonyobad.' }
+        }
+      },
+      {
+        id: 5,
+        category: 'greetings',
+        en: 'Thank you very much.',
+        translations: {
+          hi: { t: 'बहुत-बहुत धन्यवाद।', r: 'Bahut-bahut dhanyavād.' },
+          mr: { t: 'खूप खूप धन्यवाद.', r: 'Khūp khūp dhanyavād.' },
+          bn: { t: 'অনেক ধন্যবাদ।', r: 'Onek dhonnobad.' },
+          ta: { t: 'மிக்க நன்றி.', r: 'Mikka naṉṟi.' },
+          te: { t: 'చాలా ధన్యవాదాలు.', r: 'Cālā dhanyavādālu.' },
+          gu: { t: 'ખૂબ ખૂબ આભાર.', r: 'Khūb khūb ābhār.' },
+          kn: { t: 'ತುಂಬಾ ಧನ್ಯವಾದಗಳು.', r: 'Tuṁbā dhanyavādagaḷu.' },
+          ml: { t: 'വളരെ നന്ദി.', r: 'Vaḷare nandi.' },
+          pa: { t: 'ਬਹੁਤ ਬਹੁਤ ਧੰਨਵਾਦ।', r: 'Bahut bahut dhanvād.' },
+          or: { t: 'ବହୁତ ବହୁତ ଧନ୍ୟବାଦ।', r: 'Bahuta bahuta dhanyabāda.' },
+          ur: { t: 'بہت بہت شکریہ۔', r: 'Bahut bahut shukriya.' },
+          as: { t: 'বহুত বহুত ধন্যবাদ।', r: 'Bohut bohut dhonyobad.' }
+        }
+      },
+      {
+        id: 6,
+        category: 'greetings',
+        en: 'Excuse me / Sorry.',
+        translations: {
+          hi: { t: 'माफ़ कीजिए।', r: 'Māf kījiye.' },
+          mr: { t: 'माफ करा.', r: 'Māph karā.' },
+          bn: { t: 'মাফ করবেন / দুঃখিত।', r: 'Maf korben / Dukkhito.' },
+          ta: { t: 'மன்னிக்கவும்.', r: 'Maṉṉikkavum.' },
+          te: { t: 'క్షమించండి.', r: 'Kṣamiñcaṇḍi.' },
+          gu: { t: 'માફ કરશો.', r: 'Māph karasho.' },
+          kn: { t: 'ಕ್ಷಮಿಸಿ.', r: 'Kṣamisi.' },
+          ml: { t: 'ക്ഷമിക്കണം.', r: 'Kṣamikkaṇaṁ.' },
+          pa: { t: 'ਮਾਫ਼ ਕਰਨਾ।', r: 'Māf karnā.' },
+          or: { t: 'କ୍ଷମା କରିବେ।', r: 'Kṣamā karibe.' },
+          ur: { t: 'معاف کیجئے۔', r: 'Maaf kījiye.' },
+          as: { t: 'ক্ষমা কৰিব।', r: 'Khoma koribo.' }
+        }
+      },
+
+      // --- EVERYDAY CONVERSATION ---
+      {
+        id: 7,
+        category: 'conversation',
+        en: 'What is your name?',
+        translations: {
+          hi: { t: 'आपका नाम क्या है?', r: 'Āpkā nām kyā hai?' },
+          mr: { t: 'तुमचे नाव काय आहे?', r: 'Tumche nāv kāy āhe?' },
+          bn: { t: 'আপনার নাম কী?', r: 'Apnar nam ki?' },
+          ta: { t: 'உங்கள் பெயர் என்ன?', r: 'Uṅkaḷ peyar eṉṉa?' },
+          te: { t: 'మీ పేరు ఏమిటి?', r: 'Mī pēru ēmiṭi?' },
+          gu: { t: 'તમારું નામ શું છે?', r: 'Tamāruṁ nām shuṁ chhe?' },
+          kn: { t: 'ನಿಮ್ಮ ಹೆಸರು ಏನು?', r: 'Nimma hesaru ēnu?' },
+          ml: { t: 'നിങ്ങളുടെ പേര് എന്താണ്?', r: 'Niṅṅaḷuṭe pēr entāṇ?' },
+          pa: { t: 'ਤੁਹਾਡਾ ਨਾਮ ਕੀ ਹੈ?', r: 'Tuhāḍā nām kī hai?' },
+          or: { t: 'ଆପଣଙ୍କ ନାମ କ’ଣ?', r: 'Āpaṇaṅka nāma ka’ṇa?' },
+          ur: { t: 'آپ کا نام کیا ہے؟', r: 'Āp kā nām kyā hai?' },
+          as: { t: 'আপোনাৰ নাম কি?', r: 'Aponar nam ki?' }
+        }
+      },
+      {
+        id: 8,
+        category: 'conversation',
+        en: 'My name is Rahul.',
+        translations: {
+          hi: { t: 'मेरा नाम राहुल है।', r: 'Merā nām Rāhul hai.' },
+          mr: { t: 'माझे नाव राहुल आहे.', r: 'Mājhe nāv Rāhul āhe.' },
+          bn: { t: 'আমার নাম রাহুল।', r: 'Amar nam Rahul.' },
+          ta: { t: 'என் பெயர் ராகுல்.', r: 'Eṉ peyar Rākul.' },
+          te: { t: 'నా పేరు రాహుల్.', r: 'Nā pēru Rāhul.' },
+          gu: { t: 'મારું નામ રાહુલ છે.', r: 'Māruṁ nām Rāhul chhe.' },
+          kn: { t: 'ನನ್ನ ಹೆಸರು ರಾಹುಲ್.', r: 'Nanna hesaru Rāhul.' },
+          ml: { t: 'എന്റെ പേര് രാഹുൽ എന്നാണ്.', r: 'Enṯe pēr Rāhul ennāṇ.' },
+          pa: { t: 'ਮੇਰਾ ਨਾਮ ਰਾਹੁਲ ਹੈ।', r: 'Mērā nām Rāhul hai.' },
+          or: { t: 'ମୋର ନାମ ରାହୁଲ।', r: 'Mōra nāma Rāhula.' },
+          ur: { t: 'میرا نام راہل ہے۔', r: 'Merā nām Rāhul hai.' },
+          as: { t: 'মোৰ নাম ৰাহুল।', r: 'Mor nam Rahul.' }
+        }
+      },
+      {
+        id: 9,
+        category: 'conversation',
+        en: 'Nice to meet you.',
+        translations: {
+          hi: { t: 'आपसे मिलकर खुशी हुई।', r: 'Āpse milkar khushī huī.' },
+          mr: { t: 'तुम्हाला भेटून आनंद झाला.', r: 'Tumhālā bheṭūn ānand jhālā.' },
+          bn: { t: 'আপনার সাথে দেখা হয়ে ভালো লাগলো।', r: 'Apnar shathe dekha hoye bhalo laglo.' },
+          ta: { t: 'உங்களைச் சந்தித்ததில் மகிழ்ச்சி.', r: 'Uṅkaḷaic cantittatil makiḻcci.' },
+          te: { t: 'మిమ్మల్ని కలవడం చాలా సంతోషం.', r: 'Mimmalni kalavaḍaṁ cālā santōṣaṁ.' },
+          gu: { t: 'તમને મળીને આનંદ થયો.', r: 'Tamne maḷīne ānand thayo.' },
+          kn: { t: 'ನಿಮ್ಮನ್ನು ಭೇಟಿಯಾಗಿದ್ದು ಸಂತೋಷ.', r: 'Nimmannu bhēṭiyāgiddu santōṣa.' },
+          ml: { t: 'നിങ്ങളെ കണ്ടതിൽ സന്തോഷം.', r: 'Niṅṅaḷe kaṇṭatil santōṣaṁ.' },
+          pa: { t: 'ਤੁਹਾਨੂੰ ਮਿਲ ਕੇ ਖੁਸ਼ੀ ਹੋਈ।', r: 'Tuhānūṁ mil kē khuśī hōī.' },
+          or: { t: 'ଆପଣଙ୍କୁ ଭେଟି ବହୁତ ଖୁସି ଲାଗିଲା।', r: 'Āpaṇaṅku bheṭi bahuta khusi lāgilā.' },
+          ur: { t: 'آپ سے مل کر خوشی ہوئی۔', r: 'Āp se mil kar khushī huī.' },
+          as: { t: 'আপোনাক লগ পাই ভাল লাগিল।', r: 'Aponak log pai bhal lagil.' }
+        }
+      },
+      {
+        id: 10,
+        category: 'conversation',
+        en: 'Do you speak English?',
+        translations: {
+          hi: { t: 'क्या आप अंग्रेज़ी बोलते हैं?', r: 'Kyā āp angrezī bolte hain?' },
+          mr: { t: 'तुम्ही इंग्रजी बोलता का?', r: 'Tumhī ingrajī boltā kā?' },
+          bn: { t: 'আপনি কি ইংরেজি বলেন?', r: 'Apni ki ingreji bolen?' },
+          ta: { t: 'நீங்கள் ஆங்கிலம் பேசுவீர்களா?', r: 'Nīṅkaḷ āṅkilam pēcuvīrkaḷā?' },
+          te: { t: 'మీరు ఇంగ్లీష్ మాట్లాడతారా?', r: 'Mīru iṅglīṣ māṭlāḍatārā?' },
+          gu: { t: 'શું તમે અંગ્રેજી બોલો છો?', r: 'Shuṁ tame angrejī bolo chho?' },
+          kn: { t: 'ನೀವು ಇಂಗ್ಲಿಷ್ ಮಾತನಾಡುತ್ತೀರಾ?', r: 'Nīvu iṅgliṣ mātanāḍuttīrā?' },
+          ml: { t: 'നിങ്ങൾ ഇംഗ്ലീഷ് സംസാരിക്കുമോ?', r: 'Niṅṅaḷ iṅglīṣ saṁsārikkumō?' },
+          pa: { t: 'ਕੀ ਤੁਸੀਂ ਅੰਗਰੇਜ਼ੀ ਬੋਲਦੇ ਹੋ?', r: 'Kī tusīṁ aṅgrēzī bōldē hō?' },
+          or: { t: 'ଆପଣ ଇଂରାଜୀ କୁହନ୍ତି କି?', r: 'Āpaṇa iṁrājī kuhanti ki?' },
+          ur: { t: 'کیا آپ انگریزی بولتے ہیں؟', r: 'Kyā āp angrezī bolte hain?' },
+          as: { t: 'আপুনি ইংৰাজী ক’ব পাৰেনে?', r: 'Apuni ingraji kobo parene?' }
+        }
+      },
+      {
+        id: 11,
+        category: 'conversation',
+        en: 'I do not understand.',
+        translations: {
+          hi: { t: 'मुझे समझ नहीं आया।', r: 'Mujhe samajh nahīn āyā.' },
+          mr: { t: 'मला समजले नाही.', r: 'Malā samajle nāhī.' },
+          bn: { t: 'আমি বুঝতে পারছি না।', r: 'Ami bujhte parchi na.' },
+          ta: { t: 'எனக்குப் புரியவில்லை.', r: 'Eṉakkup puriyavillai.' },
+          te: { t: 'నాకు అర్థం కాలేదు.', r: 'Nāku arthaṁ kālēdu.' },
+          gu: { t: 'મને સમજાયું નહીં.', r: 'Mane samajāyuṁ nahīṁ.' },
+          kn: { t: 'ನನಗೆ ಅರ್ಥವಾಗಲಿಲ್ಲ.', r: 'Nanage arthavāgalilla.' },
+          ml: { t: 'എനിക്ക് മനസ്സിലായില്ല.', r: 'Enikk manassilāyilla.' },
+          pa: { t: 'ਮੈਨੂੰ ਸਮਝ ਨਹੀਂ ਆਇਆ।', r: 'Mainūṁ samajh nahīṁ āiā.' },
+          or: { t: 'ମୁଁ ବୁଝିପାରୁ ନାହିଁ।', r: 'Muṁ bujhipāru nāhiṁ.' },
+          ur: { t: 'مجھے سمجھ نہیں آیا۔', r: 'Mujhe samajh nahīn āyā.' },
+          as: { t: 'মই বুজি পোৱা নাই।', r: 'Moi buji powa nai.' }
+        }
+      },
+      {
+        id: 12,
+        category: 'conversation',
+        en: 'Please speak slowly.',
+        translations: {
+          hi: { t: 'कृपया धीरे बोलिए।', r: 'Kripayā dhīre boliye.' },
+          mr: { t: 'कृपया हळू बोला.', r: 'Kṛpayā haḷū bolā.' },
+          bn: { t: 'দয়া করে আস্তে বলুন।', r: 'Doya kore aste bolun.' },
+          ta: { t: 'தயவுசெய்து மெதுவாகப் பேசுங்கள்.', r: 'Tayavuceytu metuvākap pēcuṅkaḷ.' },
+          te: { t: 'దయచేసి నెమ్మదిగా మాట్లాడండి.', r: 'Dayacēsi nemmadigā māṭlāḍaṇḍi.' },
+          gu: { t: 'કૃપા કરીને ધીમે બોલો.', r: 'Kṛpā karīne dhīme bolo.' },
+          kn: { t: 'ದಯವಿಟ್ಟು ನಿಧಾನವಾಗಿ ಮಾತನಾಡಿ.', r: 'Dayaviṭṭu nidhānavāgi mātanāḍi.' },
+          ml: { t: 'ദയവായി പതുക്കെ സംസാരിക്കൂ.', r: 'Dayavāyi patukke saṁsārikkū.' },
+          pa: { t: 'ਕਿਰਪਾ ਕਰਕੇ ਹੌਲੀ ਬੋਲੋ।', r: 'Kirpā karkē haulī bōlō.' },
+          or: { t: 'ଦୟାକରି ଧୀରେ କୁହନ୍ତୁ।', r: 'Dayākari dhīre kuhantu.' },
+          ur: { t: 'براہ کرم آہستہ بولیں۔', r: 'Barāh-e-karam āhista bolein.' },
+          as: { t: 'অনুগ্ৰহ কৰি লাহে লাহে কওক।', r: 'Onugroho kori lahe lahe kowok.' }
+        }
+      },
+      {
+        id: 13,
+        category: 'conversation',
+        en: 'Yes / No',
+        translations: {
+          hi: { t: 'हाँ / नहीं', r: 'Hān / Nahīn' },
+          mr: { t: 'हो / नाही', r: 'Ho / Nāhī' },
+          bn: { t: 'হ্যাঁ / না', r: 'Hyan / Na' },
+          ta: { t: 'ஆம் / இல்லை', r: 'Ām / Illai' },
+          te: { t: 'అవును / కాదు', r: 'Avunu / Kādu' },
+          gu: { t: 'હા / ના', r: 'Hā / Nā' },
+          kn: { t: 'ಹೌದು / ಇಲ್ಲ', r: 'Haudu / Illa' },
+          ml: { t: 'അതെ / അല്ല', r: 'Ate / Alla' },
+          pa: { t: 'ਹਾਂ / ਨਹੀਂ', r: 'Hāṁ / Nahīṁ' },
+          or: { t: 'ହଁ / ନା', r: 'Haṁ / Nā' },
+          ur: { t: 'جی ہاں / نہیں', r: 'Jī hān / Nahīn' },
+          as: { t: 'হয় / নহয়', r: 'Hoy / Nohoy' }
+        }
+      },
+      {
+        id: 14,
+        category: 'conversation',
+        en: 'What time is it?',
+        translations: {
+          hi: { t: 'कितने बजे हैं?', r: 'Kitne baje hain?' },
+          mr: { t: 'किती वाजले आहेत?', r: 'Kitī vājle āhet?' },
+          bn: { t: 'এখন কটা বাজে?', r: 'Ekhon kota baje?' },
+          ta: { t: 'இப்போது மணி என்ன?', r: 'Ippōtu maṇi eṉṉa?' },
+          te: { t: 'ఇప్పుడు సమయం ఎంత అయింది?', r: 'Ippuḍu samayaṁ enta ayindi?' },
+          gu: { t: 'કેટલા વાગ્યા છે?', r: 'Keṭlā vāgyā chhe?' },
+          kn: { t: 'ಈಗ ಸಮಯ ಎಷ್ಟು?', r: 'Īga samaya eṣṭu?' },
+          ml: { t: 'ഇപ്പോൾ സമയം എത്രയായി?', r: 'Ippōḷ samayaṁ etrayāyi?' },
+          pa: { t: 'ਕਿੰਨੇ ਵਜੇ ਹਨ?', r: 'Kinnē vajē han?' },
+          or: { t: 'ଏବେ ସମୟ କେତେ?', r: 'Ebe samaya kete?' },
+          ur: { t: 'کتنے بجے ہیں؟', r: 'Kitne baje hain?' },
+          as: { t: 'এতিয়া কেইটা বাজিছে?', r: 'Etiya keita bajise?' }
+        }
+      },
+
+      // --- TRAVEL & DIRECTIONS ---
+      {
+        id: 15,
+        category: 'travel',
+        en: 'Where is the railway station?',
+        translations: {
+          hi: { t: 'रेलवे स्टेशन कहाँ है?', r: 'Relve sṭeśan kahān hai?' },
+          mr: { t: 'रेल्वे स्टेशन कुठे आहे?', r: 'Relve sṭeśan kuṭhe āhe?' },
+          bn: { t: 'রেলওয়ে স্টেশন কোথায়?', r: 'Railway station kothay?' },
+          ta: { t: 'ரயில் நிலையம் எங்கே இருக்கிறது?', r: 'Rayil nilaiyam eṅkē irukkiṟatu?' },
+          te: { t: 'రైల్వే స్టేషన్ ఎక్కడ ఉంది?', r: 'Railvē sṭēṣan ekkaḍa undi?' },
+          gu: { t: 'રેલવે સ્ટેશન ક્યાં છે?', r: 'Relve sṭeśan kyāṁ chhe?' },
+          kn: { t: 'ರೈಲ್ವೆ ನಿಲ್ದಾಣ ಎಲ್ಲಿದೆ?', r: 'Railve nildāṇa ellide?' },
+          ml: { t: 'റെയിൽവേ സ്റ്റേഷൻ എവിടെയാണ്?', r: 'Reyilvē sṭēṣan eviṭeyāṇ?' },
+          pa: { t: 'ਰੇਲਵੇ ਸਟੇਸ਼ਨ ਕਿੱਥੇ ਹੈ?', r: 'Rēlvē saṭēśan kitthē hai?' },
+          or: { t: 'ରେଳ ଷ୍ଟେସନ କେଉଁଠି ଅଛି?', r: 'Reḷa sṭesana keuṁṭhi achi?' },
+          ur: { t: 'ریلوے اسٹیشن کہاں ہے؟', r: 'Relwe sṭeshan kahān hai?' },
+          as: { t: 'ৰেলৱে ষ্টেচন ক’ত আছে?', r: 'Relwe steson kot ase?' }
+        }
+      },
+      {
+        id: 16,
+        category: 'travel',
+        en: 'How far is it?',
+        translations: {
+          hi: { t: 'यह कितनी दूर है?', r: 'Yah kitnī dūr hai?' },
+          mr: { t: 'ते किती दूर आहे?', r: 'Te kitī dūr āhe?' },
+          bn: { t: 'এটা কত দূর?', r: 'Eta koto dur?' },
+          ta: { t: 'அது எவ்வளவு தூரம்?', r: 'Atu evvaḷavu tūram?' },
+          te: { t: 'అది ఎంత దూరం?', r: 'Adi enta dūraṁ?' },
+          gu: { t: 'તે કેટલું દૂર છે?', r: 'Te keṭluṁ dūr chhe?' },
+          kn: { t: 'ಅದು ಎಷ್ಟು ದೂರದಲ್ಲಿದೆ?', r: 'Adu eṣṭu dūradallide?' },
+          ml: { t: 'അത് എത്ര ദൂരെയാണ്?', r: 'At etra dūreyāṇ?' },
+          pa: { t: 'ਇਹ ਕਿੰਨੀ ਦੂਰ ਹੈ?', r: 'Ih kinnī dūr hai?' },
+          or: { t: 'ଏହା କେତେ ଦୂର?', r: 'Ehā kete dūra?' },
+          ur: { t: 'یہ کتنی دور ہے؟', r: 'Yeh kitnī dūr hai?' },
+          as: { t: 'এইটো কিমান দূৰ?', r: 'Eito kiman dur?' }
+        }
+      },
+      {
+        id: 17,
+        category: 'travel',
+        en: 'Please go straight, then turn left.',
+        translations: {
+          hi: { t: 'कृपया सीधे जाएं, फिर बाएं मुड़ें।', r: 'Kripayā sīdhe jāen, phir bāen muṛen.' },
+          mr: { t: 'कृपया सरळ जा, मग डावीकडे वळा.', r: 'Kṛpayā saraḷ jā, mag ḍāvīkaḍe vaḷā.' },
+          bn: { t: 'দয়া করে সোজা যান, তারপর বাঁদিকে ঘুরুন।', r: 'Doya kore shoja jan, tarpor bandike ghurun.' },
+          ta: { t: 'நேராகச் சென்று, இடதுபுறம் திரும்பவும்.', r: 'Nērākac ceṉṟu, iṭatupuṟam tirumpavum.' },
+          te: { t: 'దయచేసి నేరుగా వెళ్లి, ఎడమవైపు తిరగండి.', r: 'Dayacēsi nērugā veḷḷi, eḍamavaipu tiragaṇḍi.' },
+          gu: { t: 'કૃપા કરીને સીધા જાઓ, પછી ડાબે વળો.', r: 'Kṛpā karīne sīdhā jāo, pachhī ḍābe vaḷo.' },
+          kn: { t: 'ದಯವಿಟ್ಟು ನೇರವಾಗಿ ಹೋಗಿ, ನಂತರ ಎಡಕ್ಕೆ ತಿರುಗಿ.', r: 'Dayaviṭṭu nēravāgi hōgi, nantara eḍakke tirugi.' },
+          ml: { t: 'നേരെ പോയിട്ട് ഇടത്തോട്ട് തിരിയുക.', r: 'Nēre pōyiṭṭ iṭattōṭṭ tiriyuka.' },
+          pa: { t: 'ਕਿਰਪਾ ਕਰਕੇ ਸਿੱਧੇ ਜਾਓ, ਫਿਰ ਖੱਬੇ ਮੁੜੋ।', r: 'Kirpā karkē siddhē jāō, phir khabbē muṛō.' },
+          or: { t: 'ଦୟାକରି ସିଧା ଯାଆନ୍ତୁ, ତାପରେ ବାମକୁ ବୁଲନ୍ତୁ।', r: 'Dayākari sidhā jāāntu, tāpare bāmaku bulantu.' },
+          ur: { t: 'براہ کرم سیدھے جائیں، پھر بائیں مڑیں۔', r: 'Barāh-e-karam sīdhe jāein, phir bāein muṛein.' },
+          as: { t: 'অনুগ্ৰহ কৰি পোনে পোনে যাওক, তাৰ পিছত বাওঁফালে ঘূৰক।', r: 'Onugroho kori pone pone jaok, tar pisot baofale ghurok.' }
+        }
+      },
+      {
+        id: 18,
+        category: 'travel',
+        en: 'Stop here, please.',
+        translations: {
+          hi: { t: 'कृपया यहाँ रोकिए।', r: 'Kripayā yahān rokiye.' },
+          mr: { t: 'कृपया इथे थांबा.', r: 'Kṛpayā ithe thāmbā.' },
+          bn: { t: 'দয়া করে এখানে থামুন।', r: 'Doya kore ekhane thamun.' },
+          ta: { t: 'தயவுசெய்து இங்கே நிறுத்துங்கள்.', r: 'Tayavuceytu iṅkē niṟuttuṅkaḷ.' },
+          te: { t: 'దయచేసి ఇక్కడ ఆపండి.', r: 'Dayacēsi ikkaḍa āpaṇḍi.' },
+          gu: { t: 'કૃપા કરીને અહીં રોકો.', r: 'Kṛpā karīne ahīṁ roko.' },
+          kn: { t: 'ದಯವಿಟ್ಟು ಇಲ್ಲಿ ನಿಲ್ಲಿಸಿ.', r: 'Dayaviṭṭu illi nillisi.' },
+          ml: { t: 'ദയവായി ഇവിടെ നിർത്തുക.', r: 'Dayavāyi iviṭe nirttuka.' },
+          pa: { t: 'ਕਿਰਪਾ ਕਰਕੇ ਇੱਥੇ ਰੋਕੋ।', r: 'Kirpā karkē itthē rōkō.' },
+          or: { t: 'ଦୟାକରି ଏଠାରେ ରଖନ୍ତୁ।', r: 'Dayākari eṭhāre rakhantu.' },
+          ur: { t: 'براہ کرم یہاں روکیں۔', r: 'Barāh-e-karam yahān rokein.' },
+          as: { t: 'অনুগ্ৰহ কৰি ইয়াতে ৰখাওক।', r: 'Onugroho kori iyate rokhaok.' }
+        }
+      },
+      {
+        id: 19,
+        category: 'travel',
+        en: 'Where is the washroom / toilet?',
+        translations: {
+          hi: { t: 'शौचालय कहाँ है?', r: 'Śaucālay kahān hai?' },
+          mr: { t: 'स्वच्छतागृह कुठे आहे?', r: 'Svacchatāgṛha kuṭhe āhe?' },
+          bn: { t: 'শৌচাগার কোথায়?', r: 'Shouchagar kothay?' },
+          ta: { t: 'கழிப்பறை எங்கே இருக்கிறது?', r: 'Kaḻippaṟai eṅkē irukkiṟatu?' },
+          te: { t: 'వాష్‌రూమ్ ఎక్కడ ఉంది?', r: 'Vāṣ‌rūm ekkaḍa undi?' },
+          gu: { t: 'શૌચાલય ક્યાં છે?', r: 'Śauchālay kyāṁ chhe?' },
+          kn: { t: 'ಶೌಚಾಲಯ ಎಲ್ಲಿದೆ?', r: 'Śaucālaya ellide?' },
+          ml: { t: 'ശുചിമുറി എവിടെയാണ്?', r: 'Śucimuṟi eviṭeyāṇ?' },
+          pa: { t: 'ਬਾਥਰੂਮ ਕਿੱਥੇ ਹੈ?', r: 'Bāthrūm kitthē hai?' },
+          or: { t: 'ଶୌଚାଳୟ କେଉଁଠି ଅଛି?', r: 'Śaucāḷaya keuṁṭhi achi?' },
+          ur: { t: 'بیت الخلا کہاں ہے؟', r: 'Bait-ul-khalā kahān hai?' },
+          as: { t: 'শৌচাগাৰ ক’ত আছে?', r: 'Souchagar kot ase?' }
+        }
+      },
+
+      // --- DINING & SHOPPING ---
+      {
+        id: 20,
+        category: 'dining',
+        en: 'How much does this cost?',
+        translations: {
+          hi: { t: 'यह कितने का है?', r: 'Yah kitne kā hai?' },
+          mr: { t: 'हे किती रुपयांना आहे?', r: 'He kitī rupayānnā āhe?' },
+          bn: { t: 'এটার দাম কত?', r: 'Etar dam koto?' },
+          ta: { t: 'இதன் விலை என்ன?', r: 'Itaṉ vilai eṉṉa?' },
+          te: { t: 'దీని ధర ఎంత?', r: 'Dīni dhara enta?' },
+          gu: { t: 'આની કિંમત શું છે?', r: 'Ānī kimmat shuṁ chhe?' },
+          kn: { t: 'ಇದರ ಬೆಲೆ ಎಷ್ಟು?', r: 'Idara bele eṣṭu?' },
+          ml: { t: 'ഇതിന് എത്ര രൂപയാണ്?', r: 'Itin etra rūpayāṇ?' },
+          pa: { t: 'ਇਹ ਕਿੰਨੇ ਦਾ ਹੈ?', r: 'Ih kinnē dā hai?' },
+          or: { t: 'ଏହାର ଦାମ୍ କେତେ?', r: 'Ehāra dām kete?' },
+          ur: { t: 'اس کی قیمت کیا ہے؟', r: 'Is kī qīmat kyā hai?' },
+          as: { t: 'এইটোৰ দাম কিমান?', r: 'Eitor dam kiman?' }
+        }
+      },
+      {
+        id: 21,
+        category: 'dining',
+        en: 'Please give me a glass of water.',
+        translations: {
+          hi: { t: 'कृपया मुझे एक गिलास पानी दीजिए।', r: 'Kripayā mujhe ek gilās pānī dījiye.' },
+          mr: { t: 'कृपया मला एक ग्लास पाणी द्या.', r: 'Kṛpayā malā ek glās pāṇī dyā.' },
+          bn: { t: 'দয়া করে আমাকে এক গ্লাস জল দিন।', r: 'Doya kore amake ek glass jol din.' },
+          ta: { t: 'தயவுசெய்து எனக்கு ஒரு டம்ளர் தண்ணீர் கொடுங்கள்.', r: 'Tayavuceytu eṉakku oru ṭamḷar taṇṇīr koṭuṅkaḷ.' },
+          te: { t: 'దయచేసి నాకు ఒక గ్లాసు నీళ్లు ఇవ్వండి.', r: 'Dayacēsi nāku oka glāsu nīḷḷu ivvaṇḍi.' },
+          gu: { t: 'કૃપા કરીને મને એક ગ્લાસ પાણી આપો.', r: 'Kṛpā karīne mane ek glās pāṇī āpo.' },
+          kn: { t: 'ದಯವಿಟ್ಟು ನನಗೆ ಒಂದು ಲೋಟ ನೀರು ಕೊಡಿ.', r: 'Dayaviṭṭu nanage ondu lōṭa nīru koḍi.' },
+          ml: { t: 'ദയവായി എനിക്ക് ഒരു ഗ്ലാസ് വെള്ളം തരൂ.', r: 'Dayavāyi enikk oru glās veḷḷaṁ tarū.' },
+          pa: { t: 'ਕਿਰਪਾ ਕਰਕੇ ਮੈਨੂੰ ਇੱਕ ਗਲਾਸ ਪਾਣੀ ਦਿਓ।', r: 'Kirpā karkē mainūṁ ikk galās pāṇī diō.' },
+          or: { t: 'ଦୟାକରି ମୋତେ ଗୋଟିଏ ଗ୍ଲାସ୍ ପାଣି ଦିଅନ୍ତୁ।', r: 'Dayākari mōte gōṭie glās pāṇi diantu.' },
+          ur: { t: 'براہ کرم مجھے ایک گلاس پانی دیں۔', r: 'Barāh-e-karam mujhe ek gilās pānī dein.' },
+          as: { t: 'অনুগ্ৰহ কৰি মোক এগিলাচ পানী দিয়ক।', r: 'Onugroho kori mok egilas pani diyok.' }
+        }
+      },
+      {
+        id: 22,
+        category: 'dining',
+        en: 'The food is very delicious.',
+        translations: {
+          hi: { t: 'खाना बहुत स्वादिष्ट है।', r: 'Khānā bahut svādiṣṭ hai.' },
+          mr: { t: 'जेवण खूप चविष्ट आहे.', r: 'Jevaṇ khūp caviṣṭa āhe.' },
+          bn: { t: 'খাবারটা খুব সুস্বাদু।', r: 'Khabarta khub shushadu.' },
+          ta: { t: 'உணவு மிகவும் சுவையாக உள்ளது.', r: 'Uṇavu mikavum cuvaiyāka uḷḷatu.' },
+          te: { t: 'భోజనం చాలా రుచిగా ఉంది.', r: 'Bhōjanaṁ cālā rucigā undi.' },
+          gu: { t: 'જમવાનું ખૂબ સ્વાદિષ્ટ છે.', r: 'Jamvānuṁ khūb svādiṣṭa chhe.' },
+          kn: { t: 'ಊಟ ತುಂಬಾ ರುಚಿಯಾಗಿದೆ.', r: 'Ūṭa tuṁbā ruciyāgide.' },
+          ml: { t: 'ഭക്ഷണം വളരെ രുചികരമാണ്.', r: 'Bhakṣaṇaṁ vaḷare rucikaramāṇ.' },
+          pa: { t: 'ਖਾਣਾ ਬਹੁਤ ਸੁਆਦ ਹੈ।', r: 'Khāṇā bahut suād hai.' },
+          or: { t: 'ଖାଦ୍ୟ ବହୁତ ସ୍ୱାଦିଷ୍ଟ ଅଟେ।', r: 'Khādya bahuta svādiṣṭa aṭe.' },
+          ur: { t: 'کھانا بہت مزیدار ہے۔', r: 'Khānā bahut mazedār hai.' },
+          as: { t: 'খাদ্য বৰ সোৱাদ হৈছে।', r: 'Khadya bor sowad hoise.' }
+        }
+      },
+      {
+        id: 23,
+        category: 'dining',
+        en: 'Please make it less spicy.',
+        translations: {
+          hi: { t: 'कृपया इसे कम तीखा बनाएं।', r: 'Kripayā ise kam tīkhā banāen.' },
+          mr: { t: 'कृपया हे कमी तिखट बनवा.', r: 'Kṛpayā he kamī tikhaṭ banavā.' },
+          bn: { t: 'দয়া করে ঝাল কম দেবেন।', r: 'Doya kore jhal kom deben.' },
+          ta: { t: 'தயவுசெய்து காரம் குறைவாகப் போடுங்கள்.', r: 'Tayavuceytu kāram kuṟaivākap pōṭuṅkaḷ.' },
+          te: { t: 'దయచేసి కారం తక్కువగా వేయండి.', r: 'Dayacēsi kāraṁ takkuvagā vēyaṇḍi.' },
+          gu: { t: 'કૃપા કરીને ઓછું તીખું બનાવજો.', r: 'Kṛpā karīne ochhuṁ tīkhuṁ banāvjo.' },
+          kn: { t: 'ದಯವಿಟ್ಟು ಖಾರ ಕಡಿಮೆ ಹಾಕಿ.', r: 'Dayaviṭṭu khāra kaḍime hāki.' },
+          ml: { t: 'ദയവായി എരിവ് കുറയ്ക്കുക.', r: 'Dayavāyi eriv kuṟaykkuka.' },
+          pa: { t: 'ਕਿਰਪਾ ਕਰਕੇ ਮਿਰਚ ਘੱਟ ਰੱਖਣਾ।', r: 'Kirpā karkē mirach ghaṭṭ rakkhaṇā.' },
+          or: { t: 'ଦୟାକରି କମ୍ ରାଗ କରିବେ।', r: 'Dayākari kam rāga karibe.' },
+          ur: { t: 'براہ کرم مرچ کم رکھیں۔', r: 'Barāh-e-karam mirch kam rakhein.' },
+          as: { t: 'অনুগ্ৰহ কৰি জ্বলা কমকৈ দিব।', r: 'Onugroho kori jola komkoi dibo.' }
+        }
+      },
+      {
+        id: 24,
+        category: 'dining',
+        en: 'Can I have the bill, please?',
+        translations: {
+          hi: { t: 'कृपया बिल दे दीजिए।', r: 'Kripayā bil de dījiye.' },
+          mr: { t: 'कृपया बिल द्या.', r: 'Kṛpayā bil dyā.' },
+          bn: { t: 'দয়া করে বিলটা দিন।', r: 'Doya kore bilta din.' },
+          ta: { t: 'தயவுசெய்து பில் கொடுங்கள்.', r: 'Tayavuceytu pil koṭuṅkaḷ.' },
+          te: { t: 'దయచేసి బిల్లు ఇవ్వండి.', r: 'Dayacēsi billu ivvaṇḍi.' },
+          gu: { t: 'કૃપા કરીને બિલ આપશો.', r: 'Kṛpā karīne bil āpsho.' },
+          kn: { t: 'ದಯವಿಟ್ಟು ಬಿಲ್ ಕೊಡಿ.', r: 'Dayaviṭṭu bil koḍi.' },
+          ml: { t: 'ദയവായി ബില്ല് തരാമോ?', r: 'Dayavāyi bill tarāmō?' },
+          pa: { t: 'ਕਿਰਪਾ ਕਰਕੇ ਬਿੱਲ ਦੇ ਦਿਓ।', r: 'Kirpā karkē bill dē diō.' },
+          or: { t: 'ଦୟାକରି ବିଲ୍ ଦିଅନ୍ତୁ।', r: 'Dayākari bil diantu.' },
+          ur: { t: 'براہ کرم بل دے دیں۔', r: 'Barāh-e-karam bil de dein.' },
+          as: { t: 'অনুগ্ৰহ কৰি বিলখন দিয়ক।', r: 'Onugroho kori bilkhon diyok.' }
+        }
+      },
+
+      // --- EMERGENCY & HEALTH ---
+      {
+        id: 25,
+        category: 'emergency',
+        en: 'Please help me!',
+        translations: {
+          hi: { t: 'कृपया मेरी मदद कीजिए!', r: 'Kripayā merī madad kījiye!' },
+          mr: { t: 'कृपया मला मदत करा!', r: 'Kṛpayā malā madat karā!' },
+          bn: { t: 'দয়া করে আমাকে সাহায্য করুন!', r: 'Doya kore amake shahajjo korun!' },
+          ta: { t: 'தயவுசெய்து எனக்கு உதவுங்கள்!', r: 'Tayavuceytu eṉakku utavuṅkaḷ!' },
+          te: { t: 'దయచేసి నాకు సహాయం చేయండి!', r: 'Dayacēsi nāku sahāyaṁ cēyaṇḍi!' },
+          gu: { t: 'કૃપા કરીને મને મદદ કરો!', r: 'Kṛpā karīne mane madad karo!' },
+          kn: { t: 'ದಯವಿಟ್ಟು ನನಗೆ ಸಹಾಯ ಮಾಡಿ!', r: 'Dayaviṭṭu nanage sahāya māḍi!' },
+          ml: { t: 'ദയവായി എന്നെ സഹായിക്കൂ!', r: 'Dayavāyi enne sahāyikkū!' },
+          pa: { t: 'ਕਿਰਪਾ ਕਰਕੇ ਮੇਰੀ ਮਦਦ ਕਰੋ!', r: 'Kirpā karkē mērī madad karō!' },
+          or: { t: 'ଦୟାକରି ମୋତେ ସାହାଯ୍ୟ କରନ୍ତୁ!', r: 'Dayākari mōte sāhājya karantu!' },
+          ur: { t: 'براہ کرم میری مدد کریں!', r: 'Barāh-e-karam merī madad karein!' },
+          as: { t: 'অনুগ্ৰহ কৰি মোক সহায় কৰক!', r: 'Onugroho kori mok xohay korok!' }
+        }
+      },
+      {
+        id: 26,
+        category: 'emergency',
+        en: 'I need a doctor.',
+        translations: {
+          hi: { t: 'मुझे डॉक्टर की ज़रूरत है।', r: 'Mujhe ḍŏkṭar kī zarūrat hai.' },
+          mr: { t: 'मला डॉक्टरांची गरज आहे.', r: 'Malā ḍŏkṭarāncī garaj āhe.' },
+          bn: { t: 'আমার একজন ডাক্তার প্রয়োজন।', r: 'Amar ekjon daktar proyojon.' },
+          ta: { t: 'எனக்கு ஒரு மருத்துவர் தேவை.', r: 'Eṉakku oru maruttuvar tēvai.' },
+          te: { t: 'నాకు డాక్టర్ అవసరం ఉంది.', r: 'Nāku ḍākṭar avasaraṁ undi.' },
+          gu: { t: 'મારે ડૉક્ટરની જરૂર છે.', r: 'Māre ḍŏkṭarnī jarūr chhe.' },
+          kn: { t: 'ನನಗೆ ವೈದ್ಯರ ಅಗತ್ಯವಿದೆ.', r: 'Nanage vaidyara agatyavide.' },
+          ml: { t: 'എനിക്ക് ഒരു ഡോക്ടറെ കാണണം.', r: 'Enikk oru ḍōkṭaṟe kāṇaṇaṁ.' },
+          pa: { t: 'ਮੈਨੂੰ ਡਾਕਟਰ ਦੀ ਲੋੜ ਹੈ।', r: 'Mainūṁ ḍākṭar dī lōṛ hai.' },
+          or: { t: 'ମୋତେ ଜଣେ ଡାକ୍ତରଙ୍କ ଆବଶ୍ୟକତା ଅଛି।', r: 'Mōte jaṇe ḍāktaraṅka ābaśyakatā achi.' },
+          ur: { t: 'مجھے ڈاکٹر کی ضرورت ہے۔', r: 'Mujhe ḍākṭar kī zarūrat hai.' },
+          as: { t: 'মোক এজন ডাক্তৰৰ প্ৰয়োজন।', r: 'Mok ejon daktoror proyojon.' }
+        }
+      },
+      {
+        id: 27,
+        category: 'emergency',
+        en: 'Where is the nearest hospital?',
+        translations: {
+          hi: { t: 'नज़दीकी अस्पताल कहाँ है?', r: 'Nazdīkī aspatāl kahān hai?' },
+          mr: { t: 'जवळचे रुग्णालय कुठे आहे?', r: 'Javaḷche rugṇālay kuṭhe āhe?' },
+          bn: { t: 'সবচেয়ে কাছের হাসপাতাল কোথায়?', r: 'Shobcheye kacher hashpatal kothay?' },
+          ta: { t: 'அருகிலுள்ள மருத்துவமனை எங்கே உள்ளது?', r: 'Arukiluḷḷa maruttuvamaṉai eṅkē uḷḷatu?' },
+          te: { t: 'దగ్గరలోని ఆసుపత్రి ఎక్కడ ఉంది?', r: 'Daggaralōni āsupatri ekkaḍa undi?' },
+          gu: { t: 'સૌથી નજીકની હોસ્પિટલ ક્યાં છે?', r: 'Sauthī najīknī hospiṭal kyāṁ chhe?' },
+          kn: { t: 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆ ಎಲ್ಲಿದೆ?', r: 'Hattirada āspatre ellide?' },
+          ml: { t: 'ഏറ്റവും അടുത്തുള്ള ആശുപത്രി എവിടെയാണ്?', r: 'Ēṟṟavuṁ aṭuttuḷḷa āśupatri eviṭeyāṇ?' },
+          pa: { t: 'ਸਭ ਤੋਂ ਨੇੜਲਾ ਹਸਪਤਾਲ ਕਿੱਥੇ ਹੈ?', r: 'Sabh tōṁ nēṛlā haspatāl kitthē hai?' },
+          or: { t: 'ନିକଟତମ ଡାକ୍ତରଖାନା କେଉଁଠି ଅଛି?', r: 'Nikaṭatama ḍāktarakhānā keuṁṭhi achi?' },
+          ur: { t: 'قریبی اسپتال کہاں ہے؟', r: 'Qarībī aspatāl kahān hai?' },
+          as: { t: 'আটাইতকৈ ওচৰৰ চিকিৎসালয় ক’ত আছে?', r: 'Ataitkoi osoror sikitsaloy kot ase?' }
+        }
+      },
+      {
+        id: 28,
+        category: 'emergency',
+        en: 'I am lost, can you guide me?',
+        translations: {
+          hi: { t: 'मैं रास्ता भटक गया हूँ, क्या आप मार्गदर्शन कर सकते हैं?', r: 'Main rāstā bhaṭak gayā hūn, kyā āp mārgadarśan kar sakte hain?' },
+          mr: { t: 'मी रस्ता चुकलो आहे, तुम्ही मला मार्ग दाखवू शकता का?', r: 'Mī rastā cuklo āhe, tumhī malā mārga dākhavū śaktā kā?' },
+          bn: { t: 'আমি পথ হারিয়ে ফেলেছি, আপনি কি আমাকে পথ দেখাতে পারবেন?', r: 'Ami poth hariye phelechi, apni ki amake poth dekhate parben?' },
+          ta: { t: 'நான் வழி தவறிவிட்டேன், எனக்கு வழிகாட்ட முடியுமா?', r: 'Nāṉ vaḻi tavaṟiviṭṭēṉ, eṉakku vaḻikāṭṭa muṭiyumā?' },
+          te: { t: 'నేను దారి తప్పాను, మీరు నాకు దారి చూపించగలరా?', r: 'Nēnu dāri tappānu, mīru nāku dāri cūpiñcagalarā?' },
+          gu: { t: 'હું રસ્તો ભૂલી ગયો છું, શું તમે મને રસ્તો બતાવી શકો?', r: 'Huṁ rasto bhūlī gayo chhuṁ, shuṁ tame mane rasto batāvī shako?' },
+          kn: { t: 'ನಾನು ದಾರಿ ತಪ್ಪಿದ್ದೇನೆ, ನನಗೆ ದಾರಿ ತೋರಿಸುತ್ತೀರಾ?', r: 'Nānu dāri tappiddēne, nanage dāri tōrisuttīrā?' },
+          ml: { t: 'എനിക്ക് വഴി തെറ്റിപ്പോയി, എന്നെ ഒന്ന് സഹായിക്കാമോ?', r: 'Enikk vaḻi teṟṟippōyi, enne onn sahāyikkāmō?' },
+          pa: { t: 'ਮੈਂ ਰਸਤਾ ਭੁੱਲ ਗਿਆ ਹਾਂ, ਕੀ ਤੁਸੀਂ ਮੈਨੂੰ ਰਸਤਾ ਦੱਸ ਸਕਦੇ ਹੋ?', r: 'Maiṁ rastā bhull giā hāṁ, kī tusīṁ mainūṁ rastā dass sakdē hō?' },
+          or: { t: 'ମୁଁ ବାଟ ଭୁଲିଯାଇଛି, ଆପଣ ମୋତେ ବାଟ ଦେଖାଇ ପାରିବେ କି?', r: 'Muṁ bāṭa bhuliyāichi, āpaṇa mōte bāṭa dekhāi pāribe ki?' },
+          ur: { t: 'میں راستہ بھٹک گیا ہوں، کیا آپ میری رہنمائی کر سکتے ہیں؟', r: 'Main rāsta bhaṭak gayā hūn, kyā āp merī rahnumāī kar sakte hain?' },
+          as: { t: 'মই বাট হেৰুৱাইছোঁ, আপুনি মোক বাট দেখুৱাব পাৰিবনে?', r: 'Moi bat heruwaiso, apuni mok bat dekhuwabo paribone?' }
+        }
+      }
+    ];
+
+    /**
+     * 4. APPLICATION STATE
+     */
+    const state = {
+      selectedCategory: 'all',
+      searchQuery: '',
+      primaryLang: 'hi',        // Default target language: Hindi
+      viewMode: 'focus',        // 'focus' (single primary language + expand button) or 'all' (all 12 languages grid)
+      expandedPhraseIds: new Set(), // Tracks individually expanded cards in 'focus' mode
+      speechRate: 1.0,
+      availableVoices: [],
+      activePlayingKey: null
+    };
+
+    let toastTimeout = null;
+
+    /**
+     * 5. INITIALIZATION
+     */
+    window.addEventListener('DOMContentLoaded', () => {
+      populateLanguageSelector();
+      renderCategoryTabs();
+      renderPhrases();
+      initSpeechSynthesis();
+    });
+
+    /**
+     * 6. WEB SPEECH API (TTS) SETUP & PLAYBACK
+     */
+    function initSpeechSynthesis() {
+      if (!('speechSynthesis' in window)) {
+        updateVoiceStatus(
+          'error',
+          'Web Speech API not supported in this browser',
+          'Your current browser does not support text-to-speech synthesis. Please try Chrome, Edge, Safari, or Firefox.'
+        );
+        return;
+      }
+
+      const loadVoices = () => {
+        const voices = window.speechSynthesis.getVoices();
+        state.availableVoices = voices;
+        updateVoiceDiagnostics(voices);
+      };
+
+      loadVoices();
+      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+      }
+    }
+
+    function updateVoiceDiagnostics(voices) {
+      const indianVoices = voices.filter(v =>
+        v.lang && (v.lang.toLowerCase().endsWith('-in') || INDIAN_LANGUAGES.some(l => v.lang.toLowerCase().startsWith(l.code)))
+      );
+
+      document.getElementById('installed-voice-count').textContent = indianVoices.length;
+
+      if (voices.length === 0) {
+        updateVoiceStatus(
+          'warn',
+          'Loading system speech voices...',
+          'If voices do not appear automatically, clicking any Listen button will still trigger browser TTS.'
+        );
+      } else if (indianVoices.length > 0) {
+        updateVoiceStatus(
+          'ready',
+          `${indianVoices.length} Indian language voice(s) ready on your device`,
+          'Click any Listen button to hear pronunciation. Missing regional packs automatically fall back to compatible Indic/system voices.'
+        );
+      } else {
+        updateVoiceStatus(
+          'warn',
+          'No dedicated Indian regional voice packs detected on OS',
+          'Audio playback will still attempt synthesis using your browser default voice. Installing Hindi/Indian language packs in OS Settings improves regional accents.'
+        );
+      }
+
+      const listEl = document.getElementById('voice-diagnostics-list');
+      if (indianVoices.length === 0) {
+        listEl.innerHTML = `<div class="col-span-full text-slate-400 italic">No *-IN voices exposed by the OS yet. Standard fallback synthesis will be used.</div>`;
+      } else {
+        listEl.innerHTML = indianVoices.map(v => `
+          <div class="bg-slate-800 px-3 py-2 rounded-xl border border-slate-700 flex items-center justify-between gap-2">
+            <span class="truncate font-medium text-slate-200" title="${escapeHtml(v.name)}">${escapeHtml(v.name)}</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono text-[11px] shrink-0">${escapeHtml(v.lang)}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function updateVoiceStatus(level, title, desc) {
+      const dot = document.getElementById('voice-status-dot');
+      const titleEl = document.getElementById('voice-status-title');
+      const descEl = document.getElementById('voice-status-desc');
+
+      titleEl.textContent = title;
+      descEl.textContent = desc;
+
+      dot.className = 'w-3 h-3 rounded-full mt-1.5 sm:mt-0 shrink-0 ';
+      if (level === 'ready') {
+        dot.className += 'bg-emerald-500';
+      } else if (level === 'error') {
+        dot.className += 'bg-rose-500';
+      } else {
+        dot.className += 'bg-amber-400 animate-pulse';
+      }
+    }
+
+    function toggleVoiceDiagnostics() {
+      const panel = document.getElementById('voice-diagnostics-panel');
+      panel.classList.toggle('hidden');
+    }
+
+    /**
+     * Speaks the given text in the target BCP-47 locale with smart voice matching & fallback.
+     */
+    function speakText(text, locale, langName, buttonId) {
+      if (!('speechSynthesis' in window)) {
+        showToast('Speech synthesis is not supported by your browser.');
+        return;
+      }
+
+      try {
+        window.speechSynthesis.cancel();
+        clearActivePlayingHighlight();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = locale;
+        utterance.rate = state.speechRate;
+        utterance.pitch = 1.0;
+
+        // Refresh voice list if empty
+        const voices = state.availableVoices.length > 0
+          ? state.availableVoices
+          : window.speechSynthesis.getVoices();
+
+        const langPrefix = locale.split('-')[0].toLowerCase();
+
+        // 1. Exact locale match (e.g., ta-IN)
+        let matchedVoice = voices.find(v => v.lang.toLowerCase() === locale.toLowerCase());
+        // 2. Language prefix match (e.g., ta)
+        if (!matchedVoice) {
+          matchedVoice = voices.find(v => v.lang.toLowerCase().startsWith(langPrefix));
+        }
+        // 3. Fallback to Hindi (hi-IN) for closely related Indic scripts if local voice isn't installed
+        let usedFallback = false;
+        if (!matchedVoice && locale !== 'en-IN' && locale !== 'en-US') {
+          matchedVoice = voices.find(v => v.lang.toLowerCase() === 'hi-in');
+          if (matchedVoice) usedFallback = true;
+        }
+
+        if (matchedVoice) {
+          utterance.voice = matchedVoice;
+        }
+
+        utterance.onstart = () => {
+          state.activePlayingKey = buttonId;
+          highlightButton(buttonId, true);
+        };
+
+        utterance.onend = () => {
+          highlightButton(buttonId, false);
+          state.activePlayingKey = null;
+        };
+
+        utterance.onerror = (event) => {
+          highlightButton(buttonId, false);
+          state.activePlayingKey = null;
+          if (event.error !== 'interrupted' && event.error !== 'canceled') {
+            showToast(`Could not play ${langName} audio (${event.error}). Try another browser or install the ${langName} voice pack.`);
+          }
+        };
+
+        window.speechSynthesis.speak(utterance);
+
+        if (!matchedVoice && locale !== 'en-IN') {
+          showToast(`Playing ${langName} (${locale}) using system fallback voice.`);
+        } else if (usedFallback) {
+          showToast(`${langName} voice pack not installed on OS — pronouncing via Hindi/Indic fallback.`);
+        }
+      } catch (err) {
+        showToast('Audio playback error: ' + err.message);
+      }
+    }
+
+    function stopAudio() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      clearActivePlayingHighlight();
+      state.activePlayingKey = null;
+    }
+
+    function highlightButton(buttonId, isPlaying) {
+      const btn = document.getElementById(buttonId);
+      if (!btn) return;
+      if (isPlaying) {
+        btn.classList.add('ring-2', 'ring-amber-500', 'bg-amber-100', 'text-amber-900');
+      } else {
+        btn.classList.remove('ring-2', 'ring-amber-500', 'bg-amber-100', 'text-amber-900');
+      }
+    }
+
+    function clearActivePlayingHighlight() {
+      if (state.activePlayingKey) {
+        highlightButton(state.activePlayingKey, false);
+      }
+    }
+
+    function setSpeechRate(rate) {
+      state.speechRate = rate;
+      const normalBtn = document.getElementById('speed-normal');
+      const slowBtn = document.getElementById('speed-slow');
+
+      if (rate === 1.0) {
+        normalBtn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold transition bg-white text-slate-900 shadow-sm';
+        slowBtn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900';
+      } else {
+        slowBtn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold transition bg-white text-slate-900 shadow-sm';
+        normalBtn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900';
+      }
+      showToast(`Audio speed set to ${rate === 1.0 ? 'Normal (1.0x)' : 'Slow Learner Mode (0.7x)'}`);
+    }
+
+    /**
+     * 7. UI CONTROLS & FILTERS
+     */
+    function populateLanguageSelector() {
+      const select = document.getElementById('language-select');
+      select.innerHTML = INDIAN_LANGUAGES.map(lang => `
+        <option value="${lang.code}" ${lang.code === state.primaryLang ? 'selected' : ''}>
+          ${lang.name} (${lang.nativeName}) — ${lang.script}
+        </option>
+      `).join('');
+    }
+
+    function setPrimaryLanguage(langCode) {
+      state.primaryLang = langCode;
+      renderPhrases();
+    }
+
+    function setViewMode(mode) {
+      state.viewMode = mode;
+      const focusBtn = document.getElementById('mode-focus');
+      const allBtn = document.getElementById('mode-all');
+
+      if (mode === 'focus') {
+        focusBtn.className = 'py-1.5 px-2 rounded-lg text-xs font-semibold transition bg-white text-slate-900 shadow-sm';
+        allBtn.className = 'py-1.5 px-2 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900';
+      } else {
+        allBtn.className = 'py-1.5 px-2 rounded-lg text-xs font-semibold transition bg-white text-slate-900 shadow-sm';
+        focusBtn.className = 'py-1.5 px-2 rounded-lg text-xs font-semibold transition text-slate-600 hover:text-slate-900';
+      }
+      renderPhrases();
+    }
+
+    function togglePhraseExpansion(phraseId) {
+      if (state.expandedPhraseIds.has(phraseId)) {
+        state.expandedPhraseIds.delete(phraseId);
+      } else {
+        state.expandedPhraseIds.add(phraseId);
+      }
+      renderPhrases();
+    }
+
+    function renderCategoryTabs() {
+      const container = document.getElementById('category-tabs');
+      container.innerHTML = CATEGORIES.map(cat => {
+        const isActive = state.selectedCategory === cat.id;
+        return `
+          <button
+            onclick="selectCategory('${cat.id}')"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
+              isActive
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }"
+          >
+            <span>${cat.icon}</span>
+            <span>${cat.label}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectCategory(categoryId) {
+      state.selectedCategory = categoryId;
+      renderCategoryTabs();
+      renderPhrases();
+    }
+
+    function handleSearch(value) {
+      state.searchQuery = value.trim().toLowerCase();
+      const clearBtn = document.getElementById('clear-search-btn');
+      if (state.searchQuery.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      renderPhrases();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('search-input');
+      input.value = '';
+      handleSearch('');
+      input.focus();
+    }
+
+    /**
+     * 8. RENDER PHRASE CARDS
+     */
+    function renderPhrases() {
+      const container = document.getElementById('phrases-container');
+      const primaryLangObj = INDIAN_LANGUAGES.find(l => l.code === state.primaryLang) || INDIAN_LANGUAGES[0];
+
+      // Update active badge
+      const badge = document.getElementById('active-lang-badge');
+      badge.textContent = state.viewMode === 'focus'
+        ? `Primary: ${primaryLangObj.name} (${primaryLangObj.nativeName})`
+        : 'Showing all 12 Indian languages';
+
+      // Filter phrases
+      const filtered = PHRASE_DATABASE.filter(item => {
+        const matchesCat = state.selectedCategory === 'all' || item.category === state.selectedCategory;
+        if (!matchesCat) return false;
+
+        if (!state.searchQuery) return true;
+
+        // Match English or any translation / transliteration
+        if (item.en.toLowerCase().includes(state.searchQuery)) return true;
+        return Object.values(item.translations).some(tr =>
+          tr.t.toLowerCase().includes(state.searchQuery) ||
+          tr.r.toLowerCase().includes(state.searchQuery)
+        );
+      });
+
+      document.getElementById('phrase-count').textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white border border-slate-200 rounded-2xl p-10 text-center space-y-3">
+            <div class="text-3xl">🔍</div>
+            <h3 class="text-base font-bold text-slate-800">No matching phrases found</h3>
+            <p class="text-sm text-slate-500 max-w-md mx-auto">
+              Try searching for common words like "hello", "water", "station", "doctor", or reset your category filter.
+            </p>
+            <button onclick="clearSearch(); selectCategory('all');" class="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white transition">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const catObj = CATEGORIES.find(c => c.id === item.category);
+        const isExpanded = state.viewMode === 'all' || state.expandedPhraseIds.has(item.id);
+        const primaryTr = item.translations[primaryLangObj.code];
+        const enBtnId = `btn-en-${item.id}`;
+        const primaryBtnId = `btn-pri-${item.id}-${primaryLangObj.code}`;
+
+        return `
+          <article class="bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-slate-300 transition overflow-hidden">
+            <!-- Top Row: English Source + Primary Language Highlight (in Focus Mode) -->
+            <div class="p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <!-- English Original -->
+              <div class="space-y-1.5 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600">
+                    ${catObj ? catObj.icon + ' ' + catObj.label : item.category}
+                  </span>
+                </div>
+                <div class="flex items-center gap-3 flex-wrap">
+                  <h2 class="text-lg sm:text-xl font-bold text-slate-900">${escapeHtml(item.en)}</h2>
+                  <button
+                    id="${enBtnId}"
+                    onclick="speakText('${escapeJsString(item.en)}', 'en-IN', 'English', '${enBtnId}')"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                    title="Listen in English"
+                  >
+                    ${speakerIconSvg()}
+                    <span>English</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Primary Selected Language Box (Shown in Single Focus Mode) -->
+              ${state.viewMode === 'focus' ? `
+                <div class="flex-1 bg-gradient-to-br from-amber-50/80 to-orange-50/60 border border-amber-200/80 rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-3">
+                  <div class="space-y-1 min-w-0 flex-1 ${primaryLangObj.rtl ? 'text-right' : ''}" dir="${primaryLangObj.rtl ? 'rtl' : 'ltr'}">
+                    <div class="flex items-center gap-2 ${primaryLangObj.rtl ? 'justify-end' : ''}" dir="ltr">
+                      <span class="text-xs font-bold uppercase tracking-wider text-amber-800">
+                        ${primaryLangObj.name} (${primaryLangObj.nativeName})
+                      </span>
+                      <span class="text-[11px] text-amber-700/80 font-mono">${primaryLangObj.locale}</span>
+                    </div>
+                    <p class="text-lg sm:text-xl font-bold text-slate-900 leading-relaxed ${primaryLangObj.rtl ? 'font-urdu text-2xl' : ''}">
+                      ${escapeHtml(primaryTr.t)}
+                    </p>
+                    <p class="text-xs sm:text-sm font-medium text-slate-600 italic" dir="ltr">
+                      ${escapeHtml(primaryTr.r)}
+                    </p>
+                  </div>
+
+                  <div class="flex flex-col sm:flex-row items-center gap-2 shrink-0">
+                    <button
+                      id="${primaryBtnId}"
+                      onclick="speakText('${escapeJsString(primaryTr.t)}', '${primaryLangObj.locale}', '${primaryLangObj.name}', '${primaryBtnId}')"
+                      class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition"
+                    >
+                      ${speakerIconSvg()}
+                      <span>Listen</span>
+                    </button>
+                    <button
+                      onclick="copyPhraseText('${escapeJsString(primaryTr.t + ' (' + primaryTr.r + ')')}')"
+                      class="p-2.5 rounded-xl bg-white hover:bg-amber-100 text-slate-600 hover:text-amber-900 border border-amber-200 transition"
+                      title="Copy translation"
+                    >
+                      ${copyIconSvg()}
+                    </button>
+                  </div>
+                </div>
+              ` : ''}
+
+              <!-- Expand / Collapse All 12 Languages Toggle (in Focus Mode) -->
+              ${state.viewMode === 'focus' ? `
+                <div class="shrink-0 flex justify-end">
+                  <button
+                    onclick="togglePhraseExpansion(${item.id})"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold border transition ${
+                      isExpanded
+                        ? 'bg-slate-900 text-white border-slate-900'
+                        : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-300'
+                    }"
+                  >
+                    <span>${isExpanded ? 'Hide All 12' : 'All 12 Languages'}</span>
+                    <svg class="w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Expanded Grid of All 12 Indian Languages -->
+            ${isExpanded ? `
+              <div class="border-t border-slate-100 bg-slate-50/70 p-4 sm:p-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  ${INDIAN_LANGUAGES.map(lang => {
+                    const tr = item.translations[lang.code];
+                    const gridBtnId = `btn-grid-${item.id}-${lang.code}`;
+                    const isPrimaryHighlight = lang.code === state.primaryLang;
+
+                    return `
+                      <div class="rounded-xl p-3.5 border transition flex flex-col justify-between gap-2.5 ${
+                        isPrimaryHighlight
+                          ? 'bg-amber-50/60 border-amber-300 shadow-xs'
+                          : 'bg-white border-slate-200/90 hover:border-slate-300'
+                      }">
+                        <div>
+                          <div class="flex items-center justify-between gap-2 mb-1.5">
+                            <span class="text-xs font-bold text-slate-800">
+                              ${lang.name} <span class="font-normal text-slate-500">(${lang.nativeName})</span>
+                            </span>
+                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
+                              ${lang.locale}
+                            </span>
+                          </div>
+                          <p
+                            class="text-base font-bold text-slate-900 leading-snug ${lang.rtl ? 'font-urdu text-right text-xl leading-loose' : ''}"
+                            dir="${lang.rtl ? 'rtl' : 'ltr'}"
+                          >
+                            ${escapeHtml(tr.t)}
+                          </p>
+                          <p class="text-xs text-slate-500 italic mt-1">
+                            ${escapeHtml(tr.r)}
+                          </p>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                          <button
+                            id="${gridBtnId}"
+                            onclick="speakText('${escapeJsString(tr.t)}', '${lang.locale}', '${lang.name}', '${gridBtnId}')"
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition"
+                          >
+                            ${speakerIconSvg()}
+                            <span>Listen</span>
+                          </button>
+                          <button
+                            onclick="copyPhraseText('${escapeJsString(tr.t + ' — ' + tr.r)}')"
+                            class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                            title="Copy ${lang.name} translation"
+                          >
+                            ${copyIconSvg()}
+                          </button>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    /**
+     * 9. CLIPBOARD & SOURCE CODE MODAL UTILITIES
+     */
+    function copyPhraseText(text) {
+      copyTextToClipboard(text, 'Copied translation to clipboard!');
+    }
+
+    function openSourceModal() {
+      const modal = document.getElementById('source-modal');
+      const textarea = document.getElementById('source-code-textarea');
+      // Capture full current HTML document source cleanly
+      textarea.value = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      modal.classList.remove('hidden');
+    }
+
+    function closeSourceModal() {
+      document.getElementById('source-modal').classList.add('hidden');
+    }
+
+    function copySourceCode() {
+      const textarea = document.getElementById('source-code-textarea');
+      copyTextToClipboard(textarea.value, 'Complete HTML/JS source code copied to clipboard!');
+    }
+
+    function copyTextToClipboard(text, successMsg) {
+      try {
+        const tempInput = document.createElement('textarea');
+        tempInput.value = text;
+        tempInput.style.position = 'fixed';
+        tempInput.style.opacity = '0';
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        showToast(successMsg);
+      } catch (err) {
+        showToast('Unable to copy automatically. Please select and copy manually.');
+      }
+    }
+
+    /**
+     * 10. TOAST & SVG HELPERS
+     */
+    function showToast(message) {
+      const banner = document.getElementById('toast-banner');
+      const msgEl = document.getElementById('toast-message');
+      msgEl.textContent = message;
+      banner.classList.remove('hidden');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        hideToast();
+      }, 3800);
+    }
+
+    function hideToast() {
+      document.getElementById('toast-banner').classList.add('hidden');
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function escapeJsString(str) {
+      return String(str)
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '\\"')
+        .replace(/\n/g, '\\n');
+    }
+
+    function speakerIconSvg() {
+      return `
+        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+        </svg>
+      `;
+    }
+
+    function copyIconSvg() {
+      return `
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+        </svg>
+      `;
+    }
+  </script>
+</body>
+</html>

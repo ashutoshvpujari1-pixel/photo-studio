@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multilingual Fruits & Vegetables Guide (EN • हिन्दी • मराठी • ಕನ್ನಡ)</title>
+  <!-- Tailwind CSS for responsive layout and modern design tokens -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts supporting Latin, Devanagari (Hindi & Marathi), and Kannada scripts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@500;600;700&family=Noto+Sans+Kannada:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+  <!-- Lucide Icons for crisp UI actions -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'sans-serif'],
+            devanagari: ['Noto Sans Devanagari', 'sans-serif'],
+            kannada: ['Noto Sans Kannada', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* Custom scrollbar & smooth transitions */
+    body {
+      font-family: 'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .card-hover {
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 28px -8px rgba(15, 23, 42, 0.1), 0 4px 10px -4px rgba(15, 23, 42, 0.05);
+    }
+    /* Toast animation */
+    @keyframes slideUpFade {
+      from {
+        opacity: 0;
+        transform: translate(-50%, 16px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+    .toast-animate {
+      animation: slideUpFade 0.25s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
+  <!-- Header Banner -->
+  <header class="bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-700 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-emerald-50 text-xs font-semibold tracking-wide mb-3 backdrop-blur-sm">
+            <span>EN</span>
+            <span>•</span>
+            <span class="font-devanagari">हिन्दी</span>
+            <span>•</span>
+            <span class="font-devanagari">मराठी</span>
+            <span>•</span>
+            <span class="font-kannada">ಕನ್ನಡ</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
+            Fruits &amp; Vegetables Multilingual Guide
+          </h1>
+          <p class="mt-1.5 text-emerald-100 text-sm sm:text-base max-w-2xl">
+            Browse 24 Fruits &amp; 24 Vegetables with custom vector illustrations. Copy, share, email, or download high-resolution PNG cards individually or export entire lists in one click.
+          </p>
+        </div>
+
+        <!-- Quick Stats Pills -->
+        <div class="flex flex-wrap gap-3 shrink-0">
+          <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-4 py-2.5 text-center min-w-[92px]">
+            <div class="text-xl font-bold text-white" id="stat-fruits">24</div>
+            <div class="text-xs text-emerald-100 font-medium">Fruits</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-4 py-2.5 text-center min-w-[92px]">
+            <div class="text-xl font-bold text-white" id="stat-veggies">24</div>
+            <div class="text-xs text-emerald-100 font-medium">Vegetables</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-4 py-2.5 text-center min-w-[92px]">
+            <div class="text-xl font-bold text-white">4</div>
+            <div class="text-xs text-emerald-100 font-medium">Languages</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <!-- Bulk / Entire List Action Toolbar -->
+    <section aria-label="Bulk list actions" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5">
+      <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700">
+              <i data-lucide="layers" class="w-4 h-4"></i>
+            </span>
+            <h2 class="text-base font-bold text-slate-800">Bulk Export &amp; Entire List Actions</h2>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-500">
+            Select a target dataset below to copy, share, email, or download the complete multilingual chart (CSV or compiled PNG sheet).
+          </p>
+        </div>
+
+        <!-- Target Selector + Action Buttons -->
+        <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3">
+          <!-- Dataset Selector -->
+          <div class="relative">
+            <label for="bulk-target-select" class="sr-only">Select list to export</label>
+            <select
+              id="bulk-target-select"
+              class="w-full sm:w-auto appearance-none bg-slate-50 border border-slate-300 text-slate-800 text-sm font-semibold rounded-xl pl-3.5 pr-9 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer"
+            >
+              <option value="vegetables" selected>🥦 Entire Vegetables List (24 Items)</option>
+              <option value="fruits">🍎 Entire Fruits List (24 Items)</option>
+              <option value="all">🧺 Complete Catalog (All 48 Items)</option>
+              <option value="filtered">🔍 Currently Filtered View</option>
+            </select>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"></i>
+          </div>
+
+          <!-- Action Buttons Group -->
+          <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+            <button
+              type="button"
+              onclick="handleBulkAction('copy')"
+              class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 transition cursor-pointer"
+              title="Copy entire selected list to clipboard"
+            >
+              <i data-lucide="copy" class="w-4 h-4 text-slate-600"></i>
+              <span>Copy List</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="handleBulkAction('share')"
+              class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200/70 transition cursor-pointer"
+              title="Share entire selected list"
+            >
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+              <span>Share List</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="handleBulkAction('email')"
+              class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/70 transition cursor-pointer"
+              title="Email entire selected list"
+            >
+              <i data-lucide="mail" class="w-4 h-4"></i>
+              <span>Email List</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="handleBulkAction('csv')"
+              class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition cursor-pointer"
+              title="Download UTF-8 CSV spreadsheet"
+            >
+              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+              <span>Download CSV</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="handleBulkAction('png')"
+              class="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition cursor-pointer"
+              title="Download compiled high-resolution visual sheet as PNG"
+            >
+              <i data-lucide="image-down" class="w-4 h-4"></i>
+              <span>Download Sheet (PNG)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter Tabs & Live Search Bar -->
+    <section aria-label="Search and filter controls" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- Category Tabs -->
+      <div class="inline-flex p-1.5 bg-slate-200/80 rounded-2xl self-start" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          data-tab="all"
+          onclick="setCategory('all')"
+          class="tab-btn px-4 sm:px-5 py-2 rounded-xl text-sm font-semibold transition cursor-pointer bg-white text-slate-900 shadow-sm"
+        >
+          All <span class="ml-1 text-xs font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600" id="count-all">48</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          data-tab="fruit"
+          onclick="setCategory('fruit')"
+          class="tab-btn px-4 sm:px-5 py-2 rounded-xl text-sm font-semibold transition cursor-pointer text-slate-600 hover:text-slate-900"
+        >
+          Fruits <span class="ml-1 text-xs font-bold px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700" id="count-fruit">24</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          data-tab="vegetable"
+          onclick="setCategory('vegetable')"
+          class="tab-btn px-4 sm:px-5 py-2 rounded-xl text-sm font-semibold transition cursor-pointer text-slate-600 hover:text-slate-900"
+        >
+          Vegetables <span class="ml-1 text-xs font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700" id="count-vegetable">24</span>
+        </button>
+      </div>
+
+      <!-- Live Multilingual Search Input -->
+      <div class="relative w-full md:w-96">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        <input
+          type="text"
+          id="search-input"
+          oninput="handleSearch(this.value)"
+          placeholder="Search English, हिन्दी, मराठी, ಕನ್ನಡ..."
+          class="w-full bg-white border border-slate-300 rounded-2xl pl-10 pr-10 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
+        />
+        <button
+          type="button"
+          id="clear-search-btn"
+          onclick="clearSearch()"
+          class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+          aria-label="Clear search"
+        >
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- Results Status Bar -->
+    <div class="flex items-center justify-between text-xs sm:text-sm text-slate-500 px-1">
+      <p id="results-summary">Showing all 48 items</p>
+      <p class="hidden sm:block">Tip: Click any image to preview full card or download high-res PNG</p>
+    </div>
+
+    <!-- Main Cards Grid -->
+    <section
+      id="items-grid"
+      aria-label="Fruits and vegetables grid"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+    >
+      <!-- Cards are dynamically injected here by JS -->
+    </section>
+
+    <!-- Empty State when Search yields 0 matches -->
+    <div id="empty-state" class="hidden bg-white rounded-3xl border border-slate-200 p-12 text-center max-w-lg mx-auto my-8">
+      <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="search-x" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-800">No matching fruits or vegetables</h3>
+      <p class="text-sm text-slate-500 mt-1">
+        We couldn't find any match in English, Hindi, Marathi, or Kannada. Try clearing your search filter.
+      </p>
+      <button
+        type="button"
+        onclick="clearSearch()"
+        class="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition cursor-pointer"
+      >
+        Reset Filters
+      </button>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-slate-500">
+      <p>Multilingual Produce Reference • Offline-Ready Vector Graphics &amp; Instant PNG Cards</p>
+      <div class="flex items-center gap-4">
+        <button type="button" onclick="handleBulkAction('png', 'vegetables')" class="text-emerald-700 hover:underline font-medium cursor-pointer">
+          Download Vegetables PNG Sheet
+        </button>
+        <span>•</span>
+        <button type="button" onclick="handleBulkAction('png', 'fruits')" class="text-rose-700 hover:underline font-medium cursor-pointer">
+          Download Fruits PNG Sheet
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Share / Preview Fallback Modal -->
+  <div
+    id="share-modal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"
+  >
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 id="modal-title" class="text-lg font-bold text-slate-900">Share Details</h3>
+        <button
+          type="button"
+          onclick="closeModal()"
+          class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+          aria-label="Close modal"
+        >
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Optional Card Preview Image inside Modal -->
+      <div id="modal-preview-wrap" class="hidden rounded-2xl overflow-hidden border border-slate-200 bg-slate-50">
+        <img id="modal-preview-img" src="" alt="Card preview" class="w-full h-auto object-contain max-h-64 mx-auto" />
+      </div>
+
+      <div>
+        <label for="modal-share-text" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+          Formatted Multilingual Text
+        </label>
+        <textarea
+          id="modal-share-text"
+          rows="5"
+          readonly
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-800 focus:outline-none"
+        ></textarea>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
+        <button
+          type="button"
+          onclick="copyModalText()"
+          class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition cursor-pointer"
+        >
+          <i data-lucide="copy" class="w-4 h-4"></i>
+          <span>Copy Text</span>
+        </button>
+        <a
+          id="modal-whatsapp-link"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold transition"
+        >
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+          <span>WhatsApp</span>
+        </a>
+        <a
+          id="modal-email-link"
+          href="#"
+          class="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs sm:text-sm font-semibold transition"
+        >
+          <i data-lucide="mail" class="w-4 h-4"></i>
+          <span>Email</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Banner -->
+  <div
+    id="toast"
+    role="status"
+    aria-live="polite"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden items-center gap-2.5 px-5 py-3 rounded-2xl bg-slate-900 text-white text-sm font-medium shadow-xl border border-slate-700/80"
+  >
+    <span id="toast-icon" class="text-emerald-400">
+      <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+    </span>
+    <span id="toast-message">Action completed</span>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. COMPREHENSIVE DATASET: 24 FRUITS & 24 VEGETABLES (EN, HI, MR, KN)
+    // =========================================================================
+    const PRODUCE_ITEMS = [
+      // --- 24 FRUITS ---
+      { id: 'apple', category: 'fruit', en: 'Apple', hi: 'सेब', mr: 'सफरचंद', kn: 'ಸೇಬು', bg: '#fee2e2', accent: '#dc2626', shape: 'apple' },
+      { id: 'banana', category: 'fruit', en: 'Banana', hi: 'केला', mr: 'केळी', kn: 'ಬಾಳೆಹಣ್ಣು', bg: '#fef9c3', accent: '#eab308', shape: 'banana' },
+      { id: 'mango', category: 'fruit', en: 'Mango', hi: 'आम', mr: 'आंबा', kn: 'ಮಾವಿನ ಹಣ್ಣು', bg: '#ffedd5', accent: '#f97316', shape: 'mango' },
+      { id: 'orange', category: 'fruit', en: 'Orange', hi: 'संतरा', mr: 'संत्रे', kn: 'ಕಿತ್ತಳೆ', bg: '#ffedd5', accent: '#ea580c', shape: 'citrus_orange' },
+      { id: 'grapes', category: 'fruit', en: 'Grapes', hi: 'अंगूर', mr: 'द्राक्षे', kn: 'ದ್ರಾಕ್ಷಿ', bg: '#f3e8ff', accent: '#7e22ce', shape: 'grapes' },
+      { id: 'watermelon', category: 'fruit', en: 'Watermelon', hi: 'तरबूज', mr: 'कलिंगड', kn: 'ಕಲ್ಲಂಗಡಿ', bg: '#dcfce7', accent: '#16a34a', shape: 'watermelon' },
+      { id: 'papaya', category: 'fruit', en: 'Papaya', hi: 'पपीता', mr: 'पपई', kn: 'ಪಪ್ಪಾಯಿ', bg: '#ffedd5', accent: '#ea580c', shape: 'papaya' },
+      { id: 'pineapple', category: 'fruit', en: 'Pineapple', hi: 'अनानास', mr: 'अननस', kn: 'ಅನಾನಸ್', bg: '#fef3c7', accent: '#d97706', shape: 'pineapple' },
+      { id: 'pomegranate', category: 'fruit', en: 'Pomegranate', hi: 'अनार', mr: 'डाळिंब', kn: 'ದಾಳಿಂಬೆ', bg: '#ffe4e6', accent: '#be123c', shape: 'pomegranate' },
+      { id: 'guava', category: 'fruit', en: 'Guava', hi: 'अमरूद', mr: 'पेरू', kn: 'ಸೀಬೆಹಣ್ಣು', bg: '#dcfce7', accent: '#22c55e', shape: 'guava' },
+      { id: 'strawberry', category: 'fruit', en: 'Strawberry', hi: 'स्ट्रॉबेरी', mr: 'स्ट्रॉबेरी', kn: 'ಸ್ಟ್ರಾಬೆರಿ', bg: '#ffe4e6', accent: '#e11d48', shape: 'strawberry' },
+      { id: 'lemon', category: 'fruit', en: 'Lemon', hi: 'नींबू', mr: 'लिंबू', kn: 'ನಿಂಬೆಹಣ್ಣು', bg: '#fef9c3', accent: '#ca8a04', shape: 'lemon' },
+      { id: 'coconut', category: 'fruit', en: 'Coconut', hi: 'नारियल', mr: 'नारळ', kn: 'ತೆಂಗಿನಕಾಯಿ', bg: '#f5f5f4', accent: '#78350f', shape: 'coconut' },
+      { id: 'jackfruit', category: 'fruit', en: 'Jackfruit', hi: 'कटहल', mr: 'फणस', kn: 'ಹಲಸಿನ ಹಣ್ಣು', bg: '#ecfccb', accent: '#65a30d', shape: 'jackfruit' },
+      { id: 'custard_apple', category: 'fruit', en: 'Custard Apple', hi: 'सीताफल', mr: 'सीताफळ', kn: 'ಸೀತಾಫಲ', bg: '#dcfce7', accent: '#15803d', shape: 'custard_apple' },
+      { id: 'chikoo', category: 'fruit', en: 'Sapodilla (Chikoo)', hi: 'चीकू', mr: 'चिकू', kn: 'ಸಪೋಟ', bg: '#fef3c7', accent: '#92400e', shape: 'chikoo' },
+      { id: 'kiwi', category: 'fruit', en: 'Kiwi', hi: 'कीवी', mr: 'किवी', kn: 'ಕಿವಿ ಹಣ್ಣು', bg: '#ecfccb', accent: '#4d7c0f', shape: 'kiwi' },
+      { id: 'pear', category: 'fruit', en: 'Pear', hi: 'नाशपाती', mr: 'नाशपती', kn: 'ಪೇರ್ ಹಣ್ಣು', bg: '#ecfccb', accent: '#84cc16', shape: 'pear' },
+      { id: 'peach', category: 'fruit', en: 'Peach', hi: 'आड़ू', mr: 'पीच (सतालू)', kn: 'ಪೀಚ್ ಹಣ್ಣು', bg: '#ffedd5', accent: '#fb7185', shape: 'peach' },
+      { id: 'plum', category: 'fruit', en: 'Plum', hi: 'आलूबुखारा', mr: 'आलूबुखार', kn: 'ಪ್ಲಮ್ ಹಣ್ಣು', bg: '#f3e8ff', accent: '#6b21a8', shape: 'plum' },
+      { id: 'cherry', category: 'fruit', en: 'Cherry', hi: 'चेरी', mr: 'चेरी', kn: 'ಚೆರ್ರಿ ಹಣ್ಣು', bg: '#ffe4e6', accent: '#9f1239', shape: 'cherry' },
+      { id: 'lychee', category: 'fruit', en: 'Lychee', hi: 'लीची', mr: 'लिची', kn: 'ಲಿಚಿ ಹಣ್ಣು', bg: '#ffe4e6', accent: '#e11d48', shape: 'lychee' },
+      { id: 'fig', category: 'fruit', en: 'Fig', hi: 'अंजीर', mr: 'अंजीर', kn: 'ಅಂಜೂರ', bg: '#f3e8ff', accent: '#581c87', shape: 'fig' },
+      { id: 'muskmelon', category: 'fruit', en: 'Muskmelon', hi: 'खरबूजा', mr: 'खरबूज', kn: 'ಕರಬೂಜ', bg: '#fef3c7', accent: '#d97706', shape: 'muskmelon' },
+
+      // --- 24 VEGETABLES ---
+      { id: 'potato', category: 'vegetable', en: 'Potato', hi: 'आलू', mr: 'बटाटा', kn: 'ಆಲೂಗಡ್ಡೆ', bg: '#fef3c7', accent: '#b45309', shape: 'potato' },
+      { id: 'tomato', category: 'vegetable', en: 'Tomato', hi: 'टमाटर', mr: 'टोमॅटो', kn: 'ಟೊಮೇಟೊ', bg: '#fee2e2', accent: '#dc2626', shape: 'tomato' },
+      { id: 'onion', category: 'vegetable', en: 'Onion', hi: 'प्याज', mr: 'कांदा', kn: 'ಈರುಳ್ಳಿ', bg: '#fae8ff', accent: '#a21caf', shape: 'onion' },
+      { id: 'carrot', category: 'vegetable', en: 'Carrot', hi: 'गाजर', mr: 'गाजर', kn: 'ಕ್ಯಾರೆಟ್', bg: '#ffedd5', accent: '#ea580c', shape: 'carrot' },
+      { id: 'brinjal', category: 'vegetable', en: 'Brinjal (Eggplant)', hi: 'बैंगन', mr: 'वांगे', kn: 'ಬದನೆಕಾಯಿ', bg: '#f3e8ff', accent: '#6b21a8', shape: 'brinjal' },
+      { id: 'okra', category: 'vegetable', en: 'Ladyfinger (Okra)', hi: 'भिंडी', mr: 'भेंडी', kn: 'ಬೆಂಡೆಕಾಯಿ', bg: '#dcfce7', accent: '#15803d', shape: 'okra' },
+      { id: 'cauliflower', category: 'vegetable', en: 'Cauliflower', hi: 'फूलगोभी', mr: 'फ्लॉवर', kn: 'ಹೂಕೋಸು', bg: '#f1f5f9', accent: '#16a34a', shape: 'cauliflower' },
+      { id: 'cabbage', category: 'vegetable', en: 'Cabbage', hi: 'पत्तागोभी', mr: 'कोबी', kn: 'ಎಲೆಕೋಸು', bg: '#dcfce7', accent: '#22c55e', shape: 'cabbage' },
+      { id: 'spinach', category: 'vegetable', en: 'Spinach', hi: 'पालक', mr: 'पालक', kn: 'ಪಾಲಕ್ ಸೊಪ್ಪು', bg: '#dcfce7', accent: '#166534', shape: 'spinach' },
+      { id: 'peas', category: 'vegetable', en: 'Green Peas', hi: 'मटर', mr: 'मटार (वाटाणा)', kn: 'ಹಸಿರು ಬಟಾಣಿ', bg: '#ecfccb', accent: '#16a34a', shape: 'peas' },
+      { id: 'capsicum', category: 'vegetable', en: 'Capsicum (Bell Pepper)', hi: 'शिमला मिर्च', mr: 'ढोबळी मिरची', kn: 'ದೊಡ್ಡ ಮೆಣಸಿನಕಾಯಿ', bg: '#dcfce7', accent: '#15803d', shape: 'capsicum' },
+      { id: 'cucumber', category: 'vegetable', en: 'Cucumber', hi: 'खीरा', mr: 'काकडी', kn: 'ಸೌತೆಕಾಯಿ', bg: '#dcfce7', accent: '#16a34a', shape: 'cucumber' },
+      { id: 'radish', category: 'vegetable', en: 'Radish', hi: 'मूली', mr: 'मुळा', kn: 'ಮೂಲಂಗಿ', bg: '#f1f5f9', accent: '#475569', shape: 'radish' },
+      { id: 'beetroot', category: 'vegetable', en: 'Beetroot', hi: 'चुकंदर', mr: 'बीट', kn: 'ಬೀಟ್ರೂಟ್', bg: '#ffe4e6', accent: '#881337', shape: 'beetroot' },
+      { id: 'bitter_gourd', category: 'vegetable', en: 'Bitter Gourd', hi: 'करेला', mr: 'कारले', kn: 'ಹಾಗಲಕಾಯಿ', bg: '#dcfce7', accent: '#15803d', shape: 'bitter_gourd' },
+      { id: 'bottle_gourd', category: 'vegetable', en: 'Bottle Gourd', hi: 'लौकी', mr: 'दुधी भोपळा', kn: 'ಸೋರೆಕಾಯಿ', bg: '#ecfccb', accent: '#65a30d', shape: 'bottle_gourd' },
+      { id: 'pumpkin', category: 'vegetable', en: 'Pumpkin', hi: 'कद्दू', mr: 'लाल भोपळा', kn: 'ಕುಂಬಳಕಾಯಿ', bg: '#ffedd5', accent: '#d97706', shape: 'pumpkin' },
+      { id: 'garlic', category: 'vegetable', en: 'Garlic', hi: 'लहसुन', mr: 'लसूण', kn: 'ಬೆಳ್ಳುಳ್ಳಿ', bg: '#f8fafc', accent: '#64748b', shape: 'garlic' },
+      { id: 'ginger', category: 'vegetable', en: 'Ginger', hi: 'अदरक', mr: 'आले', kn: 'ಶುಂಠಿ', bg: '#fef3c7', accent: '#b45309', shape: 'ginger' },
+      { id: 'green_chili', category: 'vegetable', en: 'Green Chili', hi: 'हरी मिर्च', mr: 'हिरवी मिरची', kn: 'ಹಸಿ ಮೆಣಸಿನಕಾಯಿ', bg: '#dcfce7', accent: '#16a34a', shape: 'green_chili' },
+      { id: 'coriander', category: 'vegetable', en: 'Coriander Leaves', hi: 'धनिया पत्ती', mr: 'कोथिंबीर', kn: 'ಕೊತ್ತಂಬರಿ ಸೊಪ್ಪು', bg: '#dcfce7', accent: '#15803d', shape: 'coriander' },
+      { id: 'drumstick', category: 'vegetable', en: 'Drumstick (Moringa)', hi: 'सहजन', mr: 'शेवग्याची शेंग', kn: 'ನುಗ್ಗೆಕಾಯಿ', bg: '#ecfccb', accent: '#4d7c0f', shape: 'drumstick' },
+      { id: 'sweet_potato', category: 'vegetable', en: 'Sweet Potato', hi: 'शकरकंद', mr: 'रताळे', kn: 'ಗೆಣಸು', bg: '#fae8ff', accent: '#9d174d', shape: 'sweet_potato' },
+      { id: 'corn', category: 'vegetable', en: 'Sweet Corn', hi: 'मक्का (भुट्टा)', mr: 'मका', kn: 'ಮೆಕ್ಕೆ ಜೋಳ', bg: '#fef9c3', accent: '#eab308', shape: 'corn' },
+    ];
+
+    // =========================================================================
+    // 2. CUSTOM VECTOR SVG GENERATOR (ZERO EXTERNAL URLS = ZERO CORS ISSUES)
+    // =========================================================================
+    function generateProduceSVG(item) {
+      const s = item.shape;
+      let artwork = '';
+
+      switch (s) {
+        case 'apple':
+          artwork = `
+            <path d="M100 54 C96 42, 106 34, 112 36" stroke="#78350f" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <path d="M102 46 C114 34, 128 38, 124 48 C118 54, 106 52, 102 46 Z" fill="#22c55e"/>
+            <path d="M100 58 C76 48, 52 68, 56 102 C60 134, 82 150, 100 144 C118 150, 140 134, 144 102 C148 68, 124 48, 100 58 Z" fill="#ef4444"/>
+            <path d="M76 72 C68 84, 68 104, 76 116" stroke="#fca5a5" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.75"/>
+          `;
+          break;
+        case 'banana':
+          artwork = `
+            <path d="M54 126 C78 148, 134 142, 152 72 C154 64, 148 58, 142 62 C126 112, 84 122, 56 114 C48 112, 48 120, 54 126 Z" fill="#facc15" stroke="#eab308" stroke-width="2"/>
+            <path d="M48 110 C76 128, 128 118, 144 56 C146 48, 140 44, 134 48 C118 96, 80 106, 52 98 C44 96, 42 104, 48 110 Z" fill="#fde047" stroke="#eab308" stroke-width="2"/>
+            <circle cx="144" cy="54" r="4" fill="#78350f"/>
+            <circle cx="49" cy="112" r="3.5" fill="#78350f"/>
+          `;
+          break;
+        case 'mango':
+          artwork = `
+            <path d="M102 44 C118 32, 136 38, 130 50 C120 56, 108 52, 102 44 Z" fill="#16a34a"/>
+            <path d="M98 48 C68 50, 56 86, 68 116 C78 140, 108 150, 126 136 C140 124, 136 106, 134 88 C132 66, 120 46, 98 48 Z" fill="url(#mangoGrad)"/>
+            <defs>
+              <linearGradient id="mangoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#f97316"/>
+                <stop offset="55%" stop-color="#facc15"/>
+                <stop offset="100%" stop-color="#84cc16"/>
+              </linearGradient>
+            </defs>
+            <path d="M78 74 C72 88, 74 104, 82 114" stroke="#fef08a" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.7"/>
+          `;
+          break;
+        case 'citrus_orange':
+          artwork = `
+            <circle cx="100" cy="102" r="44" fill="#f97316"/>
+            <circle cx="100" cy="102" r="38" fill="#fb923c"/>
+            <path d="M100 58 C108 42, 126 42, 124 54 C116 62, 104 60, 100 58 Z" fill="#16a34a"/>
+            <circle cx="84" cy="88" r="2" fill="#fed7aa"/><circle cx="114" cy="92" r="2" fill="#fed7aa"/>
+            <circle cx="92" cy="118" r="2" fill="#fed7aa"/><circle cx="112" cy="114" r="2" fill="#fed7aa"/>
+          `;
+          break;
+        case 'grapes':
+          artwork = `
+            <path d="M100 54 L100 38 M100 44 C114 34, 128 40, 122 50 C114 54, 104 50, 100 44 Z" stroke="#15803d" stroke-width="4" fill="#22c55e" stroke-linecap="round"/>
+            <g fill="#7e22ce" stroke="#f3e8ff" stroke-width="1.5">
+              <circle cx="82" cy="72" r="14"/><circle cx="100" cy="70" r="14"/><circle cx="118" cy="72" r="14"/>
+              <circle cx="74" cy="92" r="14"/><circle cx="92" cy="92" r="14"/><circle cx="110" cy="92" r="14"/><circle cx="126" cy="92" r="14"/>
+              <circle cx="84" cy="112" r="14"/><circle cx="102" cy="112" r="14"/><circle cx="118" cy="112" r="14"/>
+              <circle cx="93" cy="130" r="14"/><circle cx="109" cy="130" r="14"/>
+              <circle cx="100" cy="146" r="13"/>
+            </g>
+          `;
+          break;
+        case 'watermelon':
+          artwork = `
+            <path d="M44 88 A56 56 0 0 0 156 88 Z" fill="#15803d"/>
+            <path d="M51 88 A49 49 0 0 0 149 88 Z" fill="#bbf7d0"/>
+            <path d="M56 88 A44 44 0 0 0 144 88 Z" fill="#ef4444"/>
+            <g fill="#1e293b">
+              <ellipse cx="80" cy="102" rx="2.5" ry="4"/><ellipse cx="100" cy="106" rx="2.5" ry="4"/><ellipse cx="120" cy="102" rx="2.5" ry="4"/>
+              <ellipse cx="90" cy="118" rx="2.5" ry="4"/><ellipse cx="110" cy="118" rx="2.5" ry="4"/>
+            </g>
+          `;
+          break;
+        case 'papaya':
+          artwork = `
+            <path d="M100 44 C76 44, 62 78, 66 114 C70 142, 86 154, 100 154 C114 154, 130 142, 134 114 C138 78, 124 44, 100 44 Z" fill="#65a30d"/>
+            <path d="M100 54 C82 54, 72 82, 75 112 C78 134, 90 144, 100 144 C110 144, 122 134, 125 112 C128 82, 118 54, 100 54 Z" fill="#fb923c"/>
+            <ellipse cx="100" cy="104" rx="14" ry="28" fill="#fed7aa"/>
+            <g fill="#1e293b">
+              <circle cx="96" cy="90" r="3"/><circle cx="104" cy="94" r="3"/><circle cx="95" cy="104" r="3"/>
+              <circle cx="105" cy="108" r="3"/><circle cx="97" cy="118" r="3"/><circle cx="103" cy="122" r="3"/>
+            </g>
+          `;
+          break;
+        case 'pineapple':
+          artwork = `
+            <path d="M100 66 L80 34 L94 54 L100 28 L106 54 L120 34 Z" fill="#16a34a" stroke="#15803d" stroke-width="2" stroke-linejoin="round"/>
+            <rect x="68" y="64" width="64" height="84" rx="30" fill="#f59e0b"/>
+            <path d="M74 84 L126 124 M126 84 L74 124 M70 104 L112 140 M130 104 L88 140 M86 68 L130 102 M114 68 L70 102" stroke="#b45309" stroke-width="2.5" opacity="0.55"/>
+          `;
+          break;
+        case 'pomegranate':
+          artwork = `
+            <path d="M88 54 L92 40 L100 48 L108 40 L112 54 Z" fill="#be123c"/>
+            <circle cx="100" cy="102" r="44" fill="#e11d48"/>
+            <path d="M76 80 C68 92, 68 112, 78 124" stroke="#fda4af" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.65"/>
+            <circle cx="114" cy="112" r="16" fill="#881337"/>
+            <g fill="#fb7185">
+              <circle cx="110" cy="108" r="4"/><circle cx="118" cy="108" r="4"/>
+              <circle cx="110" cy="116" r="4"/><circle cx="118" cy="116" r="4"/>
+            </g>
+          `;
+          break;
+        case 'guava':
+          artwork = `
+            <path d="M100 52 C114 38, 128 42, 122 54 C114 60, 104 56, 100 52 Z" fill="#15803d"/>
+            <circle cx="94" cy="102" r="42" fill="#84cc16"/>
+            <circle cx="114" cy="112" r="32" fill="#bef264" stroke="#65a30d" stroke-width="3"/>
+            <circle cx="114" cy="112" r="24" fill="#fda4af"/>
+            <g fill="#fef08a">
+              <circle cx="108" cy="108" r="2"/><circle cx="118" cy="106" r="2"/><circle cx="114" cy="118" r="2"/><circle cx="120" cy="116" r="2"/>
+            </g>
+          `;
+          break;
+        case 'strawberry':
+          artwork = `
+            <path d="M64 68 C64 52, 136 52, 136 68 C136 106, 112 148, 100 148 C88 148, 64 106, 64 68 Z" fill="#e11d48"/>
+            <path d="M74 62 L88 48 L100 60 L112 48 L126 62 L100 68 Z" fill="#16a34a"/>
+            <g fill="#fef08a">
+              <circle cx="84" cy="82" r="2.2"/><circle cx="100" cy="80" r="2.2"/><circle cx="116" cy="82" r="2.2"/>
+              <circle cx="88" cy="102" r="2.2"/><circle cx="108" cy="102" r="2.2"/><circle cx="100" cy="122" r="2.2"/>
+            </g>
+          `;
+          break;
+        case 'lemon':
+          artwork = `
+            <ellipse cx="100" cy="102" rx="48" ry="34" transform="rotate(-20 100 102)" fill="#facc15"/>
+            <circle cx="54" cy="118" r="7" fill="#facc15"/>
+            <circle cx="146" cy="86" r="7" fill="#facc15"/>
+            <path d="M74 96 C88 84, 108 78, 122 80" stroke="#fef9c3" stroke-width="5" stroke-linecap="round" fill="none"/>
+          `;
+          break;
+        case 'coconut':
+          artwork = `
+            <circle cx="94" cy="102" r="42" fill="#78350f"/>
+            <circle cx="116" cy="112" r="32" fill="#92400e"/>
+            <circle cx="116" cy="112" r="26" fill="#ffffff"/>
+            <circle cx="116" cy="112" r="16" fill="#e2e8f0"/>
+          `;
+          break;
+        case 'jackfruit':
+          artwork = `
+            <ellipse cx="100" cy="104" rx="40" ry="50" fill="#84cc16" stroke="#4d7c0f" stroke-width="3" stroke-dasharray="4 4"/>
+            <path d="M100 54 L100 38" stroke="#78350f" stroke-width="6" stroke-linecap="round"/>
+            <g fill="#4d7c0f">
+              <circle cx="88" cy="84" r="2.5"/><circle cx="112" cy="84" r="2.5"/>
+              <circle cx="82" cy="104" r="2.5"/><circle cx="100" cy="104" r="2.5"/><circle cx="118" cy="104" r="2.5"/>
+              <circle cx="88" cy="124" r="2.5"/><circle cx="112" cy="124" r="2.5"/>
+            </g>
+          `;
+          break;
+        case 'custard_apple':
+          artwork = `
+            <path d="M100 54 L100 38" stroke="#78350f" stroke-width="5" stroke-linecap="round"/>
+            <path d="M62 96 C62 66, 138 66, 138 96 C138 128, 118 148, 100 148 C82 148, 62 128, 62 96 Z" fill="#4ade80"/>
+            <g fill="none" stroke="#15803d" stroke-width="2.5">
+              <circle cx="84" cy="86" r="11"/><circle cx="104" cy="84" r="11"/><circle cx="120" cy="92" r="10"/>
+              <circle cx="80" cy="106" r="11"/><circle cx="100" cy="106" r="12"/><circle cx="118" cy="112" r="10"/>
+              <circle cx="92" cy="128" r="11"/><circle cx="108" cy="128" r="10"/>
+            </g>
+          `;
+          break;
+        case 'chikoo':
+          artwork = `
+            <ellipse cx="100" cy="104" rx="38" ry="44" fill="#b45309"/>
+            <ellipse cx="100" cy="104" rx="30" ry="36" fill="#d97706" opacity="0.6"/>
+            <path d="M100 60 L100 46" stroke="#78350f" stroke-width="4" stroke-linecap="round"/>
+          `;
+          break;
+        case 'kiwi':
+          artwork = `
+            <circle cx="88" cy="102" r="38" fill="#92400e"/>
+            <circle cx="114" cy="110" r="34" fill="#78350f"/>
+            <circle cx="114" cy="110" r="29" fill="#84cc16"/>
+            <circle cx="114" cy="110" r="11" fill="#ecfccb"/>
+            <g fill="#1e293b">
+              <circle cx="102" cy="100" r="2"/><circle cx="126" cy="100" r="2"/>
+              <circle cx="102" cy="120" r="2"/><circle cx="126" cy="120" r="2"/>
+              <circle cx="114" cy="94" r="2"/><circle cx="114" cy="126" r="2"/>
+            </g>
+          `;
+          break;
+        case 'pear':
+          artwork = `
+            <path d="M100 48 L104 34" stroke="#78350f" stroke-width="4" stroke-linecap="round"/>
+            <path d="M102 42 C114 34, 126 38, 120 48 C112 52, 104 48, 102 42 Z" fill="#16a34a"/>
+            <path d="M100 50 C82 50, 78 74, 70 92 C58 114, 68 148, 100 148 C132 148, 142 114, 130 92 C122 74, 118 50, 100 50 Z" fill="#a3e635"/>
+          `;
+          break;
+        case 'peach':
+          artwork = `
+            <path d="M100 56 C70 50, 56 84, 68 116 C78 140, 100 148, 100 148 C100 148, 122 140, 132 116 C144 84, 130 50, 100 56 Z" fill="#fb7185"/>
+            <path d="M100 58 C94 84, 96 122, 100 146" stroke="#e11d48" stroke-width="3" fill="none"/>
+            <path d="M100 54 C114 38, 130 42, 124 54 C114 60, 104 56, 100 54 Z" fill="#16a34a"/>
+          `;
+          break;
+        case 'plum':
+          artwork = `
+            <circle cx="100" cy="104" r="42" fill="#7e22ce"/>
+            <path d="M100 62 C92 88, 94 122, 100 146" stroke="#581c87" stroke-width="3" fill="none"/>
+            <path d="M100 62 L104 44" stroke="#78350f" stroke-width="4" stroke-linecap="round"/>
+          `;
+          break;
+        case 'cherry':
+          artwork = `
+            <path d="M80 106 Q96 58 116 44 Q118 72 122 112" stroke="#15803d" stroke-width="3.5" fill="none"/>
+            <path d="M116 44 C130 36, 142 44, 134 54 C126 58, 118 50, 116 44 Z" fill="#22c55e"/>
+            <circle cx="78" cy="116" r="22" fill="#be123c"/>
+            <circle cx="122" cy="122" r="22" fill="#e11d48"/>
+            <circle cx="71" cy="109" r="4" fill="#fda4af"/>
+            <circle cx="115" cy="115" r="4" fill="#fda4af"/>
+          `;
+          break;
+        case 'lychee':
+          artwork = `
+            <circle cx="94" cy="100" r="36" fill="#e11d48"/>
+            <g fill="#fda4af" opacity="0.6">
+              <circle cx="84" cy="88" r="2.5"/><circle cx="102" cy="86" r="2.5"/><circle cx="92" cy="102" r="2.5"/><circle cx="82" cy="114" r="2.5"/>
+            </g>
+            <circle cx="118" cy="116" r="28" fill="#f8fafc" stroke="#e11d48" stroke-width="4"/>
+            <circle cx="118" cy="116" r="11" fill="#451a03"/>
+          `;
+          break;
+        case 'fig':
+          artwork = `
+            <path d="M100 46 C88 46, 86 68, 74 86 C62 104, 68 144, 100 144 C132 144, 138 104, 126 86 C114 68, 112 46, 100 46 Z" fill="#6b21a8"/>
+            <circle cx="116" cy="114" r="24" fill="#f43f5e" stroke="#6b21a8" stroke-width="3"/>
+            <circle cx="116" cy="114" r="16" fill="#fda4af"/>
+          `;
+          break;
+        case 'muskmelon':
+          artwork = `
+            <circle cx="100" cy="102" r="44" fill="#fcd34d"/>
+            <path d="M100 58 C78 68, 78 136, 100 146 M100 58 C122 68, 122 136, 100 146 M100 58 L100 146" stroke="#d97706" stroke-width="2.5" fill="none"/>
+            <path d="M100 58 L100 44" stroke="#15803d" stroke-width="5" stroke-linecap="round"/>
+          `;
+          break;
+
+        // --- VEGETABLES ---
+        case 'potato':
+          artwork = `
+            <ellipse cx="100" cy="104" rx="48" ry="34" transform="rotate(-15 100 104)" fill="#d97706"/>
+            <ellipse cx="100" cy="104" rx="42" ry="28" transform="rotate(-15 100 104)" fill="#f59e0b"/>
+            <g fill="#78350f" opacity="0.7">
+              <circle cx="80" cy="98" r="2.5"/><circle cx="114" cy="92" r="2.5"/><circle cx="98" cy="116" r="2.5"/><circle cx="122" cy="108" r="2"/>
+            </g>
+          `;
+          break;
+        case 'tomato':
+          artwork = `
+            <circle cx="100" cy="106" r="42" fill="#ef4444"/>
+            <path d="M100 66 L82 54 L94 68 L100 48 L106 68 L118 54 Z" fill="#16a34a" stroke="#15803d" stroke-width="2"/>
+            <path d="M76 86 C70 96, 70 112, 78 122" stroke="#fca5a5" stroke-width="5" stroke-linecap="round" fill="none"/>
+          `;
+          break;
+        case 'onion':
+          artwork = `
+            <path d="M100 42 L94 56 L106 56 Z" fill="#84cc16"/>
+            <path d="M100 54 C74 68, 60 92, 64 116 C68 138, 86 146, 100 146 C114 146, 132 138, 136 116 C140 92, 126 68, 100 54 Z" fill="#a21caf"/>
+            <path d="M100 56 C84 74, 80 110, 90 144 M100 56 C116 74, 120 110, 110 144" stroke="#f0abfc" stroke-width="2" fill="none" opacity="0.6"/>
+          `;
+          break;
+        case 'carrot':
+          artwork = `
+            <path d="M126 70 L144 46 M128 74 L152 60 M122 68 L132 42" stroke="#16a34a" stroke-width="5" stroke-linecap="round"/>
+            <path d="M122 64 C134 76, 82 136, 56 144 C48 146, 48 142, 52 134 C66 108, 110 52, 122 64 Z" fill="#f97316"/>
+            <path d="M104 82 L112 90 M88 100 L96 108 M72 118 L78 124" stroke="#9a3412" stroke-width="2.5" stroke-linecap="round"/>
+          `;
+          break;
+        case 'brinjal':
+          artwork = `
+            <path d="M104 52 C82 56, 66 86, 68 118 C70 142, 90 150, 108 144 C128 138, 136 110, 128 82 C122 64, 116 50, 104 52 Z" fill="#581c87"/>
+            <path d="M96 56 L104 36 L112 56 L124 62 L106 66 L90 64 Z" fill="#16a34a"/>
+            <path d="M84 82 C78 96, 80 114, 88 124" stroke="#c084fc" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.5"/>
+          `;
+          break;
+        case 'okra':
+          artwork = `
+            <path d="M72 138 C76 110, 96 72, 124 54 L132 62 C110 88, 92 120, 72 138 Z" fill="#16a34a"/>
+            <path d="M88 144 C94 116, 114 80, 140 64 L146 72 C124 96, 108 126, 88 144 Z" fill="#22c55e"/>
+          `;
+          break;
+        case 'cauliflower':
+          artwork = `
+            <path d="M62 114 C56 134, 80 148, 100 146 C120 148, 144 134, 138 114 Z" fill="#16a34a"/>
+            <g fill="#f8fafc" stroke="#cbd5e1" stroke-width="2">
+              <circle cx="80" cy="96" r="20"/><circle cx="120" cy="96" r="20"/>
+              <circle cx="100" cy="78" r="22"/><circle cx="100" cy="104" r="22"/>
+            </g>
+          `;
+          break;
+        case 'cabbage':
+          artwork = `
+            <circle cx="100" cy="102" r="44" fill="#22c55e"/>
+            <path d="M68 82 C84 72, 116 72, 132 82 M64 108 C88 94, 112 94, 136 108 M76 130 C92 120, 108 120, 124 130" stroke="#15803d" stroke-width="3" fill="none"/>
+          `;
+          break;
+        case 'spinach':
+          artwork = `
+            <path d="M100 146 L100 94 M84 138 L78 104 M116 138 L122 104" stroke="#15803d" stroke-width="4" stroke-linecap="round"/>
+            <ellipse cx="76" cy="88" rx="18" ry="28" transform="rotate(-20 76 88)" fill="#22c55e"/>
+            <ellipse cx="124" cy="88" rx="18" ry="28" transform="rotate(20 124 88)" fill="#22c55e"/>
+            <ellipse cx="100" cy="78" rx="20" ry="32" fill="#16a34a"/>
+          `;
+          break;
+        case 'peas':
+          artwork = `
+            <path d="M56 124 C76 142, 132 128, 146 66 C124 76, 76 92, 56 124 Z" fill="#16a34a"/>
+            <circle cx="82" cy="112" r="9" fill="#84cc16"/>
+            <circle cx="102" cy="102" r="9" fill="#84cc16"/>
+            <circle cx="120" cy="90" r="9" fill="#84cc16"/>
+          `;
+          break;
+        case 'capsicum':
+          artwork = `
+            <path d="M100 62 L104 44" stroke="#15803d" stroke-width="6" stroke-linecap="round"/>
+            <rect x="64" y="62" width="32" height="78" rx="16" fill="#16a34a"/>
+            <rect x="104" y="62" width="32" height="78" rx="16" fill="#16a34a"/>
+            <rect x="84" y="60" width="32" height="82" rx="16" fill="#22c55e"/>
+          `;
+          break;
+        case 'cucumber':
+          artwork = `
+            <rect x="82" y="44" width="36" height="114" rx="18" transform="rotate(28 100 101)" fill="#16a34a"/>
+            <path d="M114 68 L84 128" stroke="#86efac" stroke-width="3" stroke-dasharray="6 8" stroke-linecap="round"/>
+          `;
+          break;
+        case 'radish':
+          artwork = `
+            <path d="M100 66 L86 40 M100 66 L100 36 M100 66 L114 40" stroke="#16a34a" stroke-width="5" stroke-linecap="round"/>
+            <path d="M80 68 C80 56, 120 56, 120 68 C120 102, 104 138, 100 152 C96 138, 80 102, 80 68 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+          `;
+          break;
+        case 'beetroot':
+          artwork = `
+            <path d="M100 64 L84 40 M100 64 L100 36 M100 64 L116 40" stroke="#15803d" stroke-width="4" stroke-linecap="round"/>
+            <path d="M66 94 C66 68, 134 68, 134 94 C134 120, 106 140, 100 152 C94 140, 66 120, 66 94 Z" fill="#9f1239"/>
+          `;
+          break;
+        case 'bitter_gourd':
+          artwork = `
+            <ellipse cx="100" cy="102" rx="22" ry="50" transform="rotate(25 100 102)" fill="#15803d"/>
+            <g fill="#4ade80">
+              <circle cx="94" cy="84" r="4"/><circle cx="108" cy="92" r="4"/><circle cx="88" cy="104" r="4"/>
+              <circle cx="104" cy="112" r="4"/><circle cx="92" cy="122" r="4"/>
+            </g>
+          `;
+          break;
+        case 'bottle_gourd':
+          artwork = `
+            <path d="M100 44 L100 34" stroke="#15803d" stroke-width="5" stroke-linecap="round"/>
+            <path d="M88 46 C84 64, 84 82, 76 98 C66 118, 72 148, 100 148 C128 148, 134 118, 124 98 C116 82, 116 64, 112 46 Z" fill="#a3e635"/>
+          `;
+          break;
+        case 'pumpkin':
+          artwork = `
+            <path d="M100 60 L106 42" stroke="#15803d" stroke-width="6" stroke-linecap="round"/>
+            <ellipse cx="76" cy="104" rx="22" ry="38" fill="#ea580c"/>
+            <ellipse cx="124" cy="104" rx="22" ry="38" fill="#ea580c"/>
+            <ellipse cx="100" cy="104" rx="24" ry="42" fill="#f97316"/>
+          `;
+          break;
+        case 'garlic':
+          artwork = `
+            <path d="M100 46 C94 64, 64 84, 66 112 C68 134, 84 142, 100 142 C116 142, 132 134, 134 112 C136 84, 106 64, 100 46 Z" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+            <path d="M100 48 C86 76, 84 114, 90 140 M100 48 C114 76, 116 114, 110 140" stroke="#94a3b8" stroke-width="2" fill="none"/>
+          `;
+          break;
+        case 'ginger':
+          artwork = `
+            <path d="M64 112 C56 102, 68 86, 84 92 C90 74, 112 72, 116 90 C134 86, 146 104, 132 118 C122 130, 74 128, 64 112 Z" fill="#d97706"/>
+            <path d="M84 96 C92 102, 104 102, 114 96" stroke="#92400e" stroke-width="2.5" fill="none"/>
+          `;
+          break;
+        case 'green_chili':
+          artwork = `
+            <path d="M124 54 L136 42" stroke="#15803d" stroke-width="4" stroke-linecap="round"/>
+            <path d="M126 54 C132 88, 104 134, 62 142 C86 122, 108 86, 116 52 Z" fill="#16a34a"/>
+          `;
+          break;
+        case 'coriander':
+          artwork = `
+            <path d="M100 148 L100 84 M100 120 L78 96 M100 110 L122 88" stroke="#15803d" stroke-width="3.5" stroke-linecap="round"/>
+            <g fill="#22c55e">
+              <circle cx="100" cy="72" r="14"/><circle cx="76" cy="90" r="13"/><circle cx="124" cy="84" r="13"/>
+              <circle cx="88" cy="64" r="11"/><circle cx="112" cy="64" r="11"/>
+            </g>
+          `;
+          break;
+        case 'drumstick':
+          artwork = `
+            <line x1="60" y1="142" x2="134" y2="54" stroke="#65a30d" stroke-width="9" stroke-linecap="round"/>
+            <line x1="76" y1="148" x2="146" y2="66" stroke="#84cc16" stroke-width="8" stroke-linecap="round"/>
+          `;
+          break;
+        case 'sweet_potato':
+          artwork = `
+            <path d="M56 122 C66 86, 108 62, 144 74 C138 112, 96 138, 56 122 Z" fill="#be185d"/>
+          `;
+          break;
+        case 'corn':
+          artwork = `
+            <ellipse cx="100" cy="96" rx="22" ry="44" fill="#facc15"/>
+            <path d="M74 96 C68 124, 86 146, 100 148 C90 128, 84 110, 74 96 Z" fill="#16a34a"/>
+            <path d="M126 96 C132 124, 114 146, 100 148 C110 128, 116 110, 126 96 Z" fill="#16a34a"/>
+          `;
+          break;
+        default:
+          artwork = `<circle cx="100" cy="100" r="42" fill="${item.accent}"/>`;
+      }
+
+      return `
+        <svg viewBox="0 0 200 190" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+          <defs>
+            <radialGradient id="bg-${item.id}" cx="50%" cy="45%" r="55%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="${item.bg}" stop-opacity="1"/>
+            </radialGradient>
+          </defs>
+          <rect width="200" height="190" rx="18" fill="url(#bg-${item.id})"/>
+          <ellipse cx="100" cy="158" rx="44" ry="8" fill="#0f172a" opacity="0.07"/>
+          ${artwork}
+        </svg>
+      `;
+    }
+
+    // =========================================================================
+    // 3. STATE & RENDERING LOGIC
+    // =========================================================================
+    let currentCategory = 'all';
+    let searchQuery = '';
+
+    function getFilteredItems() {
+      const q = searchQuery.trim().toLowerCase();
+      return PRODUCE_ITEMS.filter((item) => {
+        const matchesCat = currentCategory === 'all' || item.category === currentCategory;
+        if (!matchesCat) return false;
+        if (!q) return true;
+        return (
+          item.en.toLowerCase().includes(q) ||
+          item.hi.toLowerCase().includes(q) ||
+          item.mr.toLowerCase().includes(q) ||
+          item.kn.toLowerCase().includes(q)
+        );
+      });
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('items-grid');
+      const emptyState = document.getElementById('empty-state');
+      const summary = document.getElementById('results-summary');
+      const items = getFilteredItems();
+
+      summary.textContent = `Showing ${items.length} of ${PRODUCE_ITEMS.length} items`;
+
+      if (items.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      grid.innerHTML = items
+        .map((item) => {
+          const isFruit = item.category === 'fruit';
+          const badgeClass = isFruit
+            ? 'bg-rose-50 text-rose-700 border-rose-200/80'
+            : 'bg-emerald-50 text-emerald-700 border-emerald-200/80';
+          const badgeLabel = isFruit ? 'Fruit' : 'Vegetable';
+
+          return `
+            <article class="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden flex flex-col card-hover">
+              <!-- Top Illustration Area -->
+              <div
+                onclick="previewItemCard('${item.id}')"
+                style="background-color: ${item.bg};"
+                class="relative h-44 p-3 flex items-center justify-center cursor-pointer group"
+                title="Click to preview & download high-res PNG card"
+              >
+                <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider border ${badgeClass}">
+                  ${badgeLabel}
+                </span>
+                <button
+                  type="button"
+                  onclick="event.stopPropagation(); downloadSingleCardPNG('${item.id}')"
+                  class="absolute top-3 right-3 w-8 h-8 rounded-xl bg-white/90 hover:bg-white text-slate-700 shadow-xs flex items-center justify-center opacity-90 group-hover:opacity-100 transition cursor-pointer"
+                  title="Download PNG Card"
+                  aria-label="Download ${item.en} PNG card"
+                >
+                  <i data-lucide="download" class="w-4 h-4"></i>
+                </button>
+                <div class="w-36 h-36 transition-transform duration-300 group-hover:scale-105">
+                  ${generateProduceSVG(item)}
+                </div>
+              </div>
+
+              <!-- Multilingual Names Block -->
+              <div class="p-4 flex-1 flex flex-col justify-between space-y-3.5">
+                <div class="space-y-2">
+                  <!-- English -->
+                  <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-100">
+                    <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">EN</span>
+                    <h3 class="text-base font-bold text-slate-900 text-right">${item.en}</h3>
+                  </div>
+
+                  <!-- Hindi -->
+                  <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-100">
+                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-orange-50 text-orange-700 font-devanagari">हिन्दी</span>
+                    <p class="text-base font-semibold text-slate-800 font-devanagari text-right">${item.hi}</p>
+                  </div>
+
+                  <!-- Marathi -->
+                  <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-100">
+                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 font-devanagari">मराठी</span>
+                    <p class="text-base font-semibold text-slate-800 font-devanagari text-right">${item.mr}</p>
+                  </div>
+
+                  <!-- Kannada -->
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 font-kannada">ಕನ್ನಡ</span>
+                    <p class="text-base font-semibold text-slate-800 font-kannada text-right">${item.kn}</p>
+                  </div>
+                </div>
+
+                <!-- Individual Action Buttons -->
+                <div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onclick="copyItem('${item.id}')"
+                    class="flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 transition cursor-pointer"
+                    title="Copy names in all 4 languages"
+                  >
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span class="text-[11px] font-semibold">Copy</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onclick="shareItem('${item.id}')"
+                    class="flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl bg-sky-50/70 hover:bg-sky-100 text-sky-700 transition cursor-pointer"
+                    title="Share card & multilingual names"
+                  >
+                    <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                    <span class="text-[11px] font-semibold">Share</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onclick="emailItem('${item.id}')"
+                    class="flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl bg-amber-50/70 hover:bg-amber-100 text-amber-800 transition cursor-pointer"
+                    title="Send via Email"
+                  >
+                    <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+                    <span class="text-[11px] font-semibold">Email</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onclick="downloadSingleCardPNG('${item.id}')"
+                    class="flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition cursor-pointer"
+                    title="Download high-resolution PNG card"
+                  >
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span class="text-[11px] font-semibold">PNG</span>
+                  </button>
+                </div>
+              </div>
+            </article>
+          `;
+        })
+        .join('');
+
+      lucide.createIcons();
+    }
+
+    function setCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.tab-btn').forEach((btn) => {
+        if (btn.dataset.tab === cat) {
+          btn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+          btn.classList.remove('text-slate-600');
+        } else {
+          btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+          btn.classList.add('text-slate-600');
+        }
+      });
+      renderGrid();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val;
+      const clearBtn = document.getElementById('clear-search-btn');
+      if (val.trim().length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      renderGrid();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('search-input');
+      input.value = '';
+      searchQuery = '';
+      document.getElementById('clear-search-btn').classList.add('hidden');
+      setCategory('all');
+    }
+
+    // =========================================================================
+    // 4. OFFSCREEN CANVAS RENDERING FOR ZERO-CORS PNG GENERATION
+    // =========================================================================
+    function svgToImage(svgString) {
+      return new Promise((resolve, reject) => {
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        const img = new Image();
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          resolve(img);
+        };
+        img.onerror = (err) => {
+          URL.revokeObjectURL(url);
+          reject(err);
+        };
+        img.src = url;
+      });
+    }
+
+    function drawRoundedRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    async function renderItemCardCanvas(item) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 720;
+      canvas.height = 860;
+      const ctx = canvas.getContext('2d');
+
+      // Card Background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Top Illustration Banner
+      drawRoundedRect(ctx, 32, 32, 656, 370, 28);
+      ctx.fillStyle = item.bg;
+      ctx.fill();
+
+      // Category Pill
+      const isFruit = item.category === 'fruit';
+      drawRoundedRect(ctx, 56, 56, 150, 42, 21);
+      ctx.fillStyle = isFruit ? '#ffe4e6' : '#dcfce7';
+      ctx.fill();
+      ctx.fillStyle = isFruit ? '#be123c' : '#15803d';
+      ctx.font = 'bold 20px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(isFruit ? 'FRUIT' : 'VEGETABLE', 131, 84);
+
+      // Draw SVG Vector Graphic
+      const svgImg = await svgToImage(generateProduceSVG(item));
+      ctx.drawImage(svgImg, 195, 58, 330, 315);
+
+      // Language Rows
+      const rows = [
+        { tag: 'ENGLISH', val: item.en, tagBg: '#f1f5f9', tagColor: '#334155', font: 'bold 34px Inter, sans-serif' },
+        { tag: 'हिन्दी (HINDI)', val: item.hi, tagBg: '#ffedd5', tagColor: '#c2410c', font: 'bold 34px "Noto Sans Devanagari", sans-serif' },
+        { tag: 'मराठी (MARATHI)', val: item.mr, tagBg: '#fef3c7', tagColor: '#b45309', font: 'bold 34px "Noto Sans Devanagari", sans-serif' },
+        { tag: 'ಕನ್ನಡ (KANNADA)', val: item.kn, tagBg: '#dcfce7', tagColor: '#15803d', font: 'bold 34px "Noto Sans Kannada", sans-serif' },
+      ];
+
+      let startY = 445;
+      rows.forEach((r, idx) => {
+        // Subtle row separator
+        if (idx > 0) {
+          ctx.strokeStyle = '#e2e8f0';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(44, startY - 26);
+          ctx.lineTo(676, startY - 26);
+          ctx.stroke();
+        }
+
+        // Language Badge
+        drawRoundedRect(ctx, 44, startY - 6, 225, 44, 12);
+        ctx.fillStyle = r.tagBg;
+        ctx.fill();
+        ctx.fillStyle = r.tagColor;
+        ctx.font = 'bold 18px Inter, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(r.tag, 60, startY + 22);
+
+        // Script Name
+        ctx.fillStyle = '#0f172a';
+        ctx.font = r.font;
+        ctx.textAlign = 'right';
+        ctx.fillText(r.val, 676, startY + 28);
+
+        startY += 94;
+      });
+
+      // Footer Watermark
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '500 18px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Multilingual Produce Guide • EN • हिन्दी • मराठी • ಕನ್ನಡ', 360, 832);
+
+      return canvas;
+    }
+
+    async function downloadSingleCardPNG(id) {
+      const item = PRODUCE_ITEMS.find((i) => i.id === id);
+      if (!item) return;
+
+      try {
+        showToast(`Generating ${item.en} PNG card...`);
+        const canvas = await renderItemCardCanvas(item);
+        const dataUrl = canvas.toDataURL('image/png');
+        triggerDownload(dataUrl, `${item.id}-multilingual-card.png`);
+        showToast(`Downloaded ${item.en} PNG card!`);
+      } catch (err) {
+        console.error(err);
+        showToast('Could not generate PNG image.');
+      }
+    }
+
+    async function previewItemCard(id) {
+      const item = PRODUCE_ITEMS.find((i) => i.id === id);
+      if (!item) return;
+
+      try {
+        const canvas = await renderItemCardCanvas(item);
+        const dataUrl = canvas.toDataURL('image/png');
+        const text = formatItemText(item);
+        openModal(`${item.en} — Card Preview & Share`, text, dataUrl);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // =========================================================================
+    // 5. INDIVIDUAL ITEM COPY, SHARE & EMAIL ACTIONS
+    // =========================================================================
+    function formatItemText(item) {
+      const typeLabel = item.category === 'fruit' ? 'Fruit' : 'Vegetable';
+      return `${item.en} (${typeLabel})\n• English: ${item.en}\n• Hindi (हिन्दी): ${item.hi}\n• Marathi (मराठी): ${item.mr}\n• Kannada (ಕನ್ನಡ): ${item.kn}`;
+    }
+
+    function copyItem(id) {
+      const item = PRODUCE_ITEMS.find((i) => i.id === id);
+      if (!item) return;
+      copyToClipboard(formatItemText(item), `Copied "${item.en}" in 4 languages!`);
+    }
+
+    async function shareItem(id) {
+      const item = PRODUCE_ITEMS.find((i) => i.id === id);
+      if (!item) return;
+      const text = formatItemText(item);
+
+      try {
+        const canvas = await renderItemCardCanvas(item);
+        const dataUrl = canvas.toDataURL('image/png');
+
+        if (navigator.share) {
+          const blob = await new Promise((res) => canvas.toBlob(res, 'image/png'));
+          const file = new File([blob], `${item.id}-card.png`, { type: 'image/png' });
+
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: `${item.en} in English, Hindi, Marathi & Kannada`,
+              text: text,
+              files: [file],
+            });
+            showToast(`Shared ${item.en} card!`);
+            return;
+          } else {
+            await navigator.share({
+              title: `${item.en} in 4 Languages`,
+              text: text,
+            });
+            showToast(`Shared ${item.en}!`);
+            return;
+          }
+        }
+
+        // Graceful fallback modal with preview image, copy, WhatsApp & email
+        openModal(`Share ${item.en}`, text, dataUrl);
+      } catch (err) {
+        if (err && err.name !== 'AbortError') {
+          openModal(`Share ${item.en}`, text, null);
+        }
+      }
+    }
+
+    function emailItem(id) {
+      const item = PRODUCE_ITEMS.find((i) => i.id === id);
+      if (!item) return;
+      const subject = encodeURIComponent(`${item.en} (${item.hi} / ${item.mr} / ${item.kn}) - Multilingual Guide`);
+      const body = encodeURIComponent(formatItemText(item));
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    }
+
+    // =========================================================================
+    // 6. BULK / ENTIRE LIST ACTIONS (VEGETABLES, FRUITS, ALL, FILTERED)
+    // =========================================================================
+    function getDatasetByKey(key) {
+      if (key === 'vegetables') {
+        return {
+          title: 'Complete Vegetables List (English, Hindi, Marathi, Kannada)',
+          filename: 'vegetables-multilingual-list',
+          items: PRODUCE_ITEMS.filter((i) => i.category === 'vegetable'),
+        };
+      }
+      if (key === 'fruits') {
+        return {
+          title: 'Complete Fruits List (English, Hindi, Marathi, Kannada)',
+          filename: 'fruits-multilingual-list',
+          items: PRODUCE_ITEMS.filter((i) => i.category === 'fruit'),
+        };
+      }
+      if (key === 'filtered') {
+        return {
+          title: 'Filtered Fruits & Vegetables List',
+          filename: 'filtered-produce-list',
+          items: getFilteredItems(),
+        };
+      }
+      return {
+        title: 'Complete Fruits & Vegetables List (English, Hindi, Marathi, Kannada)',
+        filename: 'all-fruits-vegetables-list',
+        items: PRODUCE_ITEMS,
+      };
+    }
+
+    function formatBulkText(dataset) {
+      const header = `${dataset.title}\nTotal Items: ${dataset.items.length}\n${'='.repeat(42)}\n`;
+      const lines = dataset.items.map(
+        (item, idx) => `${idx + 1}. ${item.en} | हिन्दी: ${item.hi} | मराठी: ${item.mr} | ಕನ್ನಡ: ${item.kn}`
+      );
+      return header + lines.join('\n');
+    }
+
+    async function handleBulkAction(actionType, explicitKey = null) {
+      const key = explicitKey || document.getElementById('bulk-target-select').value;
+      const dataset = getDatasetByKey(key);
+
+      if (dataset.items.length === 0) {
+        showToast('No items available in the current view to export.');
+        return;
+      }
+
+      if (actionType === 'copy') {
+        copyToClipboard(formatBulkText(dataset), `Copied ${dataset.items.length} items to clipboard!`);
+      } else if (actionType === 'email') {
+        const subject = encodeURIComponent(dataset.title);
+        const body = encodeURIComponent(formatBulkText(dataset));
+        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      } else if (actionType === 'share') {
+        const text = formatBulkText(dataset);
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: dataset.title,
+              text: text,
+            });
+            showToast('Shared list successfully!');
+            return;
+          } catch (err) {
+            if (err && err.name === 'AbortError') return;
+          }
+        }
+        openModal(dataset.title, text, null);
+      } else if (actionType === 'csv') {
+        downloadBulkCSV(dataset);
+      } else if (actionType === 'png') {
+        await downloadBulkSheetPNG(dataset);
+      }
+    }
+
+    function downloadBulkCSV(dataset) {
+      // Include UTF-8 BOM (\uFEFF) so Excel & mobile spreadsheets display Devanagari & Kannada properly
+      const headers = ['No.', 'Category', 'English', 'Hindi (हिन्दी)', 'Marathi (मराठी)', 'Kannada (ಕನ್ನಡ)'];
+      const rows = dataset.items.map((item, idx) => [
+        idx + 1,
+        item.category === 'fruit' ? 'Fruit' : 'Vegetable',
+        `"${item.en.replace(/"/g, '""')}"`,
+        `"${item.hi.replace(/"/g, '""')}"`,
+        `"${item.mr.replace(/"/g, '""')}"`,
+        `"${item.kn.replace(/"/g, '""')}"`,
+      ]);
+
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      triggerDownload(url, `${dataset.filename}.csv`);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast(`Downloaded ${dataset.filename}.csv!`);
+    }
+
+    async function downloadBulkSheetPNG(dataset) {
+      showToast(`Compiling ${dataset.items.length}-item visual PNG sheet...`);
+
+      const cols = 4;
+      const rowsCount = Math.ceil(dataset.items.length / cols);
+      const cardW = 360;
+      const cardH = 390;
+      const gap = 24;
+      const padding = 40;
+      const headerH = 120;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = padding * 2 + cols * cardW + (cols - 1) * gap;
+      canvas.height = headerH + padding + rowsCount * cardH + (rowsCount - 1) * gap + 60;
+      const ctx = canvas.getContext('2d');
+
+      // Background
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Sheet Header Banner
+      ctx.fillStyle = '#065f46';
+      ctx.fillRect(0, 0, canvas.width, headerH);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 34px Inter, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(dataset.title, padding, 56);
+      ctx.fillStyle = '#a7f3d0';
+      ctx.font = '500 20px Inter, "Noto Sans Devanagari", "Noto Sans Kannada", sans-serif';
+      ctx.fillText(`English  •  हिन्दी (Hindi)  •  मराठी (Marathi)  •  ಕನ್ನಡ (Kannada)   |   Total: ${dataset.items.length}`, padding, 92);
+
+      // Render Each Grid Tile
+      for (let i = 0; i < dataset.items.length; i++) {
+        const item = dataset.items[i];
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const x = padding + col * (cardW + gap);
+        const y = headerH + padding + row * (cardH + gap);
+
+        // Card Box
+        drawRoundedRect(ctx, x, y, cardW, cardH, 20);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Illustration Backdrop
+        drawRoundedRect(ctx, x + 14, y + 14, cardW - 28, 165, 14);
+        ctx.fillStyle = item.bg;
+        ctx.fill();
+
+        const svgImg = await svgToImage(generateProduceSVG(item));
+        ctx.drawImage(svgImg, x + (cardW - 150) / 2, y + 20, 150, 150);
+
+        // Multilingual Labels inside Tile
+        ctx.textAlign = 'center';
+        const centerX = x + cardW / 2;
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 22px Inter, sans-serif';
+        ctx.fillText(item.en, centerX, y + 214);
+
+        ctx.fillStyle = '#c2410c';
+        ctx.font = 'bold 21px "Noto Sans Devanagari", sans-serif';
+        ctx.fillText(`हिन्दी: ${item.hi}`, centerX, y + 252);
+
+        ctx.fillStyle = '#b45309';
+        ctx.font = 'bold 21px "Noto Sans Devanagari", sans-serif';
+        ctx.fillText(`मराठी: ${item.mr}`, centerX, y + 290);
+
+        ctx.fillStyle = '#15803d';
+        ctx.font = 'bold 21px "Noto Sans Kannada", sans-serif';
+        ctx.fillText(`ಕನ್ನಡ: ${item.kn}`, centerX, y + 328);
+      }
+
+      const dataUrl = canvas.toDataURL('image/png');
+      triggerDownload(dataUrl, `${dataset.filename}.png`);
+      showToast(`Downloaded ${dataset.filename}.png!`);
+    }
+
+    // =========================================================================
+    // 7. UTILITIES: CLIPBOARD (WITH IFRAME FALLBACK), MODAL, TOAST, DOWNLOAD
+    // =========================================================================
+    function copyToClipboard(text, successMsg = 'Copied to clipboard!') {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMsg);
+      } catch (err) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => showToast(successMsg));
+        }
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    }
+
+    function triggerDownload(url, filename) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function openModal(title, text, previewDataUrl) {
+      const modal = document.getElementById('share-modal');
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-share-text').value = text;
+
+      const previewWrap = document.getElementById('modal-preview-wrap');
+      const previewImg = document.getElementById('modal-preview-img');
+      if (previewDataUrl) {
+        previewImg.src = previewDataUrl;
+        previewWrap.classList.remove('hidden');
+      } else {
+        previewWrap.classList.add('hidden');
+      }
+
+      const encoded = encodeURIComponent(text);
+      document.getElementById('modal-whatsapp-link').href = `https://wa.me/?text=${encoded}`;
+      document.getElementById('modal-email-link').href = `mailto:?subject=${encodeURIComponent(title)}&body=${encoded}`;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('share-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function copyModalText() {
+      const text = document.getElementById('modal-share-text').value;
+      copyToClipboard(text, 'Copied text to clipboard!');
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toast-message');
+      msgEl.textContent = msg;
+
+      toast.classList.remove('hidden');
+      toast.classList.add('flex', 'toast-animate');
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex', 'toast-animate');
+      }, 2800);
+    }
+
+    // Close modal on backdrop click or Escape key
+    document.getElementById('share-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'share-modal') closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Initialize App on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderGrid();
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

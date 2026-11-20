@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Interactive 3D Earth Explorer</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Three.js & Globe.gl -->
+    <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/globe.gl@2.32.1/dist/globe.gl.min.js"></script>
+    <!-- TopoJSON Client for parsing World Atlas countries -->
+    <script src="https://unpkg.com/topojson-client@3"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #02040a;
+            color: #f8fafc;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Custom subtle scrollbars for dropdown and info panels */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.4);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(56, 189, 248, 0.7);
+        }
+
+        /* Glassmorphism panel utility */
+        .glass-panel {
+            background: rgba(10, 15, 28, 0.72);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65);
+        }
+
+        /* Custom Globe Tooltip styling */
+        .globe-tooltip {
+            background: rgba(8, 12, 24, 0.88) !important;
+            backdrop-filter: blur(8px) !important;
+            border: 1px solid rgba(56, 189, 248, 0.45) !important;
+            border-radius: 10px !important;
+            padding: 8px 12px !important;
+            color: #f1f5f9 !important;
+            font-family: 'Inter', sans-serif !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+            pointer-events: none;
+        }
+
+        /* Pulse animation for loading spinner */
+        @keyframes spin-slow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 3s linear infinite;
+        }
+    </style>
+</head>
+<body class="relative w-screen h-screen overflow-hidden bg-[#02040a]">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#02040a] transition-opacity duration-700">
+        <div class="relative w-20 h-20 mb-4 flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full border-t-2 border-b-2 border-sky-400 animate-spin"></div>
+            <div class="absolute inset-2 rounded-full border-r-2 border-l-2 border-indigo-400 animate-spin-slow"></div>
+            <i class="ph-fill ph-planet text-3xl text-sky-400"></i>
+        </div>
+        <h2 class="text-lg font-semibold tracking-wide text-slate-100">Initializing 3D Earth...</h2>
+        <p id="loading-status" class="text-xs text-slate-400 mt-1">Loading planetary textures & geopolitical borders</p>
+    </div>
+
+    <!-- 3D Globe Container -->
+    <div id="globeViz" class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"></div>
+
+    <!-- Top Navigation & Search Header -->
+    <header class="fixed top-4 left-4 right-4 z-20 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pointer-events-none">
+        
+        <!-- Brand / Title Card -->
+        <div class="glass-panel rounded-2xl px-4 py-3 flex items-center justify-between pointer-events-auto">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
+                    <i class="ph-bold ph-globe-hemisphere-east text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold tracking-tight text-white leading-tight">Terra<span class="text-sky-400">3D</span> Explorer</h1>
+                    <p class="text-[11px] text-slate-400 hidden sm:block">Interactive World Atlas & Geopolitics</p>
+                </div>
+            </div>
+            <!-- Mobile Info / Help Button -->
+            <button id="mobile-help-btn" class="md:hidden p-2 rounded-xl bg-slate-800/70 text-slate-300 hover:text-white border border-slate-700/60" title="Controls Guide">
+                <i class="ph ph-info text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Country Search & Selector Dropdown -->
+        <div class="relative w-full md:w-96 pointer-events-auto" id="search-container">
+            <div class="glass-panel rounded-2xl flex items-center px-3.5 py-2.5 focus-within:border-sky-400/70 transition-colors">
+                <i class="ph ph-magnifying-glass text-slate-400 text-lg mr-2.5"></i>
+                <input 
+                    type="text" 
+                    id="country-search" 
+                    placeholder="Search 195+ countries, capitals, regions..." 
+                    autocomplete="off"
+                    class="w-full bg-transparent text-sm text-white placeholder-slate-400 focus:outline-none"
+                >
+                <button id="clear-search-btn" class="hidden text-slate-400 hover:text-white p-1 rounded-lg">
+                    <i class="ph ph-x text-sm"></i>
+                </button>
+                <button id="dropdown-toggle-btn" class="text-slate-400 hover:text-sky-400 p-1 ml-1 rounded-lg transition-colors" title="Browse All Countries">
+                    <i class="ph ph-caret-down text-base"></i>
+                </button>
+            </div>
+
+            <!-- Dropdown Results List -->
+            <div id="country-dropdown" class="hidden absolute left-0 right-0 mt-2 glass-panel rounded-2xl max-h-72 overflow-y-auto divide-y divide-slate-800/70 z-30 shadow-2xl">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Selected Country Knowledge Card (Left / Bottom-Left Drawer) -->
+    <aside id="country-card" class="fixed bottom-20 md:bottom-auto md:top-24 left-4 right-4 md:right-auto md:w-88 z-20 glass-panel rounded-2xl p-5 transition-all duration-300 transform translate-y-6 opacity-0 pointer-events-none">
+        <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="flex items-center gap-3">
+                <img id="cc-flag" src="" alt="Flag" class="w-11 h-7 object-cover rounded-md shadow border border-white/15 bg-slate-800" onerror="this.style.display='none'">
+                <div>
+                    <span id="cc-region" class="inline-block text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 mb-1">Region</span>
+                    <h2 id="cc-name" class="text-lg font-bold text-white leading-snug">Country Name</h2>
+                </div>
+            </div>
+            <button id="close-card-btn" class="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors" title="Close Panel">
+                <i class="ph ph-x text-base"></i>
+            </button>
+        </div>
+
+        <p id="cc-official" class="text-xs text-slate-400 italic mb-4 line-clamp-1">Official State Name</p>
+
+        <!-- Key Knowledge Metrics Grid -->
+        <div class="grid grid-cols-2 gap-2.5 mb-4">
+            <div class="bg-slate-900/65 border border-slate-800 rounded-xl p-2.5">
+                <div class="flex items-center gap-1.5 text-slate-400 text-[11px] mb-0.5">
+                    <i class="ph ph-buildings text-sky-400"></i>
+                    <span>Capital</span>
+                </div>
+                <div id="cc-capital" class="text-sm font-semibold text-slate-100 truncate">—</div>
+            </div>
+
+            <div class="bg-slate-900/65 border border-slate-800 rounded-xl p-2.5">
+                <div class="flex items-center gap-1.5 text-slate-400 text-[11px] mb-0.5">
+                    <i class="ph ph-users text-emerald-400"></i>
+                    <span>Population</span>
+                </div>
+                <div id="cc-population" class="text-sm font-semibold text-slate-100 truncate">—</div>
+            </div>
+
+            <div class="bg-slate-900/65 border border-slate-800 rounded-xl p-2.5">
+                <div class="flex items-center gap-1.5 text-slate-400 text-[11px] mb-0.5">
+                    <i class="ph ph-map-trifold text-amber-400"></i>
+                    <span>Area</span>
+                </div>
+                <div id="cc-area" class="text-sm font-semibold text-slate-100 truncate">—</div>
+            </div>
+
+            <div class="bg-slate-900/65 border border-slate-800 rounded-xl p-2.5">
+                <div class="flex items-center gap-1.5 text-slate-400 text-[11px] mb-0.5">
+                    <i class="ph ph-compass text-indigo-400"></i>
+                    <span>Subregion</span>
+                </div>
+                <div id="cc-subregion" class="text-sm font-semibold text-slate-100 truncate">—</div>
+            </div>
+        </div>
+
+        <!-- Languages & Currency Footer -->
+        <div class="space-y-1.5 text-xs border-t border-slate-800/80 pt-3">
+            <div class="flex justify-between gap-2">
+                <span class="text-slate-400">Languages:</span>
+                <span id="cc-languages" class="text-slate-200 font-medium text-right truncate max-w-[190px]">—</span>
+            </div>
+            <div class="flex justify-between gap-2">
+                <span class="text-slate-400">Currency:</span>
+                <span id="cc-currency" class="text-slate-200 font-medium text-right truncate max-w-[190px]">—</span>
+            </div>
+            <div class="flex justify-between gap-2">
+                <span class="text-slate-400">Coordinates:</span>
+                <span id="cc-coords" class="text-sky-300 font-mono text-[11px]">—</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Bottom Interactive Controls Dock -->
+    <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 glass-panel rounded-2xl p-1.5 sm:p-2 pointer-events-auto">
+        <!-- Auto-Rotate Toggle -->
+        <button id="btn-autorotate" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition-all text-xs sm:text-sm font-medium" title="Toggle Earth Rotation">
+            <i id="icon-autorotate" class="ph-fill ph-pause text-base"></i>
+            <span class="hidden sm:inline" id="text-autorotate">Rotating</span>
+        </button>
+
+        <!-- Day/Night Lighting Toggle -->
+        <button id="btn-lighting" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800/70 hover:bg-slate-700/80 text-slate-200 border border-slate-700/60 transition-all text-xs sm:text-sm font-medium" title="Toggle Sun & Day/Night Shading">
+            <i id="icon-lighting" class="ph-fill ph-sun text-amber-400 text-base"></i>
+            <span class="hidden md:inline">Sunlight</span>
+        </button>
+
+        <!-- Country Borders Toggle -->
+        <button id="btn-borders" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition-all text-xs sm:text-sm font-medium" title="Toggle Political Boundaries">
+            <i class="ph ph-polygon text-base"></i>
+            <span class="hidden md:inline">Borders</span>
+        </button>
+
+        <div class="h-6 w-[1px] bg-slate-700/70 mx-0.5"></div>
+
+        <!-- Zoom Out (-) -->
+        <button id="btn-zoom-out" class="p-2 sm:p-2.5 rounded-xl bg-slate-800/70 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition-all active:scale-95" title="Zoom Out">
+            <i class="ph-bold ph-minus text-base"></i>
+        </button>
+
+        <!-- Zoom In (+) -->
+        <button id="btn-zoom-in" class="p-2 sm:p-2.5 rounded-xl bg-slate-800/70 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition-all active:scale-95" title="Zoom In">
+            <i class="ph-bold ph-plus text-base"></i>
+        </button>
+
+        <!-- Reset View -->
+        <button id="btn-reset" class="p-2 sm:p-2.5 rounded-xl bg-slate-800/70 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition-all active:scale-95" title="Reset Global View">
+            <i class="ph-bold ph-arrows-out-cardinal text-base"></i>
+        </button>
+    </div>
+
+    <!-- Bottom-Right Navigation Hint (Desktop) -->
+    <div class="hidden lg:flex fixed bottom-4 right-4 z-10 glass-panel rounded-xl px-3.5 py-2 items-center gap-3 text-[11px] text-slate-400 pointer-events-none">
+        <span class="flex items-center gap-1"><i class="ph ph-hand-grabbing text-sky-400"></i> Drag to rotate</span>
+        <span>•</span>
+        <span class="flex items-center gap-1"><i class="ph ph-mouse-scroll text-sky-400"></i> Scroll / Pinch to zoom</span>
+        <span>•</span>
+        <span class="flex items-center gap-1"><i class="ph ph-cursor-click text-sky-400"></i> Click country for facts</span>
+    </div>
+
+    <!-- Mobile Controls Guide Toast Modal (Replaces alert) -->
+    <div id="help-modal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="glass-panel rounded-2xl max-w-sm w-full p-5 text-slate-200">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold text-base text-white flex items-center gap-2">
+                    <i class="ph-fill ph-sparkle text-sky-400"></i> How to Explore Earth
+                </h3>
+                <button id="close-help-btn" class="p-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+            <ul class="space-y-2.5 text-xs text-slate-300">
+                <li class="flex items-center gap-2.5"><i class="ph-fill ph-hand-swipe-right text-sky-400 text-base"></i> <span><b>Swipe / Drag</b> anywhere to spin the globe in 360°.</span></li>
+                <li class="flex items-center gap-2.5"><i class="ph-fill ph-magnifying-glass-plus text-sky-400 text-base"></i> <span><b>Pinch or use +/-</b> buttons to zoom into countries.</span></li>
+                <li class="flex items-center gap-2.5"><i class="ph-fill ph-map-pin text-sky-400 text-base"></i> <span><b>Tap any country</b> or search above to view its capital, population, area, and flag.</span></li>
+                <li class="flex items-center gap-2.5"><i class="ph-fill ph-sun text-amber-400 text-base"></i> <span>Toggle <b>Sunlight</b> for realistic day/night planetary illumination.</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Interactive 3D Earth Explorer
+         * Powered by Globe.gl, Three.js, TopoJSON, and REST Countries metadata.
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            // Application State
+            const state = {
+                autoRotate: true,
+                sunlightMode: true,
+                showBorders: true,
+                countriesGeo: [],
+                countryMetadataByIsoNum: {},
+                countryMetadataByName: {},
+                allSearchableCountries: [],
+                hoveredPolygon: null,
+                selectedPolygon: null,
+                globeInstance: null,
+                sunLight: null,
+                ambientLight: null,
+                cloudsMesh: null
+            };
+
+            // DOM Elements
+            const globeContainer = document.getElementById('globeViz');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const loadingStatus = document.getElementById('loading-status');
+            const searchInput = document.getElementById('country-search');
+            const clearSearchBtn = document.getElementById('clear-search-btn');
+            const dropdownToggleBtn = document.getElementById('dropdown-toggle-btn');
+            const countryDropdown = document.getElementById('country-dropdown');
+            const countryCard = document.getElementById('country-card');
+            const closeCardBtn = document.getElementById('close-card-btn');
+
+            // Control Buttons
+            const btnAutoRotate = document.getElementById('btn-autorotate');
+            const iconAutoRotate = document.getElementById('icon-autorotate');
+            const textAutoRotate = document.getElementById('text-autorotate');
+            const btnLighting = document.getElementById('btn-lighting');
+            const iconLighting = document.getElementById('icon-lighting');
+            const btnBorders = document.getElementById('btn-borders');
+            const btnZoomIn = document.getElementById('btn-zoom-in');
+            const btnZoomOut = document.getElementById('btn-zoom-out');
+            const btnReset = document.getElementById('btn-reset');
+
+            // Mobile Help Modal
+            const mobileHelpBtn = document.getElementById('mobile-help-btn');
+            const helpModal = document.getElementById('help-modal');
+            const closeHelpBtn = document.getElementById('close-help-btn');
+
+            /**
+             * Format large numbers cleanly (e.g., 1,428,627,663 or 1.43B)
+             */
+            function formatNumber(num) {
+                if (num === undefined || num === null || isNaN(num)) return 'N/A';
+                if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2) + ' B';
+                if (num >= 1_000_000) return (num / 1_000_000).toFixed(2) + ' M';
+                return num.toLocaleString();
+            }
+
+            /**
+             * Calculate rough geometric centroid [lat, lng] of a GeoJSON Polygon/MultiPolygon
+             */
+            function getFeatureCentroid(feature) {
+                if (!feature || !feature.geometry) return { lat: 20, lng: 0 };
+                let coords = [];
+                const geom = feature.geometry;
+
+                if (geom.type === 'Polygon') {
+                    coords = geom.coordinates[0];
+                } else if (geom.type === 'MultiPolygon') {
+                    // Use the largest polygon ring by vertex count for accurate mainland centering
+                    let maxLen = 0;
+                    geom.coordinates.forEach(poly => {
+                        if (poly[0] && poly[0].length > maxLen) {
+                            maxLen = poly[0].length;
+                            coords = poly[0];
+                        }
+                    });
+                }
+
+                if (!coords || coords.length === 0) return { lat: 20, lng: 0 };
+
+                let minLng = 180, maxLng = -180, minLat = 90, maxLat = -90;
+                coords.forEach(([lng, lat]) => {
+                    if (lng < minLng) minLng = lng;
+                    if (lng > maxLng) maxLng = lng;
+                    if (lat < minLat) minLat = lat;
+                    if (lat > maxLat) maxLat = lat;
+                });
+
+                return {
+                    lat: (minLat + maxLat) / 2,
+                    lng: (minLng + maxLng) / 2
+                };
+            }
+
+            /**
+             * Create a procedural starfield background in Three.js scene
+             */
+            function addStarfield(scene) {
+                const starCount = 4500;
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(starCount * 3);
+                const colors = new Float32Array(starCount * 3);
+
+                const colorPalette = [
+                    new THREE.Color(0xffffff),
+                    new THREE.Color(0xcce4ff),
+                    new THREE.Color(0xffe9c4),
+                    new THREE.Color(0xa5f3fc)
+                ];
+
+                for (let i = 0; i < starCount; i++) {
+                    // Distribute stars on a distant sphere shell
+                    const radius = 900 + Math.random() * 1400;
+                    const theta = 2 * Math.PI * Math.random();
+                    const phi = Math.acos(2 * Math.random() - 1);
+
+                    positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                    positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                    positions[i * 3 + 2] = radius * Math.cos(phi);
+
+                    const starColor = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+                    const brightness = 0.5 + Math.random() * 0.5;
+                    colors[i * 3] = starColor.r * brightness;
+                    colors[i * 3 + 1] = starColor.g * brightness;
+                    colors[i * 3 + 2] = starColor.b * brightness;
+                }
+
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+                const material = new THREE.PointsMaterial({
+                    size: 1.8,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.9,
+                    sizeAttenuation: true
+                });
+
+                const starField = new THREE.Points(geometry, material);
+                scene.add(starField);
+            }
+
+            /**
+             * Fetch Country Borders (TopoJSON) and Country Facts (REST Countries API)
+             */
+            async function loadWorldData() {
+                try {
+                    loadingStatus.textContent = 'Fetching global borders & country facts...';
+
+                    const [topoRes, metaRes] = await Promise.all([
+                        fetch('https://unpkg.com/world-atlas@2.0.2/countries-110m.json'),
+                        fetch('https://restcountries.com/v3.1/all?fields=name,ccn3,cca3,capital,region,subregion,population,area,languages,currencies,flags,latlng')
+                            .catch(() => null) // Fallback gracefully if API rate-limited
+                    ]);
+
+                    const worldTopo = await topoRes.json();
+                    const geoJson = topojson.feature(worldTopo, worldTopo.objects.countries);
+
+                    // Parse REST Countries metadata if available
+                    if (metaRes && metaRes.ok) {
+                        const metaList = await metaRes.json();
+                        metaList.forEach(item => {
+                            const info = {
+                                name: item.name?.common || 'Unknown',
+                                officialName: item.name?.official || item.name?.common || '',
+                                ccn3: item.ccn3 ? String(item.ccn3).padStart(3, '0') : null,
+                                cca3: item.cca3 || '',
+                                capital: Array.isArray(item.capital) && item.capital.length ? item.capital[0] : 'N/A',
+                                region: item.region || 'World',
+                                subregion: item.subregion || item.region || '—',
+                                population: item.population || 0,
+                                area: item.area || 0,
+                                languages: item.languages ? Object.values(item.languages).slice(0, 3).join(', ') : 'N/A',
+                                currency: item.currencies
+                                    ? Object.values(item.currencies).map(c => `${c.name} (${c.symbol || ''})`).slice(0, 2).join(', ')
+                                    : 'N/A',
+                                flag: item.flags?.svg || item.flags?.png || '',
+                                latlng: Array.isArray(item.latlng) && item.latlng.length === 2 ? item.latlng : null
+                            };
+
+                            if (info.ccn3) {
+                                state.countryMetadataByIsoNum[info.ccn3] = info;
+                            }
+                            state.countryMetadataByName[info.name.toLowerCase()] = info;
+                        });
+                    }
+
+                    // Merge GeoJSON features with enriched metadata
+                    state.countriesGeo = geoJson.features.filter(f => f.properties && f.properties.name !== 'Antarctica' || true);
+
+                    state.countriesGeo.forEach(feature => {
+                        const isoNum = feature.id ? String(feature.id).padStart(3, '0') : null;
+                        const rawName = feature.properties?.name || 'Unknown Territory';
+                        const matchedMeta = (isoNum && state.countryMetadataByIsoNum[isoNum]) ||
+                                            state.countryMetadataByName[rawName.toLowerCase()];
+
+                        const centroid = getFeatureCentroid(feature);
+
+                        feature.enriched = matchedMeta ? {
+                            ...matchedMeta,
+                            latlng: matchedMeta.latlng || [centroid.lat, centroid.lng],
+                            featureRef: feature
+                        } : {
+                            name: rawName,
+                            officialName: rawName,
+                            capital: rawName === 'Antarctica' ? 'None (Research Stations)' : 'N/A',
+                            region: rawName === 'Antarctica' ? 'Antarctica' : 'Territory',
+                            subregion: '—',
+                            population: rawName === 'Antarctica' ? 1000 : null,
+                            area: null,
+                            languages: 'N/A',
+                            currency: 'N/A',
+                            flag: '',
+                            latlng: [centroid.lat, centroid.lng],
+                            featureRef: feature
+                        };
+                    });
+
+                    // Build sorted searchable array
+                    state.allSearchableCountries = state.countriesGeo
+                        .map(f => f.enriched)
+                        .sort((a, b) => a.name.localeCompare(b.name));
+
+                    renderDropdownList(state.allSearchableCountries);
+                } catch (err) {
+                    console.error('Error loading world data:', err);
+                    loadingStatus.textContent = 'Loaded base globe (offline border mode).';
+                }
+            }
+
+            /**
+             * Initialize the 3D Globe using Globe.gl
+             */
+            function initGlobe() {
+                const globe = Globe()(globeContainer)
+                    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+                    .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+                    .backgroundColor('#02040a')
+                    .showAtmosphere(true)
+                    .atmosphereColor('#38bdf8')
+                    .atmosphereAltitude(0.18)
+                    .polygonsData(state.countriesGeo)
+                    .polygonAltitude(d => d === state.selectedPolygon ? 0.025 : (d === state.hoveredPolygon ? 0.015 : 0.006))
+                    .polygonCapColor(d => {
+                        if (d === state.selectedPolygon) return 'rgba(56, 189, 248, 0.42)';
+                        if (d === state.hoveredPolygon) return 'rgba(14, 165, 233, 0.25)';
+                        return 'rgba(255, 255, 255, 0.01)';
+                    })
+                    .polygonSideColor(d => d === state.selectedPolygon ? 'rgba(56, 189, 248, 0.6)' : 'rgba(56, 189, 248, 0.12)')
+                    .polygonStrokeColor(() => state.showBorders ? 'rgba(186, 230, 253, 0.42)' : 'rgba(0, 0, 0, 0)')
+                    .polygonLabel(({ enriched: d }) => {
+                        if (!d) return '';
+                        return `
+                            <div class="globe-tooltip">
+                                <div class="flex items-center gap-2 mb-1">
+                                    ${d.flag ? `<img src="${d.flag}" class="w-5 h-3.5 object-cover rounded-sm border border-white/20" />` : ''}
+                                    <span class="font-bold text-sm text-white">${d.name}</span>
+                                </div>
+                                <div class="text-[11px] text-slate-300">
+                                    Capital: <span class="text-sky-300 font-medium">${d.capital}</span>
+                                </div>
+                                <div class="text-[10px] text-slate-400 mt-0.5">Click to inspect details</div>
+                            </div>
+                        `;
+                    })
+                    .onPolygonHover(hoverD => {
+                        state.hoveredPolygon = hoverD || null;
+                        globeContainer.style.cursor = hoverD ? 'pointer' : 'grab';
+                        updatePolygonStyles();
+                    })
+                    .onPolygonClick(clickedD => {
+                        if (clickedD && clickedD.enriched) {
+                            selectCountry(clickedD.enriched);
+                        }
+                    });
+
+                // Configure Camera & OrbitControls
+                const controls = globe.controls();
+                controls.autoRotate = state.autoRotate;
+                controls.autoRotateSpeed = 0.55;
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.07;
+                controls.minDistance = 125; // Allow deep zoom into countries
+                controls.maxDistance = 550;
+
+                // Stop auto-rotation when user manually grabs the globe if desired, or keep smooth interaction
+                controls.addEventListener('start', () => {
+                    // Pause auto-rotation while actively dragging so user has full precision
+                    controls.autoRotate = false;
+                });
+                controls.addEventListener('end', () => {
+                    controls.autoRotate = state.autoRotate;
+                });
+
+                // Enhance Scene Lighting (Realistic Sun + Ambient Fill) & Starfield
+                const scene = globe.scene();
+                addStarfield(scene);
+
+                // Remove default uniform lights to set up directional solar lighting
+                const existingLights = scene.children.filter(obj => obj.isLight);
+                existingLights.forEach(l => scene.remove(l));
+
+                const ambientLight = new THREE.AmbientLight(0x334155, 0.65);
+                const sunLight = new THREE.DirectionalLight(0xffffff, 2.1);
+                sunLight.position.set(220, 90, 180);
+
+                scene.add(ambientLight);
+                scene.add(sunLight);
+
+                state.ambientLight = ambientLight;
+                state.sunLight = sunLight;
+                state.globeInstance = globe;
+
+                // Initial view centered nicely over Afro-Eurasia / Indian Ocean
+                globe.pointOfView({ lat: 18, lng: 35, altitude: 2.2 }, 0);
+
+                // Responsive Resize Handler
+                window.addEventListener('resize', () => {
+                    globe.width(window.innerWidth);
+                    globe.height(window.innerHeight);
+                });
+            }
+
+            /**
+             * Refresh polygon altitudes & colors smoothly on hover/selection/border toggle
+             */
+            function updatePolygonStyles() {
+                if (!state.globeInstance) return;
+                state.globeInstance
+                    .polygonAltitude(d => d === state.selectedPolygon ? 0.025 : (d === state.hoveredPolygon ? 0.015 : 0.006))
+                    .polygonCapColor(d => {
+                        if (d === state.selectedPolygon) return 'rgba(56, 189, 248, 0.42)';
+                        if (d === state.hoveredPolygon) return 'rgba(14, 165, 233, 0.25)';
+                        return 'rgba(255, 255, 255, 0.01)';
+                    })
+                    .polygonStrokeColor(() => state.showBorders ? 'rgba(186, 230, 253, 0.42)' : 'rgba(0, 0, 0, 0)');
+            }
+
+            /**
+             * Select a country, smoothly fly camera to it, and display its knowledge card
+             */
+            function selectCountry(countryInfo) {
+                if (!countryInfo) return;
+
+                state.selectedPolygon = countryInfo.featureRef || null;
+                updatePolygonStyles();
+
+                // Pause auto-rotation so user can inspect the selected nation
+                if (state.autoRotate) {
+                    toggleAutoRotate(false);
+                }
+
+                // Smoothly fly camera to country coordinates
+                const [lat, lng] = countryInfo.latlng || [20, 0];
+                state.globeInstance.pointOfView({
+                    lat: lat,
+                    lng: lng,
+                    altitude: 1.25
+                }, 1100);
+
+                // Populate Knowledge Card UI
+                const flagEl = document.getElementById('cc-flag');
+                if (countryInfo.flag) {
+                    flagEl.src = countryInfo.flag;
+                    flagEl.style.display = 'block';
+                } else {
+                    flagEl.style.display = 'none';
+                }
+
+                document.getElementById('cc-region').textContent = countryInfo.region || 'World';
+                document.getElementById('cc-name').textContent = countryInfo.name;
+                document.getElementById('cc-official').textContent = countryInfo.officialName || countryInfo.name;
+                document.getElementById('cc-capital').textContent = countryInfo.capital || 'N/A';
+                document.getElementById('cc-population').textContent = formatNumber(countryInfo.population);
+                document.getElementById('cc-area').textContent = countryInfo.area ? `${countryInfo.area.toLocaleString()} km²` : 'N/A';
+                document.getElementById('cc-subregion').textContent = countryInfo.subregion || '—';
+                document.getElementById('cc-languages').textContent = countryInfo.languages || 'N/A';
+                document.getElementById('cc-currency').textContent = countryInfo.currency || 'N/A';
+                document.getElementById('cc-coords').textContent = `${lat.toFixed(2)}°, ${lng.toFixed(2)}°`;
+
+                // Show card with smooth entrance
+                countryCard.classList.remove('translate-y-6', 'opacity-0', 'pointer-events-none');
+                countryCard.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+
+                // Hide dropdown
+                countryDropdown.classList.add('hidden');
+            }
+
+            /**
+             * Hide the Country Knowledge Card
+             */
+            function closeCountryCard() {
+                state.selectedPolygon = null;
+                updatePolygonStyles();
+                countryCard.classList.add('translate-y-6', 'opacity-0', 'pointer-events-none');
+                countryCard.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+            }
+
+            /**
+             * Render filtered countries into the search dropdown
+             */
+            function renderDropdownList(list) {
+                if (!list || list.length === 0) {
+                    countryDropdown.innerHTML = `
+                        <div class="px-4 py-4 text-center text-xs text-slate-400">
+                            No matching countries found.
+                        </div>
+                    `;
+                    return;
+                }
+
+                countryDropdown.innerHTML = list.map((country, idx) => `
+                    <button 
+                        type="button"
+                        data-country-index="${idx}"
+                        class="country-option w-full px-4 py-2.5 flex items-center justify-between hover:bg-sky-500/15 transition-colors text-left"
+                    >
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            ${country.flag 
+                                ? `<img src="${country.flag}" alt="" class="w-6 h-4 object-cover rounded-sm border border-white/10 shrink-0">` 
+                                : `<span class="w-6 h-4 rounded-sm bg-slate-800 flex items-center justify-center text-[10px] text-slate-400 shrink-0"><i class="ph ph-globe"></i></span>`
+                            }
+                            <div class="truncate">
+                                <div class="text-sm font-medium text-slate-100 truncate">${country.name}</div>
+                                <div class="text-[11px] text-slate-400 truncate">${country.capital !== 'N/A' ? country.capital + ' • ' : ''}${country.region}</div>
+                            </div>
+                        </div>
+                        <i class="ph ph-arrow-up-right text-slate-500 text-sm shrink-0 ml-2"></i>
+                    </button>
+                `).join('');
+
+                // Attach click events to generated options
+                const options = countryDropdown.querySelectorAll('.country-option');
+                options.forEach((btn, i) => {
+                    btn.addEventListener('click', () => {
+                        const chosen = list[i];
+                        searchInput.value = chosen.name;
+                        clearSearchBtn.classList.remove('hidden');
+                        selectCountry(chosen);
+                    });
+                });
+            }
+
+            /**
+             * Toggle Auto-Rotation State & UI
+             */
+            function toggleAutoRotate(forceState) {
+                state.autoRotate = typeof forceState === 'boolean' ? forceState : !state.autoRotate;
+                if (state.globeInstance) {
+                    state.globeInstance.controls().autoRotate = state.autoRotate;
+                }
+
+                if (state.autoRotate) {
+                    btnAutoRotate.className = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition-all text-xs sm:text-sm font-medium';
+                    iconAutoRotate.className = 'ph-fill ph-pause text-base';
+                    textAutoRotate.textContent = 'Rotating';
+                } else {
+                    btnAutoRotate.className = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800/70 hover:bg-slate-700/80 text-slate-300 border border-slate-700/60 transition-all text-xs sm:text-sm font-medium';
+                    iconAutoRotate.className = 'ph-fill ph-play text-base';
+                    textAutoRotate.textContent = 'Paused';
+                }
+            }
+
+            /**
+             * Toggle Day/Night Realistic Lighting vs Full Illumination
+             */
+            function toggleLighting() {
+                state.sunlightMode = !state.sunlightMode;
+                if (state.sunlightMode) {
+                    // Realistic Day/Night contrast
+                    state.ambientLight.intensity = 0.65;
+                    state.sunLight.intensity = 2.1;
+                    iconLighting.className = 'ph-fill ph-sun text-amber-400 text-base';
+                } else {
+                    // Uniform Global Map Daylight (easier for studying every continent simultaneously)
+                    state.ambientLight.intensity = 2.3;
+                    state.sunLight.intensity = 0.4;
+                    iconLighting.className = 'ph-fill ph-sun-dim text-sky-300 text-base';
+                }
+            }
+
+            /**
+             * Toggle Political Boundaries visibility
+             */
+            function toggleBorders() {
+                state.showBorders = !state.showBorders;
+                updatePolygonStyles();
+                if (state.showBorders) {
+                    btnBorders.className = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition-all text-xs sm:text-sm font-medium';
+                } else {
+                    btnBorders.className = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800/70 hover:bg-slate-700/80 text-slate-300 border border-slate-700/60 transition-all text-xs sm:text-sm font-medium';
+                }
+            }
+
+            /**
+             * Smoothly adjust camera altitude for +/- zoom buttons
+             */
+            function adjustZoom(deltaAltitude) {
+                if (!state.globeInstance) return;
+                const currentPov = state.globeInstance.pointOfView();
+                const targetAltitude = Math.max(0.32, Math.min(4.2, currentPov.altitude + deltaAltitude));
+                state.globeInstance.pointOfView({
+                    lat: currentPov.lat,
+                    lng: currentPov.lng,
+                    altitude: targetAltitude
+                }, 400);
+            }
+
+            // Event Listeners Setup
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim().toLowerCase();
+                clearSearchBtn.classList.toggle('hidden', query.length === 0);
+
+                const filtered = state.allSearchableCountries.filter(c =>
+                    c.name.toLowerCase().includes(query) ||
+                    (c.capital && c.capital.toLowerCase().includes(query)) ||
+                    (c.region && c.region.toLowerCase().includes(query))
+                );
+                renderDropdownList(filtered);
+                countryDropdown.classList.remove('hidden');
+            });
+
+            searchInput.addEventListener('focus', () => {
+                countryDropdown.classList.remove('hidden');
+            });
+
+            dropdownToggleBtn.addEventListener('click', () => {
+                countryDropdown.classList.toggle('hidden');
+                if (!countryDropdown.classList.contains('hidden')) {
+                    renderDropdownList(state.allSearchableCountries);
+                }
+            });
+
+            clearSearchBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                clearSearchBtn.classList.add('hidden');
+                renderDropdownList(state.allSearchableCountries);
+                searchInput.focus();
+            });
+
+            // Close dropdown when clicking outside search container
+            document.addEventListener('click', (e) => {
+                const searchContainer = document.getElementById('search-container');
+                if (!searchContainer.contains(e.target)) {
+                    countryDropdown.classList.add('hidden');
+                }
+            });
+
+            closeCardBtn.addEventListener('click', closeCountryCard);
+            btnAutoRotate.addEventListener('click', () => toggleAutoRotate());
+            btnLighting.addEventListener('click', toggleLighting);
+            btnBorders.addEventListener('click', toggleBorders);
+            btnZoomIn.addEventListener('click', () => adjustZoom(-0.45));
+            btnZoomOut.addEventListener('click', () => adjustZoom(0.45));
+
+            btnReset.addEventListener('click', () => {
+                closeCountryCard();
+                toggleAutoRotate(true);
+                if (state.globeInstance) {
+                    state.globeInstance.pointOfView({ lat: 18, lng: 35, altitude: 2.2 }, 1000);
+                }
+            });
+
+            // Help Modal Listeners
+            mobileHelpBtn.addEventListener('click', () => {
+                helpModal.classList.remove('hidden');
+                helpModal.classList.add('flex');
+            });
+            closeHelpBtn.addEventListener('click', () => {
+                helpModal.classList.add('hidden');
+                helpModal.classList.remove('flex');
+            });
+            helpModal.addEventListener('click', (e) => {
+                if (e.target === helpModal) {
+                    helpModal.classList.add('hidden');
+                    helpModal.classList.remove('flex');
+                }
+            });
+
+            // Boot Application
+            (async function startApp() {
+                await loadWorldData();
+                initGlobe();
+
+                // Fade out loading screen smoothly
+                setTimeout(() => {
+                    loadingOverlay.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(() => loadingOverlay.remove(), 750);
+                }, 400);
+            })();
+        });
+    </script>
+</body>
+</html>

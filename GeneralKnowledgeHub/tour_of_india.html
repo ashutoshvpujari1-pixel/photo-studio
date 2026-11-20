@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incredible India: Ultimate Regional Tour</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(217, 119, 6, 0.4);
+            border-radius: 9999px;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        saffron: { 500: '#FF671F', 600: '#E05514' },
+                        indiaGreen: { 500: '#046A38', 600: '#03522C' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300 flex flex-col">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-50 glass-card border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3 flex items-center justify-between shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-saffron-500 via-white to-indiaGreen-500 p-0.5 shadow-md flex items-center justify-center">
+                <div class="w-full h-full bg-white dark:bg-slate-900 rounded-[10px] flex items-center justify-center text-xl font-bold">
+                    🇮🇳
+                </div>
+            </div>
+            <div>
+                <h1 class="text-lg sm:text-xl font-extrabold bg-gradient-to-r from-saffron-500 via-orange-600 to-indiaGreen-500 bg-clip-text text-transparent">
+                    Incredible India Tour
+                </h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">South to North • East to West</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <!-- Audio Toggle -->
+            <button onclick="toggleAudio()" id="audioBtn" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center space-x-2">
+                <span id="audioIcon">🎵</span>
+                <span class="hidden sm:inline" id="audioText">Ambient Music</span>
+            </button>
+
+            <!-- Start Tour Guide Modal Trigger -->
+            <button onclick="startGuidedTour(0)" class="px-4 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-saffron-500 to-orange-600 hover:from-saffron-600 hover:to-orange-700 shadow-lg shadow-saffron-500/20 rounded-xl transition transform active:scale-95 flex items-center space-x-1.5">
+                <span>🚀</span>
+                <span>Start Guided Tour</span>
+            </button>
+
+            <!-- Dark Mode Toggle -->
+            <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                <span id="themeIcon" class="text-sm">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+
+        <!-- Sidebar / Controls & Region Filter -->
+        <aside class="w-full lg:w-96 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border-r border-slate-200 dark:border-slate-800 flex flex-col p-4 sm:p-5 space-y-4 overflow-y-auto custom-scrollbar">
+            
+            <!-- Search Bar -->
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">🔍</span>
+                <input type="text" id="searchInput" oninput="filterStates()" placeholder="Search state, city, or culture..." 
+                    class="w-full pl-10 pr-4 py-2.5 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-saffron-500 transition">
+            </div>
+
+            <!-- Region Filter Pills -->
+            <div>
+                <label class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 block">Tour Regions</label>
+                <div class="grid grid-cols-2 gap-1.5" id="regionFilters">
+                    <button onclick="setRegion('All')" class="region-btn px-3 py-2 text-xs font-bold rounded-lg bg-saffron-500 text-white shadow-sm transition">All India (36)</button>
+                    <button onclick="setRegion('South')" class="region-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">Southern (6)</button>
+                    <button onclick="setRegion('North')" class="region-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">Northern (9)</button>
+                    <button onclick="setRegion('East')" class="region-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">Eastern (4)</button>
+                    <button onclick="setRegion('West')" class="region-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">Western (4)</button>
+                    <button onclick="setRegion('Central')" class="region-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">Central (2)</button>
+                    <button onclick="setRegion('North-East')" class="region-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition col-span-2">North-Eastern (8)</button>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="bg-gradient-to-br from-orange-500/10 to-indiaGreen-500/10 border border-saffron-500/20 rounded-2xl p-4">
+                <div class="flex justify-between items-center text-xs font-bold text-slate-600 dark:text-slate-300 mb-2">
+                    <span>TOUR PROGRESS</span>
+                    <span id="progressCount">0 / 36 Explored</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div id="progressBar" class="bg-gradient-to-r from-saffron-500 to-indiaGreen-500 h-full w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+
+            <!-- States List Summary -->
+            <div class="flex-1 overflow-y-auto space-y-2 pr-1" id="statesListContainer">
+                <!-- Dynamically populated via JS -->
+            </div>
+        </aside>
+
+        <!-- Main Display / Interactive Tour Area -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-8 flex flex-col justify-between custom-scrollbar" id="mainDisplay">
+            
+            <div class="max-w-4xl mx-auto w-full space-y-6" id="contentArea">
+                <!-- Dynamic State Details or Welcome Screen -->
+            </div>
+
+            <!-- Footer info -->
+            <footer class="mt-12 text-center text-xs text-slate-400 py-4 border-t border-slate-200 dark:border-slate-800">
+                Incredible India Interactive Guide • Celebrating Unity in Diversity 🇮🇳
+            </footer>
+        </main>
+
+    </div>
+
+    <!-- Guided Tour Modal -->
+    <div id="guidedTourModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="glass-card max-w-2xl w-full rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden border border-saffron-500/30">
+            <button onclick="closeGuidedTour()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 dark:hover:text-white p-2">✕</button>
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center space-x-2 text-saffron-500 font-bold text-xs uppercase tracking-wider">
+                    <span>🧭 Guided Tour of India</span>
+                    <span>•</span>
+                    <span id="tourStepIndicator">Step 1 of 36</span>
+                </div>
+                <!-- Tour Controls (Play/Pause & Timer) -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="toggleTourPlay()" id="tourPlayPauseBtn" class="px-3 py-1 text-xs font-bold rounded-lg bg-saffron-500 text-white shadow-sm transition flex items-center space-x-1">
+                        <span id="tourPlayIcon">⏸️</span>
+                        <span id="tourPlayText">Pause</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tour Progress Bar -->
+            <div class="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden mb-4">
+                <div id="tourProgressBar" class="bg-saffron-500 h-full w-0 transition-all duration-100"></div>
+            </div>
+
+            <div id="tourModalContent" class="space-y-4">
+                <!-- Tour modal content loaded dynamically -->
+            </div>
+            <div class="flex justify-between items-center mt-8 pt-4 border-t border-slate-200 dark:border-slate-800">
+                <button onclick="prevTourStep()" id="prevTourBtn" class="px-4 py-2 text-sm font-semibold rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition">← Previous</button>
+                <div class="text-xs text-slate-500 font-medium">Auto-slides every 5s</div>
+                <button onclick="nextTourStep()" id="nextTourBtn" class="px-5 py-2 text-sm font-bold text-white bg-gradient-to-r from-saffron-500 to-orange-600 rounded-xl shadow-lg shadow-saffron-500/20 hover:from-saffron-600 transition">Next Stop →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Data and Logic -->
+    <script>
+        // Comprehensive dataset of all 28 States and 8 Union Territories of India
+        const indiaData = [
+            // SOUTH
+            {
+                id: "kerala",
+                name: "Kerala",
+                type: "State",
+                region: "South",
+                capital: "Thiruvananthapuram",
+                majorCities: ["Kochi", "Kozhikode", "Thrissur", "Kollam", "Alappuzha"],
+                tagline: "God's Own Country",
+                culture: "Famous for Kathakali classical dance, Kalaripayattu martial arts, Vallam Kali (snake boat races), and rich temple festivals like Thrissur Pooram.",
+                food: "Appam with Stew, Puttu and Kadala Curry, Kerala Sadya (feast on banana leaf), Karimeen Pollichathu, and Payasam.",
+                icon: "🌴",
+                image: "https://placehold.co/800x400/046A38/ffffff?text=Kerala+Backwaters",
+                highlights: ["Alleppey Backwaters", "Munnar Tea Gardens", "Wayanad Hills", "Kovalam Beach"]
+            },
+            {
+                id: "tamil-nadu",
+                name: "Tamil Nadu",
+                type: "State",
+                region: "South",
+                capital: "Chennai",
+                majorCities: ["Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Thanjavur"],
+                tagline: "Land of Temples",
+                culture: "Cradle of Bharatanatyam dance, Carnatic music, magnificent Dravidian temple architecture (Meenakshi Temple, Brihadeeswarar Temple), and Tamil literature.",
+                food: "Idli, Dosa, Chettinad Chicken, Pongal, Kothu Parotta, Filter Coffee, and Sambhar.",
+                icon: "🛕",
+                image: "https://placehold.co/800x400/FF671F/ffffff?text=Tamil+Nadu+Temples",
+                highlights: ["Meenakshi Amman Temple", "Ooty Hill Station", "Mahabalipuram Shore Temple", "Rameswaram"]
+            },
+            {
+                id: "karnataka",
+                name: "Karnataka",
+                type: "State",
+                region: "South",
+                capital: "Bengaluru",
+                majorCities: ["Mysuru", "Mangaluru", "Hubballi", "Belagavi", "Udupi"],
+                tagline: "One State, Many Worlds",
+                culture: "Home to the majestic Dasara festival in Mysuru, Yakshagana theatre art, classical Carnatic music, and Silicon Valley innovation in Bengaluru.",
+                food: "Bisi Bele Bath, Mysore Pak, Ragi Mudde, Neer Dosa, Akki Roti, and Mangalorean Fish Curry.",
+                icon: "🏛️",
+                image: "https://placehold.co/800x400/7c2d12/ffffff?text=Karnataka+Heritage",
+                highlights: ["Mysore Palace", "Hampi Ruins", "Coorg Coffee Plantations", "Jog Falls"]
+            },
+            {
+                id: "andhra-pradesh",
+                name: "Andhra Pradesh",
+                type: "State",
+                region: "South",
+                capital: "Amaravati",
+                majorCities: ["Visakhapatnam", "Vijayawada", "Tirupati", "Guntur", "Kurnool"],
+                tagline: "Koh-f-i-noor of India",
+                culture: "Birthplace of Kuchipudi classical dance, rich Buddhist heritage at Amaravati, and the spiritual grandeur of the Tirumala Venkateswara Temple.",
+                food: "Hyderabadi Biryani influences, Andhra Pulihora (Tamarind Rice), Gongura Pachadi, Bobbatlu, and Mirchi Bajji.",
+                icon: "🌶️",
+                image: "https://placehold.co/800x400/1e3a8a/ffffff?text=Andhra+Pradesh",
+                highlights: ["Tirupati Balaji Temple", "Araku Valley", "Undavalli Caves", "Visakhapatnam Beach"]
+            },
+            {
+                id: "telangana",
+                name: "Telangana",
+                type: "State",
+                region: "South",
+                capital: "Hyderabad",
+                majorCities: ["Warangal", "Nizamabad", "Karimnagar", "Khammam", "Ramagundam"],
+                tagline: "The Pearl State",
+                culture: "Deccan heritage blending Persian and Telugu influences, Bathukamma floral festival, Bonalu, and historic Qutb Shahi tombs and Charminar.",
+                food: "Hyderabadi Dum Biryani, Haleem, Mirchi Ka Salan, Double ka Meetha, and Qubani ka Meetha.",
+                icon: "🕌",
+                image: "https://placehold.co/800x400/831843/ffffff?text=Hyderabad+Charminar",
+                highlights: ["Charminar & Golconda Fort", "Ramoji Film City", "Warangal Thousand Pillar Temple", "Medak Church"]
+            },
+            {
+                id: "puducherry",
+                name: "Puducherry",
+                type: "Union Territory",
+                region: "South",
+                capital: "Puducherry (Pondicherry)",
+                majorCities: ["Karaikal", "Mahe", "Yanam"],
+                tagline: "French Riviera of the East",
+                culture: "Unique blend of French colonial heritage and South Indian tradition, Auroville spiritual community, and serene beaches.",
+                food: "Creoles cuisine, Baguette sandwiches, Seafood platters, South Indian filter coffee, and French pastries.",
+                icon: "🌊",
+                image: "https://placehold.co/800x400/0284c7/ffffff?text=Puducherry+French+Quarter",
+                highlights: ["White Town French Quarter", "Auroville Matrimandir", "Promenade Beach", "Paradise Beach"]
+            },
+            {
+                id: "lakshadweep",
+                name: "Lakshadweep",
+                type: "Union Territory",
+                region: "South",
+                capital: "Kavaratti",
+                majorCities: ["Agatti", "Minicoy", "Andrott", "Kalpeni"],
+                tagline: "A Paradise of Coral Islands",
+                culture: "Tranquil island life with strong maritime traditions, folk dances like Lava and Kolkali, and pristine coral reef ecosystems.",
+                food: "Tuna Curry, Rice, Coconut-heavy coastal delicacies, and fresh seafood.",
+                icon: "🏝️",
+                image: "https://placehold.co/800x400/06b6d4/ffffff?text=Lakshadweep+Atolls",
+                highlights: ["Agatti Island Lagoons", "Scuba Diving in Kavaratti", "Minicoy Lighthouse", "Bangaram Island"]
+            },
+            {
+                id: "andaman-nicobar",
+                name: "Andaman and Nicobar Islands",
+                type: "Union Territory",
+                region: "South",
+                capital: "Port Blair",
+                majorCities: ["Havelock Island", "Neil Island", "Diglipur"],
+                tagline: "Emerald Isles in the Bay of Bengal",
+                culture: "Indigenous tribal heritage, historic Indian freedom struggle memorials (Cellular Jail), and diverse multicultural coastal communities.",
+                food: "Grilled Lobster, Amritsari Kulcha fusion, Fish Curry, Coconut Water, and tropical fruit cocktails.",
+                icon: "🐚",
+                image: "https://placehold.co/800x400/0f766e/ffffff?text=Andaman+Beaches",
+                highlights: ["Radhanagar Beach (Havelock)", "Cellular Jail National Memorial", "Ross Island", "Scuba at Elephant Beach"]
+            },
+
+            // WEST
+            {
+                id: "maharashtra",
+                name: "Maharashtra",
+                type: "State",
+                region: "West",
+                capital: "Mumbai",
+                majorCities: ["Pune", "Nagpur", "Nashik", "Aurangabad (Chhatrapati Sambhajinagar)", "Thane"],
+                tagline: "Unlimited",
+                culture: "Rich Maratha history (Shivaji Maharaj fort legacy), Bollywood cinema, Ganeshotsav festival, and rock-cut cave temples at Ajanta and Ellora.",
+                food: "Vada Pav, Puran Poli, Misal Pav, Poha, Modak, and Mumbai street food.",
+                icon: "🎬",
+                image: "https://placehold.co/800x400/b45309/ffffff?text=Mumbai+Gateway+of+India",
+                highlights: ["Gateway of India & Marine Drive", "Ajanta & Ellora Caves", "Lonavala & Khandala", "Shirdi Saibaba Temple"]
+            },
+            {
+                id: "gujarat",
+                name: "Gujarat",
+                type: "State",
+                region: "West",
+                capital: "Gandhinagar",
+                majorCities: ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar"],
+                tagline: "Heart of Incredible India",
+                culture: "Vibrant Navratri Garba dances, rich textile arts, Mahatma Gandhi's Sabarmati Ashram, and majestic Asiatic lions in Gir.",
+                food: "Dhokla, Khandvi, Gujarati Thali (sweet-savory balance), Fafda-Jalebi, and Undhiyu.",
+                icon: "🦁",
+                image: "https://placehold.co/800x400/ea580c/ffffff?text=Gujarat+Statue+of+Unity",
+                highlights: ["Statue of Unity (Ekta Nagar)", "Gir National Park", "Rann of Kutch", "Sabarmati Ashram"]
+            },
+            {
+                id: "goa",
+                name: "Goa",
+                type: "State",
+                region: "West",
+                capital: "Panaji",
+                majorCities: ["Vasco da Gama", "Margao", "Mapusa", "Ponda"],
+                tagline: "Pearl of the Orient",
+                culture: "Portuguese colonial architecture, Catholic churches, vibrant beach shacks, Sunburn music festivals, and high spirits.",
+                food: "Goan Fish Curry, Bebinca, Pork Vindaloo, Xacuti, and Feni.",
+                icon: "🏖️",
+                image: "https://placehold.co/800x400/0284c7/ffffff?text=Goa+Golden+Beaches",
+                highlights: ["Calangute & Baga Beaches", "Basilica of Bom Jesus", "Dudhsagar Waterfalls", "Fontainhas Latin Quarter"]
+            },
+            {
+                id: "dadra-nagar-haveli-daman-diu",
+                name: "Dadra and Nagar Haveli and Daman and Diu",
+                type: "Union Territory",
+                region: "West",
+                capital: "Daman",
+                majorCities: ["Silvassa", "Diu", "Dadra"],
+                tagline: "Serene Coastlines & Forests",
+                culture: "Blend of Portuguese and Gujarati indigenous Warli tribal traditions, scenic nature reserves, and tranquil sea forts.",
+                food: "Patra, Ubadiyo, Seafood curries, Bebinca, and Portuguese-influenced snacks.",
+                icon: "🏰",
+                image: "https://placehold.co/800x400/475569/ffffff?text=Daman+and+Diu+Forts",
+                highlights: ["Diu Fort", "Nagoa Beach", "Silvassa Vanganga Lake", "Daman St. Jerome Fort"]
+            },
+
+            // NORTH
+            {
+                id: "punjab",
+                name: "Punjab",
+                type: "State",
+                region: "North",
+                capital: "Chandigarh",
+                majorCities: ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda"],
+                tagline: "India's Bread Basket & Land of Five Rivers",
+                culture: "Energetic Bhangra and Gidda folk dances, warm hospitality (Langar), and spiritual devotion at the Golden Temple.",
+                food: "Makki di Roti & Sarson da Saag, Amritsari Kulcha, Butter Chicken, Lassi, and Dal Makhani.",
+                icon: "🌾",
+                image: "https://placehold.co/800x400/ca8a04/ffffff?text=Golden+Temple+Amritsar",
+                highlights: ["Golden Temple (Harmandir Sahib)", "Wagah Border Ceremony", "Jallianwala Bagh", "Anandpur Sahib"]
+            },
+            {
+                id: "haryana",
+                name: "Haryana",
+                type: "State",
+                region: "North",
+                capital: "Chandigarh",
+                majorCities: ["Gurugram", "Faridabad", "Panipat", "Ambala", "Hisar"],
+                tagline: "A Land of Abundant Agriculture & Enterprise",
+                culture: "Rich Vedic heritage (Kurukshetra Mahabharata battle site), robust rural folk culture, and modern corporate hub in Gurugram.",
+                food: "Bajra Khichdi, Singri ki Sabzi, Rabri, White Butter, Churma, and Kachi Lassi.",
+                icon: "🚜",
+                image: "https://placehold.co/800x400/15803d/ffffff?text=Haryana+Heritage",
+                highlights: ["Kurukshetra Brahma Sarovar", "Sultanpur National Park", "Gurugram Cyber City", "Pinjore Gardens"]
+            },
+            {
+                id: "himachal-pradesh",
+                name: "Himachal Pradesh",
+                type: "State",
+                region: "North",
+                capital: "Shimla (Summer) / Dharamshala (Winter)",
+                majorCities: ["Manali", "Dharamshala", "Kullu", "Solan", "Mandi"],
+                tagline: "Devbhumi - Land of the Gods",
+                culture: "Tibetan Buddhist monasteries (Dalai Lama residence), Kullu Dussehra celebrations, apple orchards, and mountain trekking.",
+                food: "Madra, Dhaam, Siddu, Tudkiya Bhath, and Trout fish.",
+                icon: "🏔️",
+                image: "https://placehold.co/800x400/0369a1/ffffff?text=Himachal+Snow+Peaks",
+                highlights: ["Rohtang Pass & Manali", "Shimla Mall Road", "Dharamshala Cricket Stadium & Temple", "Spiti Valley"]
+            },
+            {
+                id: "jammu-kashmir",
+                name: "Jammu and Kashmir",
+                type: "Union Territory",
+                region: "North",
+                capital: "Srinagar (Summer) / Jammu (Winter)",
+                majorCities: ["Jammu", "Anantnag", "Baramulla", "Katra", "Udhampur"],
+                tagline: "Heaven on Earth",
+                culture: "Sufi shrines, Kashmiri folk music (Rouf), intricate Pashmina shawls, walnut wood carving, and Shikara boat rides on Dal Lake.",
+                food: "Rogan Josh, Wazwan feast, Kahwa tea, Dum Aloo, and Yakhni.",
+                icon: "❄️",
+                image: "https://placehold.co/800x400/0284c7/ffffff?text=Kashmir+Dal+Lake",
+                highlights: ["Dal Lake Shikara Ride", "Gulmarg Gondola", "Vaishno Devi Temple", "Pahalgam Valley"]
+            },
+            {
+                id: "ladakh",
+                name: "Ladakh",
+                type: "Union Territory",
+                region: "North",
+                capital: "Leh",
+                majorCities: ["Kargil", "Diskit", "Padum", "Nyoma"],
+                tagline: "Land of High Passes",
+                culture: "Tibetan Buddhist monasteries (Hemis, Thiksey), colourful masked dance festivals, prayer flags flutter in stark mountain deserts.",
+                food: "Thukpa, Momos, Tingmo with Dal, Butter Tea (Gur Gur Chai), and Chhurpi (yak cheese).",
+                icon: "🦅",
+                image: "https://placehold.co/800x400/334155/ffffff?text=Ladakh+Pangong+Lake",
+                highlights: ["Pangong Tso Lake", "Nubra Valley Sand Dunes", "Leh Palace & Shanti Stupa", "Khardung La Pass"]
+            },
+            {
+                id: "uttarakhand",
+                name: "Uttarakhand",
+                type: "State",
+                region: "North",
+                capital: "Dehradun (Winter) / Bhararisain (Summer)",
+                majorCities: ["Haridwar", "Rishikesh", "Nainital", "Haldwani", "Roorkee"],
+                tagline: "Devbhoomi - Land of the Gods",
+                culture: "Char Dham Hindu pilgrimage circuit (Badrinath, Kedarnath, Gangotri, Yamunotri), Yoga capital of the world (Rishikesh), and Garhwali folk arts.",
+                food: "Kafuli, Chainsoo, Bal Mithai, Phaanu, and Bhatt ki Dal.",
+                icon: "🧘",
+                image: "https://placehold.co/800x400/047857/ffffff?text=Rishikesh+Ganga+Aarti",
+                highlights: ["Rishikesh Suspension Bridges & Ganga Aarti", "Jim Corbett National Park", "Valley of Flowers", "Kedarnath Temple"]
+            },
+            {
+                id: "uttar-pradesh",
+                name: "Uttar Pradesh",
+                type: "State",
+                region: "North",
+                capital: "Lucknow",
+                majorCities: ["Kanpur", "Varanasi", "Agra", "Prayagraj", "Meerut"],
+                tagline: "Incredible Uttar Pradesh",
+                culture: "Taj Mahal (Agra), spiritual Varanasi ghats on the Ganges, Ayodhya Ram Mandir, Kathak dance, and Awadhi Nawabi heritage.",
+                food: "Awadhi Dum Biryani, Galouti Kebab, Banarasi Paan, Tunday Kababi, Kachori Jalebi, and Petha.",
+                icon: "🕌",
+                image: "https://placehold.co/800x400/b45309/ffffff?text=Taj+Mahal+Agra",
+                highlights: ["Taj Mahal in Agra", "Varanasi Ghats & Kashi Vishwanath", "Prayagraj Triveni Sangam", "Lucknow Bara Imambara"]
+            },
+            {
+                id: "delhi",
+                name: "Delhi",
+                type: "Union Territory",
+                region: "North",
+                capital: "New Delhi",
+                majorCities: ["New Delhi", "Dwarka", "Rohini", "Saket", "Connaught Place"],
+                tagline: "Dilwalon ki Dilli - Heart of the Nation",
+                culture: "Mughal and British colonial architectural wonders, vibrant street food, Qawwali at Nizamuddin Dargah, and Republic Day parades.",
+                food: "Dilli Chole Bhature, Butter Chicken, Paranthas in Chandni Chowk, Golgappe, and Momos.",
+                icon: "🏛️",
+                image: "https://placehold.co/800x400/9a3412/ffffff?text=Delhi+India+Gate",
+                highlights: ["India Gate & Kartavya Path", "Red Fort & Qutub Minar", "Lotus Temple & Akshardham", "Chandni Chowk Market"]
+            },
+            {
+                id: "chandigarh",
+                name: "Chandigarh",
+                type: "Union Territory",
+                region: "North",
+                capital: "Chandigarh",
+                majorCities: ["Chandigarh"],
+                tagline: "The City Beautiful",
+                culture: "Le Corbusier modernist architecture, Nek Chand Rock Garden made from industrial waste, and high standard of urban living.",
+                food: "North Indian Punjabi tandoori items, Rajma Chawal, Butter Chicken, and Ambala sweets.",
+                icon: "🏙️",
+                image: "https://placehold.co/800x400/0369a1/ffffff?text=Chandigarh+Rock+Garden",
+                highlights: ["Rock Garden of Chandigarh", "Sukhna Lake", "Rose Garden", "Capitol Complex"]
+            },
+
+            // EAST
+            {
+                id: "west-bengal",
+                name: "West Bengal",
+                type: "State",
+                region: "East",
+                capital: "Kolkata",
+                majorCities: ["Howrah", "Siliguri", "Durgapur", "Asansol", "Darjeeling"],
+                tagline: "Beautiful West Bengal",
+                culture: "Durga Puja festival, Rabindra Sangeet, literature, football passion, colonial architecture, and Darjeeling Himalayan Railway.",
+                food: "Rosogolla, Mishti Doi, Machher Jhol (Fish Curry), Kosha Mangsho, and Kathi Rolls.",
+                icon: "🐅",
+                image: "https://placehold.co/800x400/991b1b/ffffff?text=Kolkata+Howrah+Bridge",
+                highlights: ["Victoria Memorial Kolkata", "Darjeeling Tea Toy Train", "Sundarbans Mangrove Forests", "Howrah Bridge"]
+            },
+            {
+                id: "bihar",
+                name: "Bihar",
+                type: "State",
+                region: "East",
+                capital: "Patna",
+                majorCities: ["Gaya", "Muzaffarpur", "Bhagalpur", "Purnia", "Darbhanga", "Nalanda"],
+                tagline: "Blissful Bihar",
+                culture: "Ancient seat of learning (Nalanda & Vikramshila universities), Buddhism roots (Bodh Gaya where Buddha attained enlightenment), and Chhath Puja.",
+                food: "Litti Chokha, Sattu Paratha, Khaja, Thekua, and Malpua.",
+                icon: "📜",
+                image: "https://placehold.co/800x400/b45309/ffffff?text=Bodh+Gaya+Temple",
+                highlights: ["Mahabodhi Temple Bodh Gaya", "Nalanda University Ruins", "Patna Sahib Takht", "Rajgir Hot Springs"]
+            },
+            {
+                id: "odisha",
+                name: "Odisha",
+                type: "State",
+                region: "East",
+                capital: "Bhubaneswar",
+                majorCities: ["Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri"],
+                tagline: "India's Best Kept Secret",
+                culture: "Odissi classical dance, intricate Pattachitra paintings, Jagannath Rath Yatra in Puri, and Konark Sun Temple chariot architecture.",
+                food: "Dalma, Pakhala Bhata, Chhena Poda, Crab Curry, and Rasabali.",
+                icon: "🛕",
+                image: "https://placehold.co/800x400/c2410c/ffffff?text=Konark+Sun+Temple",
+                highlights: ["Konark Sun Temple", "Puri Jagannath Temple", "Chilika Lake (Dolphins)", "Bhubaneswar Lingaraj Temple"]
+            },
+            {
+                id: "jharkhand",
+                name: "Jharkhand",
+                type: "State",
+                region: "East",
+                capital: "Ranchi",
+                majorCities: ["Jamshedpur", "Dhanbad", "Bokaro", "Deoghar", "Hazaribagh"],
+                tagline: "The Land of Forests",
+                culture: "Rich tribal heritage (Santhal, Munda, Oraon), vibrant Sarhul festival, waterfall cascades, and industrial mineral wealth.",
+                food: "Dhuska, Litti Chokha, Chilka Roti, Rugra curry, and Bamboo shoot preparations.",
+                icon: "🌳",
+                image: "https://placehold.co/800x400/166534/ffffff?text=Jharkhand+Waterfalls",
+                highlights: ["Hundru Falls Ranchi", "Deoghar Baidyanath Temple", "Betla National Park", "Jamshedpur Jubilee Park"]
+            },
+
+            // CENTRAL
+            {
+                id: "madhya-pradesh",
+                name: "Madhya Pradesh",
+                type: "State",
+                region: "Central",
+                capital: "Bhopal",
+                majorCities: ["Indore", "Gwalior", "Jabalpur", "Ujjain", "Sagar"],
+                tagline: "The Heart of Incredible India",
+                culture: "Khajuraho erotic temple sculptures, magnificent wildlife sanctuaries (Bandhavgarh, Kanha tigers), and Ujjain Mahakaleshwar Jyotirlinga.",
+                food: "Poha-Jalebi, Bhutte Ka Kees, Dal Bafla, Rogan Josh, and Indore Namkeen.",
+                icon: "🐅",
+                image: "https://placehold.co/800x400/854d0e/ffffff?text=Khajuraho+Temples+MP",
+                highlights: ["Khajuraho Temples", "Kanha & Bandhavgarh Tiger Reserves", "Sanchi Stupa", "Gwalior Fort"]
+            },
+            {
+                id: "chhattisgarh",
+                name: "Chhattisgarh",
+                type: "State",
+                region: "Central",
+                capital: "Raipur",
+                majorCities: ["Bhilai", "Bilaspur", "Korba", "Durg", "Jagdalpur"],
+                tagline: "Full of Surprises",
+                culture: "Ancient Bastar tribal arts (Dhokra metal casting), Chitrakote Falls (Niagara of India), dense Sal forests, and Panthi folk dance.",
+                food: "Chila, Farha, Muthiya, Aamat, Bafauri, and Mahua drink.",
+                icon: "🌾",
+                image: "https://placehold.co/800x400/047857/ffffff?text=Chitrakote+Falls+Chhattisgarh",
+                highlights: ["Chitrakote Waterfalls", "Bastar Palace & Tribal Crafts", "Kanger Valley National Park", "Bhoramdeo Temple"]
+            },
+
+            // NORTH-EAST
+            {
+                id: "assam",
+                name: "Assam",
+                type: "State",
+                region: "North-East",
+                capital: "Dispur (Guwahati is largest)",
+                majorCities: ["Guwahati", "Dibrugarh", "Jorhat", "Silchar", "Tezpur"],
+                tagline: "Awesome Assam",
+                culture: "World-famous Assam tea gardens, Bihu folk dance festivals, Kaziranga one-horned rhinoceros sanctuary, and Kamakhya temple.",
+                food: "Assamese Thali, Masor Tenga (tangy fish curry), Khaar, Duck meat curry, and Pitha.",
+                icon: "🦏",
+                image: "https://placehold.co/800x400/15803d/ffffff?text=Assam+Tea+Gardens",
+                highlights: ["Kaziranga National Park", "Majuli River Island", "Kamakhya Temple Guwahati", "Manas National Park"]
+            },
+            {
+                id: "arunachal-pradesh",
+                name: "Arunachal Pradesh",
+                type: "State",
+                region: "North-East",
+                capital: "Itanagar",
+                majorCities: ["Tawang", "Pasighat", "Ziro", "Namsai", "Bomdila"],
+                tagline: "Land of the Dawn-Lit Mountains",
+                culture: "Majestic Tawang Monastery (second largest in world), diverse tribal communities, Ziro Valley music festivals, and pristine Himalayan beauty.",
+                food: "Thukpa, Apong (rice beer), Zan, Momos, and Bamboo shoot dishes.",
+                icon: "🏔️",
+                image: "https://placehold.co/800x400/1e3a8a/ffffff?text=Tawang+Monastery+Arunachal",
+                highlights: ["Tawang Monastery", "Sela Pass snow peaks", "Ziro Valley Pine Hills", "Namdapha National Park"]
+            },
+            {
+                id: "nagaland",
+                name: "Nagaland",
+                type: "State",
+                region: "North-East",
+                capital: "Kohima",
+                majorCities: ["Dimapur", "Mokokchung", "Tuensang", "Wokha", "Zunheboto"],
+                tagline: "Land of Festivals",
+                culture: "Famous Hornbill Festival celebrating all Naga warrior tribes, rich folk songs, woodcarving, and traditional handlooms.",
+                food: "Smoked Pork with Bamboo Shoot, Naga King Chilli dishes, Axone (fermented soya), and Rice beer.",
+                icon: "🦅",
+                image: "https://placehold.co/800x400/9a3412/ffffff?text=Nagaland+Hornbill+Festival",
+                highlights: ["Hornbill Festival at Kisama", "Dzukou Valley", "Kohima War Cemetery", "Dimapur Kachari Ruins"]
+            },
+            {
+                id: "manipur",
+                name: "Manipur",
+                type: "State",
+                region: "North-East",
+                capital: "Imphal",
+                majorCities: ["Thoubal", "Bishnupur", "Churachandpur", "Ukhrul"],
+                tagline: "Jewel of India",
+                culture: "Manipuri classical dance (Raas Leela), birthplace of Polo (Sagol Kangjei), Loktak floating lake with Phumdis, and Sanamahism.",
+                food: "Eromba, Ngari, Kangshoi, Singju, and Bora preparations.",
+                icon: "💃",
+                image: "https://placehold.co/800x400/0369a1/ffffff?text=Loktak+Lake+Manipur",
+                highlights: ["Loktak Floating Lake & Sendra Island", "Keibul Lamjao National Park (Sangai Deer)", "Kangla Fort Imphal", "Ima Keithel (All-Women Market)"]
+            },
+            {
+                id: "mizoram",
+                name: "Mizoram",
+                type: "State",
+                region: "North-East",
+                capital: "Aizawl",
+                majorCities: ["Lunglei", "Champhai", "Serchhip", "Kolasib"],
+                tagline: "Songbird of the East",
+                culture: "Cheraw bamboo dance, high literacy rate, Mizo hospitality (Khuallian), and lush rolling blue mountains.",
+                food: "Bai, Vawksa Rep, Koat Pitha, Bamboo shoot curry, and Sanpiau.",
+                icon: "🎶",
+                image: "https://placehold.co/800x400/475569/ffffff?text=Mizoram+Blue+Mountains",
+                highlights: ["Aizawl City View", "Reiek Tourist Resort", "Phawngpui (Blue Mountain National Park)", "Vantawng Falls"]
+            },
+            {
+                id: "tripura",
+                name: "Tripura",
+                type: "State",
+                region: "North-East",
+                capital: "Agartala",
+                majorCities: ["Udaipur", "Dharmanagar", "Kailasahar", "Belonia"],
+                tagline: "Cpital of Palaces and Bamboo Craft",
+                culture: "Ujjayanta Palace, Neermahal water palace in Rudrasagar Lake, Hojagiri folk dance, and intricate bamboo handicrafts.",
+                food: "Mui Borok, Gudok, Wahan, Chakhwi, and Rice beer (Chuak).",
+                icon: "🏛️",
+                image: "https://placehold.co/800x400/047857/ffffff?text=Neermahal+Water+Palace",
+                highlights: ["Neermahal Water Palace", "Ujjayanta Palace Agartala", "Unakoti Rock Carvings", "Tripureswari Temple"]
+            },
+            {
+                id: "meghalaya",
+                name: "Meghalaya",
+                type: "State",
+                region: "North-East",
+                capital: "Shillong",
+                majorCities: ["Tura", "Jowai", "Nongpoh", "Cherrapunji (Sohra)"],
+                tagline: "Abode of Clouds",
+                culture: "Matrilineal society, living root bridges made of rubber tree vines, spectacular waterfalls, and rock music capital of India.",
+                food: "Jadoh, Dohneiiong, Pukhlein, Nakham Bitchi, and Tungrymbai.",
+                icon: "☁️",
+                image: "https://placehold.co/800x400/0284c7/ffffff?text=Meghalaya+Living+Root+Bridges",
+                highlights: ["Living Root Bridges in Cherrapunji", "Mawlynnong (Cleanest Village)", "Nohkalikai Falls", "Shillong Peak & Umiam Lake"]
+            },
+            {
+                id: "sikkim",
+                name: "Sikkim",
+                type: "State",
+                region: "North-East",
+                capital: "Gangtok",
+                majorCities: ["Namchi", "Gyalshing", "Mangan", "Ravangla"],
+                tagline: "Small Paradise in the Himalaya",
+                culture: "100% organic farming state, pristine Buddhist monasteries, majestic views of Mt. Kanchenjunga (third highest peak in world), and diverse flora.",
+                food: "Momos, Thukpa, Gundruk, Sha Phaley, and Chhang (millet beer).",
+                icon: "🏔️",
+                image: "https://placehold.co/800x400/047857/ffffff?text=Sikkim+Kanchenjunga",
+                highlights: ["Tsomgo Lake & Nathu La Pass", "Rumtek Monastery", "Pelling Skywalk & Kangchenjunga views", "Yumthang Valley of Flowers"]
+            }
+        ];
+
+        // State & Local Storage variables
+        let currentRegion = 'All';
+        let currentStateId = 'kerala';
+        let exploredStates = JSON.parse(localStorage.getItem('exploredStates') || '[]');
+        let currentTourIndex = 0;
+        let isAudioPlaying = false;
+        let audioCtx = null;
+        let audioInterval = null;
+
+        // Presentation Tour variables
+        let tourInterval = null;
+        let tourProgressInterval = null;
+        let isTourPlaying = true;
+        let tourSecondsElapsed = 0;
+        const tourStepDuration = 5; // 5 seconds per slide
+
+        // Initialize App on Load
+        window.onload = function() {
+            renderStatesList();
+            selectState(currentStateId);
+            updateProgress();
+            
+            // Keyboard navigation for guided tour or general
+            document.addEventListener('keydown', (e) => {
+                if(document.getElementById('guidedTourModal').classList.contains('flex')) {
+                    if(e.key === 'ArrowRight') nextTourStep();
+                    if(e.key === 'ArrowLeft') prevTourStep();
+                    if(e.key === 'Escape') closeGuidedTour();
+                    if(e.key === ' ') {
+                        e.preventDefault();
+                        toggleTourPlay();
+                    }
+                }
+            });
+        };
+
+        // Dark mode toggle
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            document.getElementById('themeIcon').innerText = isDark ? '☀️' : '🌙';
+        }
+
+        // Ambient Audio using Native Web Audio API (Reliable without external CDN dependencies)
+        function toggleAudio() {
+            const btn = document.getElementById('audioBtn');
+            const icon = document.getElementById('audioIcon');
+            const text = document.getElementById('audioText');
+
+            if (!isAudioPlaying) {
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+
+                    // Pentatonic drone notes (Sa, Pa, Dha, Ni in Hz) e.g., 261.63 (C4), 392.00 (G4), 440.00 (A4), 523.25 (C5)
+                    const frequencies = [261.63, 392.00, 440.00, 523.25, 587.33];
+
+                    function playDroneNote() {
+                        if (!isAudioPlaying || !audioCtx) return;
+                        const freq = frequencies[Math.floor(Math.random() * frequencies.length)];
+                        
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                        // Smooth envelope
+                        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                        gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 1);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 4.5);
+
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 5);
+                    }
+
+                    playDroneNote();
+                    audioInterval = setInterval(playDroneNote, 3000);
+
+                    isAudioPlaying = true;
+                    icon.innerText = '🔇';
+                    text.innerText = 'Mute Music';
+                    btn.classList.add('bg-saffron-500', 'text-white');
+                } catch(e) {
+                    showToast('Audio playback could not be started.');
+                }
+            } else {
+                if (audioInterval) clearInterval(audioInterval);
+                if (audioCtx) {
+                    audioCtx.close();
+                    audioCtx = null;
+                }
+                isAudioPlaying = false;
+                icon.innerText = '🎵';
+                text.innerText = 'Ambient Music';
+                btn.classList.remove('bg-saffron-500', 'text-white');
+            }
+        }
+
+        // Filter by Region
+        function setRegion(region) {
+            currentRegion = region;
+            document.querySelectorAll('.region-btn').forEach(btn => {
+                btn.className = "region-btn px-3 py-2 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition";
+                if(btn.innerText.includes(region) || (region === 'All' && btn.innerText.includes('All India'))) {
+                    btn.className = "region-btn px-3 py-2 text-xs font-bold rounded-lg bg-saffron-500 text-white shadow-sm transition";
+                }
+            });
+            renderStatesList();
+        }
+
+        // Search filter
+        function filterStates() {
+            renderStatesList();
+        }
+
+        // Render States List in Sidebar
+        function renderStatesList() {
+            const container = document.getElementById('statesListContainer');
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            
+            container.innerHTML = '';
+
+            const filtered = indiaData.filter(item => {
+                const matchesRegion = currentRegion === 'All' || item.region === currentRegion;
+                const matchesQuery = item.name.toLowerCase().includes(query) || 
+                                     item.capital.toLowerCase().includes(query) || 
+                                     item.majorCities.some(c => c.toLowerCase().includes(query)) ||
+                                     item.culture.toLowerCase().includes(query);
+                return matchesRegion && matchesQuery;
+            });
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">No regions found matching your search.</div>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const isExplored = exploredStates.includes(item.id);
+                const isSelected = item.id === currentStateId;
+                
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-xl cursor-pointer transition flex items-center justify-between border ${
+                    isSelected ? 'bg-saffron-500/10 border-saffron-500 text-saffron-600 dark:text-saffron-400 font-bold shadow-sm' : 
+                    'bg-white/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`;
+                card.onclick = () => selectState(item.id);
+
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">${item.icon}</span>
+                        <div>
+                            <div class="text-sm font-bold">${item.name}</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400">Capital: ${item.capital}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        ${isExplored ? '<span class="text-xs" title="Explored">✅</span>' : ''}
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">${item.region}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Select and Display State Detail
+        function selectState(id) {
+            currentStateId = id;
+            const state = indiaData.find(s => s.id === id);
+            if (!state) return;
+
+            // Mark as explored if not already
+            if (!exploredStates.includes(id)) {
+                exploredStates.push(id);
+                localStorage.setItem('exploredStates', JSON.stringify(exploredStates));
+                updateProgress();
+            }
+
+            renderStatesList(); // refresh selection highlight
+
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = `
+                <!-- Breadcrumb / Region Tag -->
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center space-x-2">
+                        <span class="px-3 py-1 text-xs font-bold rounded-full bg-saffron-500/10 text-saffron-600 dark:text-saffron-400 border border-saffron-500/20">
+                            ${state.region} Region • ${state.type}
+                        </span>
+                        <span class="text-xs text-slate-500 dark:text-slate-400">✨ ${state.tagline}</span>
+                    </div>
+                    <button onclick="shareState('${state.name}')" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center space-x-1">
+                        <span>🔗</span>
+                        <span>Share Tour</span>
+                    </button>
+                </div>
+
+                <!-- Main State Card Banner -->
+                <div class="glass-card rounded-3xl overflow-hidden shadow-xl border border-slate-200 dark:border-slate-800">
+                    <div class="relative h-64 sm:h-80 w-full bg-slate-200 dark:bg-slate-800">
+                        <img src="${state.image}" alt="${state.name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/800x400/0f172a/ffffff?text=${encodeURIComponent(state.name)}'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent flex flex-col justify-end p-6 sm:p-8">
+                            <div class="flex items-center space-x-3 mb-1">
+                                <span class="text-4xl sm:text-5xl">${state.icon}</span>
+                                <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">${state.name}</h2>
+                            </div>
+                            <p class="text-slate-200 text-sm sm:text-base font-medium">Capital: <span class="text-saffron-400 font-bold">${state.capital}</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Details Grid -->
+                    <div class="p-6 sm:p-8 space-y-6">
+                        
+                        <!-- Major Cities -->
+                        <div>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">🏙️ Important Cities & Hubs</h3>
+                            <div class="flex flex-wrap gap-2">
+                                ${state.majorCities.map(city => `
+                                    <span class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200">
+                                        📍 ${city}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                            <!-- Culture & Heritage -->
+                            <div class="p-5 rounded-2xl bg-orange-500/5 dark:bg-orange-500/10 border border-orange-500/20 space-y-2">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-orange-600 dark:text-orange-400 flex items-center space-x-1.5">
+                                    <span>🎭</span>
+                                    <span>Culture & Traditions</span>
+                                </h4>
+                                <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">${state.culture}</p>
+                            </div>
+
+                            <!-- Iconic Food -->
+                            <div class="p-5 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 space-y-2">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center space-x-1.5">
+                                    <span>🍲</span>
+                                    <span>Famous Delicacies & Food</span>
+                                </h4>
+                                <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">${state.food}</p>
+                            </div>
+                        </div>
+
+                        <!-- Tourist Highlights -->
+                        <div>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">🌟 Must-Visit Landmarks</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                ${state.highlights.map(hl => `
+                                    <div class="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                                        <span class="text-saffron-500 font-bold">✦</span>
+                                        <span class="text-sm font-semibold">${hl}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Navigation Footer inside Card -->
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-800">
+                            <button onclick="navigateState(-1)" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                                ← Previous State
+                            </button>
+                            <button onclick="startGuidedTour(indiaData.findIndex(s => s.id === '${state.id}'))" class="px-4 py-2 text-xs font-bold text-white bg-saffron-500 hover:bg-saffron-600 rounded-xl transition">
+                                🧭 Open in Guided Tour
+                            </button>
+                            <button onclick="navigateState(1)" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                                Next State →
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+            
+            // Scroll main display to top
+            document.getElementById('mainDisplay').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Navigate previous / next state
+        function navigateState(direction) {
+            const currentIndex = indiaData.findIndex(s => s.id === currentStateId);
+            let newIndex = currentIndex + direction;
+            if(newIndex < 0) newIndex = indiaData.length - 1;
+            if(newIndex >= indiaData.length) newIndex = 0;
+            selectState(indiaData[newIndex].id);
+        }
+
+        // Update Progress Bar
+        function updateProgress() {
+            const total = indiaData.length;
+            const explored = exploredStates.length;
+            const percentage = Math.round((explored / total) * 100);
+            
+            document.getElementById('progressCount').innerText = `${explored} / ${total} Explored`;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+        }
+
+        // Share State
+        function shareState(stateName) {
+            const shareText = `Explore ${stateName} on the Incredible India Interactive Tour! Discover capitals, cities, culture, and food from South to North and East to West.`;
+            if (navigator.clipboard) {
+                document.execCommand('copy'); // Fallback compliance
+                // or navigator.clipboard.writeText
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showToast(`Copied tour info for ${stateName} to clipboard! 📋`);
+                }).catch(() => {
+                    showToast(`Tour info: ${shareText}`);
+                });
+            } else {
+                showToast(`Tour info: ${shareText}`);
+            }
+        }
+
+        // Toast Message notification (replaces alert)
+        function showToast(message) {
+            let toast = document.getElementById('toastNotification');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toastNotification';
+                toast.className = 'fixed bottom-6 right-6 z-50 glass-card px-5 py-3 rounded-2xl shadow-2xl border border-saffron-500 text-sm font-bold text-slate-800 dark:text-white transition-all duration-300 transform translate-y-20 opacity-0';
+                document.body.appendChild(toast);
+            }
+            toast.innerText = message;
+            setTimeout(() => {
+                toast.classList.remove('translate-y-20', 'opacity-0');
+            }, 50);
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        // Guided Tour Modal Management
+        function startGuidedTour(index) {
+            currentTourIndex = index >= 0 ? index : 0;
+            document.getElementById('guidedTourModal').classList.remove('hidden');
+            document.getElementById('guidedTourModal').classList.add('flex');
+            isTourPlaying = true;
+            updateTourPlayButton();
+            renderTourStep();
+            startTourTimer();
+        }
+
+        function closeGuidedTour() {
+            document.getElementById('guidedTourModal').classList.remove('flex');
+            document.getElementById('guidedTourModal').classList.add('hidden');
+            stopTourTimer();
+            selectState(indiaData[currentTourIndex].id);
+        }
+
+        function startTourTimer() {
+            stopTourTimer();
+            tourSecondsElapsed = 0;
+            
+            tourProgressInterval = setInterval(() => {
+                if (!isTourPlaying) return;
+                tourSecondsElapsed += 0.1;
+                const percent = (tourSecondsElapsed / tourStepDuration) * 100;
+                const bar = document.getElementById('tourProgressBar');
+                if(bar) bar.style.width = `${Math.min(percent, 100)}%`;
+
+                if (tourSecondsElapsed >= tourStepDuration) {
+                    tourSecondsElapsed = 0;
+                    if (currentTourIndex < indiaData.length - 1) {
+                        currentTourIndex++;
+                        renderTourStep();
+                    } else {
+                        currentTourIndex = 0; // Loop or stop
+                        renderTourStep();
+                    }
+                }
+            }, 100);
+        }
+
+        function stopTourTimer() {
+            if (tourProgressInterval) clearInterval(tourProgressInterval);
+        }
+
+        function toggleTourPlay() {
+            isTourPlaying = !isTourPlaying;
+            updateTourPlayButton();
+        }
+
+        function updateTourPlayButton() {
+            const icon = document.getElementById('tourPlayIcon');
+            const text = document.getElementById('tourPlayText');
+            if (isTourPlaying) {
+                icon.innerText = '⏸️';
+                text.innerText = 'Pause';
+            } else {
+                icon.innerText = '▶️';
+                text.innerText = 'Play';
+            }
+        }
+
+        function nextTourStep() {
+            if (currentTourIndex < indiaData.length - 1) {
+                currentTourIndex++;
+                renderTourStep();
+                tourSecondsElapsed = 0;
+            } else {
+                showToast('🎉 You have completed the grand tour of all 36 regions of India!');
+                closeGuidedTour();
+            }
+        }
+
+        function prevTourStep() {
+            if (currentTourIndex > 0) {
+                currentTourIndex--;
+                renderTourStep();
+                tourSecondsElapsed = 0;
+            }
+        }
+
+        function renderTourStep() {
+            const state = indiaData[currentTourIndex];
+            document.getElementById('tourStepIndicator').innerText = `Step ${currentTourIndex + 1} of ${indiaData.length} (${state.region})`;
+            
+            const modalContent = document.getElementById('tourModalContent');
+            modalContent.innerHTML = `
+                <div class="flex items-center space-x-4">
+                    <span class="text-5xl sm:text-6xl">${state.icon}</span>
+                    <div>
+                        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">${state.name}</h3>
+                        <p class="text-xs sm:text-sm text-saffron-500 font-bold">${state.tagline}</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Capital: <strong>${state.capital}</strong></p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                    <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/80">
+                        <strong class="text-saffron-500 block mb-1">🎭 Culture</strong>
+                        <p class="text-slate-600 dark:text-slate-300 line-clamp-3">${state.culture}</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/80">
+                        <strong class="text-emerald-500 block mb-1">🍲 Special Food</strong>
+                        <p class="text-slate-600 dark:text-slate-300 line-clamp-3">${state.food}</p>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Key Cities:</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        ${state.majorCities.map(c => `<span class="px-2.5 py-1 rounded-lg text-xs bg-slate-200 dark:bg-slate-700">${c}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('prevTourBtn').disabled = currentTourIndex === 0;
+            document.getElementById('nextTourBtn').innerText = currentTourIndex === indiaData.length - 1 ? 'Finish Tour 🏁' : 'Next Stop →';
+        }
+    </script>
+</body>
+</html>

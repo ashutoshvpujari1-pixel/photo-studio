@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Explore beautiful, openly licensed scenic photographs of famous places, landscapes and natural wonders around the world.">
+<meta name="keywords" content="world scenery, landscapes, mountains, beaches, waterfalls, nature photography, Wikimedia Commons">
+<meta property="og:title" content="World Scenic Photography Gallery">
+<meta property="og:description" content="Explore scenic photographs from around the world. View, copy, download, share and email images.">
+<meta name="theme-color" content="#102a43">
+<title>World Scenic Photography Gallery</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+<style>
+:root{--navy:#102a43;--blue:#176b87;--teal:#2a9d8f;--ink:#183044;--muted:#607789;--paper:#f4f8fb;--white:#fff;--line:#dce6ed;--shadow:0 12px 32px rgba(16,42,67,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,Segoe UI,Arial,sans-serif}
+header{background:linear-gradient(120deg,#102a43,#176b87 62%,#2a9d8f);color:white;padding:24px clamp(16px,4vw,56px) 34px}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;max-width:1500px;margin:auto}
+.brand{font-size:14px;letter-spacing:2px;text-transform:uppercase;font-weight:800;opacity:.9}
+header h1{font-size:clamp(30px,5vw,56px);line-height:1.06;margin:28px 0 12px;max-width:900px}
+header p{font-size:17px;line-height:1.6;max-width:760px;margin:0;color:#e7f3f8}
+.header-note{margin-top:22px;font-size:12px;color:#e2f1f5}
+main{max-width:1500px;margin:auto;padding:24px clamp(14px,3vw,40px) 60px}
+.toolbar{background:white;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);position:relative;z-index:2}
+.searchrow{display:flex;gap:10px;flex-wrap:wrap}
+input[type=search]{flex:1;min-width:210px;border:1px solid #cbd9e2;border-radius:11px;padding:13px 15px;font-size:15px;outline:none}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #176b8720}
+.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:700;font-size:13px;cursor:pointer;transition:.18s;background:var(--navy);color:white}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.1)}.btn.secondary{background:#e8f1f5;color:var(--navy)}.btn.teal{background:var(--teal)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.chip{border:1px solid #d3e0e7;background:#f6fafc;color:#315065;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer}
+.chip.active{background:var(--navy);border-color:var(--navy);color:white}
+.controlrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 2px 12px}
+#status{font-size:13px;color:var(--muted)}.viewbuttons{display:flex;gap:7px}
+.section-title{font-size:20px;margin:25px 2px 5px}.section-sub{font-size:13px;color:var(--muted);margin:0 2px 15px}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:17px}
+.photo-card{background:white;border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:0 5px 18px rgba(16,42,67,.07);min-width:0}
+.photo-wrap{height:205px;position:relative;background:#dce8ee;overflow:hidden;cursor:zoom-in}
+.photo-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s}
+.photo-card:hover .photo-wrap img{transform:scale(1.045)}
+.photo-info{padding:13px 14px 14px}.photo-info h3{font-size:15px;margin:0 0 6px;line-height:1.35}
+.meta{font-size:11px;color:var(--muted);line-height:1.5;min-height:31px}
+.license{display:inline-block;background:#edf5f7;color:#315a68;border-radius:5px;padding:4px 7px;font-size:10px;font-weight:700;margin-top:8px}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+.actions button{border:1px solid #d9e4e9;background:#f8fbfc;color:#25485a;border-radius:7px;padding:7px 9px;font-size:11px;font-weight:700;cursor:pointer}
+.actions button:hover{background:#e5f1f4}
+.attribution{font-size:10px;color:#728594;margin-top:9px;line-height:1.45}.attribution a{color:#176b87}
+.gallery.panorama{display:flex;overflow-x:auto;gap:14px;padding:4px 2px 18px;scroll-snap-type:x mandatory}
+.gallery.panorama .photo-card{flex:0 0 min(72vw,650px);scroll-snap-align:start}
+.gallery.panorama .photo-wrap{height:clamp(240px,37vw,420px)}
+.empty,.loading{background:white;border:1px dashed #bdcdd6;padding:35px;border-radius:15px;text-align:center;color:var(--muted);grid-column:1/-1}
+#loadMore{display:block;margin:24px auto 0;min-width:180px}
+footer{background:#102a43;color:#dcebf1;padding:25px;text-align:center;font-size:12px;line-height:1.7}
+footer a{color:#9fe3db}
+.modal{position:fixed;inset:0;background:rgba(4,16,27,.94);z-index:20;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}.modal-inner{width:min(1200px,100%);max-height:95vh;display:flex;flex-direction:column;align-items:center;gap:12px}
+.modal img{max-width:100%;max-height:76vh;object-fit:contain;border-radius:8px}
+.modal-caption{color:white;text-align:center;font-size:14px}.modal-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.close{position:fixed;right:22px;top:18px;background:white;color:#102a43;border:0;border-radius:50%;width:42px;height:42px;font-size:24px;cursor:pointer}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#102a43;color:white;padding:12px 18px;border-radius:9px;z-index:40;display:none;box-shadow:var(--shadow);font-size:13px}
+@media(max-width:600px){header{padding-top:18px}.photo-wrap{height:185px}.gallery{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px}.photo-info{padding:10px}.actions button{padding:7px}.photo-info h3{font-size:13px}.meta{font-size:10px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="topline"><div class="brand">A world of natural beauty</div><div style="font-size:12px">SCENIC PHOTO COLLECTION</div></div>
+  <h1>Discover the Beautiful Earth</h1>
+  <p>Explore breathtaking landscapes, iconic destinations and natural wonders from every corner of our planet. Open a photograph, enjoy the panoramic view, or save and share your favourites.</p>
+  <div class="header-note">Openly licensed photographs • Source and license details shown with each image</div>
+</header>
+<main>
+  <section class="toolbar" aria-label="Gallery controls">
+    <div class="searchrow">
+      <input id="searchInput" type="search" placeholder="Search places, countries, mountains, beaches..." aria-label="Search photographs">
+      <button class="btn teal" id="searchBtn">Search</button>
+      <button class="btn secondary" id="resetBtn">Reset</button>
+    </div>
+    <div class="filters" id="filters"></div>
+  </section>
+  <div class="controlrow">
+    <div id="status" aria-live="polite">Preparing scenic photographs…</div>
+    <div class="viewbuttons">
+      <button class="btn secondary" id="gridBtn">▦ Gallery view</button>
+      <button class="btn secondary" id="panBtn">▤ Panoramic view</button>
+    </div>
+  </div>
+  <h2 class="section-title">Explore the world</h2>
+  <p class="section-sub">Photographs are retrieved from Wikimedia Commons. Select any image to see it larger.</p>
+  <div id="gallery" class="gallery"><div class="loading">Loading scenic photographs… Please allow a moment.</div></div>
+  <button class="btn" id="loadMore">Load more photographs</button>
+</main>
+<footer>
+  <strong>World Scenic Photography Gallery</strong><br>
+  Images are sourced from <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a>. Each image card links to its original file page and displays available license/creator information.<br>
+  Please review the individual file page and license before any reuse, especially for commercial purposes. Wikimedia Commons is a media repository, not a blanket guarantee for every depicted subject.
+</footer>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Photograph preview">
+  <button class="close" id="closeModal" aria-label="Close">×</button>
+  <div class="modal-inner">
+    <img id="modalImage" alt="">
+    <div class="modal-caption" id="modalCaption"></div>
+    <div class="modal-actions">
+      <button class="btn teal" id="modalDownload">Download</button>
+      <button class="btn secondary" id="modalCopy">Copy image</button>
+      <button class="btn secondary" id="modalEmail">Email</button>
+      <button class="btn secondary" id="modalShare">Share</button>
+      <a class="btn secondary" id="modalSource" target="_blank" rel="noopener" style="text-decoration:none">Original source</a>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(() => {
+"use strict";
+const API="https://commons.wikimedia.org/w/api.php";
+const categories=[
+ {label:"All",q:"",terms:[]},
+ {label:"Mountains",q:"mountain landscape",terms:["mountain","mountains","alps","himalaya"]},
+ {label:"Beaches & Oceans",q:"beach ocean coast",terms:["beach","ocean","sea","coast"]},
+ {label:"Waterfalls",q:"waterfall",terms:["waterfall","falls"]},
+ {label:"Forests",q:"forest rainforest",terms:["forest","rainforest","woods"]},
+ {label:"Deserts",q:"desert dunes",terms:["desert","dune","sahara"]},
+ {label:"Lakes & Rivers",q:"lake river landscape",terms:["lake","river","water"]},
+ {label:"Islands",q:"tropical island landscape",terms:["island","islands"]},
+ {label:"Famous Cities",q:"famous city skyline landscape",terms:["city","skyline","town"]},
+ {label:"Natural Wonders",q:"natural wonder landscape",terms:["canyon","volcano","glacier","cliff"]},
+ {label:"National Parks",q:"national park landscape",terms:["national park","park"]},
+ {label:"Snow & Ice",q:"snow glacier ice landscape",terms:["snow","ice","glacier"]},
+ {label:"Sunrises & Sunsets",q:"sunrise sunset landscape",terms:["sunrise","sunset"]},
+ {label:"Countryside",q:"countryside scenic landscape",terms:["countryside","valley","meadow"]},
+ {label:"Descriptive Views",q:"panoramic landscape view",terms:["panorama","view","landscape"]}
+];
+let allPhotos=[],visiblePhotos=[],activeCategory="All",searchTerm="",panorama=false,selected=null;
+const gallery=document.getElementById("gallery"),status=document.getElementById("status"),filters=document.getElementById("filters");
+const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.style.display="block";clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display="none",2800)}
+function plain(html){const d=document.createElement("div");d.innerHTML=html||"";return d.textContent.trim()}
+function renderFilters(){filters.innerHTML=categories.map(c=>`<button class="chip ${activeCategory===c.label?"active":""}" data-cat="${esc(c.label)}">${esc(c.label)}</button>`).join("");filters.querySelectorAll("button").forEach(b=>b.onclick=()=>{activeCategory=b.dataset.cat;renderFilters();applyFilters()})}
+function licenseInfo(meta){
+ const short=plain(meta.LicenseShortName?.value)||"License details on source page";
+ const url=meta.LicenseUrl?.value||"";
+ return {short,url};
+}
+function photoFromPage(p,cat){
+ const ii=p.imageinfo?.[0];if(!ii||!ii.thumburl)return null;
+ const m=ii.extmetadata||{},title=p.title.replace(/^File:/,"").replace(/_/g," ");
+ const author=plain(m.Artist?.value)||"Creator information on source page";
+ const lic=licenseInfo(m);
+ return {id:p.pageid,title,thumb:ii.thumburl,full:ii.url||ii.thumburl,source:ii.descriptionurl||("https://commons.wikimedia.org/wiki/"+encodeURIComponent(p.title.replace(/ /g,"_"))),author,license:lic.short,licenseUrl:lic.url,category:cat};
+}
+async function fetchCategory(cat){
+ const params=new URLSearchParams({action:"query",format:"json",origin:"*",generator:"search",gsrsearch:cat.q+" filetype:bitmap",gsrnamespace:"6",gsrlimit:"40",prop:"imageinfo",iiprop:"url|extmetadata",iiurlwidth:"1000"});
+ const r=await fetch(API+"?"+params.toString());if(!r.ok)throw new Error("Commons request failed");
+ const data=await r.json();return Object.values(data.query?.pages||{}).map(p=>photoFromPage(p,cat.label)).filter(Boolean);
+}
+async function loadInitial(){
+ renderFilters();status.textContent="Loading photographs from Wikimedia Commons…";
+ const wanted=categories.slice(1,11);
+ const results=await Promise.allSettled(wanted.map(fetchCategory));
+ results.forEach((r)=>{if(r.status==="fulfilled")allPhotos.push(...r.value)});
+ dedupe();applyFilters();
+ if(!allPhotos.length){gallery.innerHTML='<div class="empty">Could not load photographs. Please check your internet connection and try again.</div>';status.textContent="No photographs loaded."}
+}
+function dedupe(){const seen=new Set();allPhotos=allPhotos.filter(p=>{if(seen.has(p.id))return false;seen.add(p.id);return true})}
+function applyFilters(){
+ const cat=categories.find(c=>c.label===activeCategory);
+ visiblePhotos=allPhotos.filter(p=>(activeCategory==="All"||p.category===activeCategory|| (cat&&cat.terms.some(t=>(p.title+" "+p.category).toLowerCase().includes(t))))&&(!searchTerm||(p.title+" "+p.category).toLowerCase().includes(searchTerm)));
+ renderGallery();status.textContent=`Showing ${visiblePhotos.length} photographs${allPhotos.length?` • ${allPhotos.length} loaded`: ""}`;
+}
+function renderGallery(){
+ gallery.className="gallery"+(panorama?" panorama":"");
+ if(!visiblePhotos.length){gallery.innerHTML='<div class="empty">No matching photographs found. Try another category or search term.</div>';return}
+ gallery.innerHTML=visiblePhotos.map((p,i)=>`
+ <article class="photo-card">
+  <div class="photo-wrap" data-open="${i}"><img src="${esc(p.thumb)}" alt="${esc(p.title)}" loading="lazy" referrerpolicy="no-referrer"></div>
+  <div class="photo-info">
+   <h3>${esc(p.title)}</h3>
+   <div class="meta">${esc(p.category)}<br>Creator: ${esc(p.author).slice(0,105)}</div>
+   <span class="license">${esc(p.license)}</span>
+   <div class="actions">
+    <button data-action="download" data-index="${i}">↓ Download</button>
+    <button data-action="copy" data-index="${i}">▣ Copy</button>
+    <button data-action="email" data-index="${i}">✉ Email</button>
+    <button data-action="share" data-index="${i}">↗ Share</button>
+   </div>
+   <div class="attribution"><a href="${esc(p.source)}" target="_blank" rel="noopener">View original file & details</a>${p.licenseUrl?` · <a href="${esc(p.licenseUrl)}" target="_blank" rel="noopener">License</a>`:""}</div>
+  </div>
+ </article>`).join("");
+ gallery.querySelectorAll("[data-open]").forEach(el=>el.onclick=()=>openModal(visiblePhotos[+el.dataset.open]));
+ gallery.querySelectorAll("[data-action]").forEach(b=>b.onclick=()=>action(visiblePhotos[+b.dataset.index],b.dataset.action));
+ gallery.querySelectorAll("img").forEach(img=>img.onerror=()=>{img.closest(".photo-card")?.remove()});
+}
+async function downloadPhoto(p){
+ try{const r=await fetch(p.full);if(!r.ok)throw 0;const blob=await r.blob();const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(p.title||"scenic-photo").replace(/[^\w.-]+/g,"_")+".jpg";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);toast("Download started")}
+ catch(e){window.open(p.source,"_blank","noopener");toast("Opened original file page; use its download option")}
+}
+async function copyPhoto(p){
+ try{const r=await fetch(p.full);if(!r.ok)throw 0;const blob=await r.blob();if(!navigator.clipboard?.write||!window.ClipboardItem)throw 0;await navigator.clipboard.write([new ClipboardItem({[blob.type||"image/jpeg"]:blob})]);toast("Image copied to clipboard")}
+ catch(e){try{await navigator.clipboard.writeText(p.full);toast("Image copying is restricted here; image URL copied instead")}catch(_){toast("Copy is unavailable in this browser. Open the original file page.")}}
+}
+function emailPhoto(p){const body=`I thought you might like this scenic photograph: ${p.title}\n\nImage: ${p.full}\nSource and license details: ${p.source}\nCreator: ${p.author}\nLicense: ${p.license}`;location.href=`mailto:?subject=${encodeURIComponent("Scenic photograph: "+p.title)}&body=${encodeURIComponent(body)}`}
+async function sharePhoto(p){
+ try{if(navigator.share){await navigator.share({title:p.title,text:`${p.title} — ${p.author}. ${p.license}.`,url:p.source})}else{await navigator.clipboard.writeText(p.source);toast("Source link copied to clipboard")}}
+ catch(e){if(e.name!=="AbortError")toast("Sharing was cancelled or is not supported")}
+}
+function action(p,a){if(!p)return;if(a==="download")downloadPhoto(p);if(a==="copy")copyPhoto(p);if(a==="email")emailPhoto(p);if(a==="share")sharePhoto(p)}
+function openModal(p){selected=p;document.getElementById("modalImage").src=p.full;document.getElementById("modalImage").alt=p.title;document.getElementById("modalCaption").textContent=`${p.title} · ${p.author} · ${p.license}`;document.getElementById("modalSource").href=p.source;document.getElementById("modal").classList.add("open")}
+function closeModal(){document.getElementById("modal").classList.remove("open")}
+document.getElementById("closeModal").onclick=closeModal;
+document.getElementById("modal").onclick=e=>{if(e.target.id==="modal")closeModal()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+document.getElementById("modalDownload").onclick=()=>selected&&downloadPhoto(selected);
+document.getElementById("modalCopy").onclick=()=>selected&&copyPhoto(selected);
+document.getElementById("modalEmail").onclick=()=>selected&&emailPhoto(selected);
+document.getElementById("modalShare").onclick=()=>selected&&sharePhoto(selected);
+document.getElementById("gridBtn").onclick=()=>{panorama=false;renderGallery()};
+document.getElementById("panBtn").onclick=()=>{panorama=true;renderGallery()};
+function search(){searchTerm=document.getElementById("searchInput").value.trim().toLowerCase();applyFilters()}
+document.getElementById("searchBtn").onclick=search;
+document.getElementById("searchInput").addEventListener("keydown",e=>{if(e.key==="Enter")search()});
+document.getElementById("resetBtn").onclick=()=>{document.getElementById("searchInput").value="";searchTerm="";activeCategory="All";renderFilters();applyFilters()};
+document.getElementById("loadMore").onclick=async()=>{
+ const remaining=categories.filter(c=>c.label!=="All"&&!allPhotos.some(p=>p.category===c.label));
+ if(!remaining.length){toast("All available categories have been loaded");return}
+ const next=remaining.slice(0,5);status.textContent="Loading more categories…";
+ const results=await Promise.allSettled(next.map(fetchCategory));
+ results.forEach((r,i)=>{if(r.status==="fulfilled")allPhotos.push(...r.value)});
+ dedupe();applyFilters();
+};
+loadInitial().catch(e=>{console.error(e);gallery.innerHTML='<div class="empty">Unable to contact Wikimedia Commons. Please check your connection and refresh this page.</div>';status.textContent="Loading error."});
+})();
+</script>
+</body>
+</html>
