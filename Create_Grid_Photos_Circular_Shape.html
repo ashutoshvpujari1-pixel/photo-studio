@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photo Grid Generator — Titles, Footers & Photo Labels</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-81X622TYDG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-81X622TYDG');
+</script>
+
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --border: #cbd5e1;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      background: var(--card);
+      max-width: 1020px;
+      width: 100%;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.6rem;
+      text-align: center;
+    }
+
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 1.4rem;
+      text-align: center;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 1.25rem;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    .dropzone p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #475569;
+    }
+
+    .dropzone strong {
+      color: var(--primary);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem 1.15rem;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .option-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    select, input[type="color"], input[type="text"] {
+      padding: 0.35rem 0.55rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: white;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    input[type="text"] {
+      min-width: 185px;
+    }
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: var(--primary-hover);
+    }
+
+    button:disabled {
+      background-color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    button.secondary {
+      background-color: #334155;
+    }
+
+    button.secondary:hover:not(:disabled) {
+      background-color: #1e293b;
+    }
+
+    button.danger {
+      background-color: #ef4444;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.85rem;
+    }
+
+    button.danger:hover:not(:disabled) {
+      background-color: #dc2626;
+    }
+
+    .status {
+      text-align: center;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      min-height: 1.2rem;
+      color: #475569;
+    }
+
+    .status.error {
+      color: #dc2626;
+      font-weight: 600;
+    }
+
+    .preview-header {
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+      color: #475569;
+    }
+
+    .thumbnail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .thumb-card {
+      display: flex;
+      flex-direction: column;
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: grab;
+      transition: transform 0.15s, border-color 0.15s, opacity 0.15s;
+      user-select: none;
+    }
+
+    .thumb-card:active {
+      cursor: grabbing;
+    }
+
+    .thumb-card.dragging {
+      opacity: 0.4;
+      transform: scale(0.95);
+    }
+
+    .thumb-card.drag-over {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .thumb-media {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      background: #e2e8f0;
+    }
+
+    .thumb-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .thumb-badge {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      background: rgba(15, 23, 42, 0.75);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    .thumb-remove {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(220, 38, 38, 0.9);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 0.75rem;
+      line-height: 1;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .thumb-remove:hover {
+      background: #b91c1c;
+    }
+
+    .thumb-label-input {
+      width: 100%;
+      min-width: 0 !important;
+      border: none !important;
+      border-top: 1px solid var(--border) !important;
+      border-radius: 0 !important;
+      padding: 0.35rem 0.45rem !important;
+      font-size: 0.78rem !important;
+      text-align: center;
+      background: #ffffff;
+    }
+
+    .thumb-label-input:focus {
+      outline: none;
+      background: #eff6ff;
+    }
+
+    .canvas-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 1rem 0;
+      background: #e2e8f0;
+      padding: 1.25rem;
+      border-radius: 8px;
+      min-height: 220px;
+      align-items: center;
+    }
+
+    canvas {
+      max-width: 100%;
+      max-height: 680px;
+      width: auto;
+      height: auto;
+      border-radius: 4px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+      display: none;
+    }
+
+    .action-bar {
+      display: none;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Photo Grid Generator</h1>
+
+  <div class="dropzone" id="dropzone">
+    <p><strong>Click to upload</strong> or drag and drop photos here (1 to 25 images)</p>
+    <input type="file" id="photoInput" accept="image/*" multiple hidden />
+  </div>
+
+  <div class="controls">
+    <div class="option-group">
+      <label for="gridShape">Shape:</label>
+      <select id="gridShape">
+        <option value="circular" selected>Circular Grid</option>
+        <option value="rect">Rectangular Grid</option>
+      </select>
+    </div>
+
+    <div class="option-group" id="circularModeGroup">
+      <label for="circularMode">Arrangement:</label>
+      <select id="circularMode">
+        <option value="concentric" selected>Concentric Rings</option>
+        <option value="grid-in-circle">Grid Inside Circle</option>
+      </select>
+    </div>
+
+    <div class="option-group">
+      <label for="aspectRatio">Aspect Ratio:</label>
+      <select id="aspectRatio">
+        <option value="1:1" selected>Square (1:1)</option>
+        <option value="4:5">Portrait (4:5)</option>
+        <option value="9:16">Story (9:16)</option>
+        <option value="16:9">Landscape (16:9)</option>
+      </select>
+    </div>
+
+    <div class="option-group">
+      <label for="gapSize">Gap:</label>
+      <select id="gapSize">
+        <option value="0">None (0px)</option>
+        <option value="12" selected>Medium (12px)</option>
+        <option value="24">Large (24px)</option>
+      </select>
+    </div>
+
+    <div class="option-group">
+      <label for="bgColor">Background:</label>
+      <input type="color" id="bgColor" value="#ffffff" />
+    </div>
+
+    <div class="option-group">
+      <label for="ringColor">Ring Border:</label>
+      <input type="color" id="ringColor" value="#2563eb" />
+      <select id="ringWidth">
+        <option value="0">No Ring</option>
+        <option value="6">Thin</option>
+        <option value="12" selected>Medium</option>
+        <option value="20">Thick</option>
+      </select>
+    </div>
+
+    <div class="option-group">
+      <input type="checkbox" id="dropShadowToggle" checked />
+      <label for="dropShadowToggle">Drop Shadow</label>
+    </div>
+
+    <div class="option-group">
+      <label for="titleCaption">Top Title:</label>
+      <input type="text" id="titleCaption" placeholder="Optional header title" maxlength="60" />
+    </div>
+
+    <div class="option-group">
+      <label for="footerCaption">Bottom Footer:</label>
+      <input type="text" id="footerCaption" placeholder="Optional footer caption" maxlength="80" />
+    </div>
+
+    <div class="option-group">
+      <label for="captionColor">Text Color:</label>
+      <input type="color" id="captionColor" value="#0f172a" title="Caption & label text color" />
+    </div>
+
+    <button id="generateBtn" disabled>Generate Grid</button>
+  </div>
+
+  <div id="statusMsg" class="status">Select or drop 1 to 25 photos to begin.</div>
+
+  <div class="preview-header" id="previewHeader">
+    <span><strong>Tip:</strong> Drag cards to reorder photos, or type optional short labels below each photo</span>
+    <button id="clearAllBtn" class="danger">Clear All</button>
+  </div>
+  <div class="thumbnail-grid" id="thumbnailGrid"></div>
+
+  <div class="canvas-wrapper">
+    <span id="placeholderText" style="color: #64748b;">Your generated grid will appear here</span>
+    <canvas id="gridCanvas"></canvas>
+  </div>
+
+  <div class="action-bar" id="actionBar">
+    <button id="downloadBtn">Download</button>
+    <button id="copyBtn" class="secondary">Copy Image</button>
+    <button id="shareBtn" class="secondary">Share</button>
+    <button id="emailBtn" class="secondary">Email</button>
+  </div>
+</div>
+
+<script>
+  const dropzone = document.getElementById('dropzone');
+  const photoInput = document.getElementById('photoInput');
+  const generateBtn = document.getElementById('generateBtn');
+  const clearAllBtn = document.getElementById('clearAllBtn');
+  const statusMsg = document.getElementById('statusMsg');
+  const previewHeader = document.getElementById('previewHeader');
+  const thumbnailGrid = document.getElementById('thumbnailGrid');
+  const canvas = document.getElementById('gridCanvas');
+  const ctx = canvas.getContext('2d');
+  const placeholderText = document.getElementById('placeholderText');
+  const actionBar = document.getElementById('actionBar');
+
+  const gridShapeSelect = document.getElementById('gridShape');
+  const circularModeGroup = document.getElementById('circularModeGroup');
+  const circularModeSelect = document.getElementById('circularMode');
+  const aspectRatioSelect = document.getElementById('aspectRatio');
+  const gapSizeSelect = document.getElementById('gapSize');
+  const bgColorInput = document.getElementById('bgColor');
+  const ringColorInput = document.getElementById('ringColor');
+  const ringWidthSelect = document.getElementById('ringWidth');
+  const dropShadowToggle = document.getElementById('dropShadowToggle');
+  const titleCaptionInput = document.getElementById('titleCaption');
+  const footerCaptionInput = document.getElementById('footerCaption');
+  const captionColorInput = document.getElementById('captionColor');
+
+  // Each item: { id, file, url, label }
+  let photoItems = [];
+  let draggedIndex = null;
+
+  gridShapeSelect.addEventListener('change', () => {
+    circularModeGroup.style.display = gridShapeSelect.value === 'circular' ? 'flex' : 'none';
+  });
+
+  function setStatus(text, isError = false) {
+    statusMsg.textContent = text;
+    statusMsg.className = isError ? 'status error' : 'status';
+  }
+
+  // --- 1. File Upload & Dropzone Handling ---
+  dropzone.addEventListener('click', () => photoInput.click());
+
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  });
+
+  dropzone.addEventListener('dragleave', () => {
+    dropzone.classList.remove('dragover');
+  });
+
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      addFiles(e.dataTransfer.files);
+    }
+  });
+
+  photoInput.addEventListener('change', (e) => {
+    if (e.target.files.length) {
+      addFiles(e.target.files);
+      photoInput.value = '';
+    }
+  });
+
+  function addFiles(fileList) {
+    const validImages = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+    if (validImages.length === 0) {
+      setStatus('Please select valid image files.', true);
+      return;
+    }
+
+    const remainingSlots = 25 - photoItems.length;
+    if (remainingSlots <= 0) {
+      setStatus('Maximum limit of 25 photos reached. Remove some to add more.', true);
+      return;
+    }
+
+    const filesToAdd = validImages.slice(0, remainingSlots);
+    filesToAdd.forEach(file => {
+      photoItems.push({
+        id: crypto.randomUUID(),
+        file,
+        url: URL.createObjectURL(file),
+        label: ''
+      });
+    });
+
+    if (validImages.length > remainingSlots) {
+      setStatus(`Added ${filesToAdd.length} photo(s). Max limit of 25 reached.`, true);
+    } else {
+      setStatus(`${photoItems.length} photo(s) loaded. Add optional labels or reorder, then click "Generate Grid".`, false);
+    }
+
+    renderThumbnails();
+  }
+
+  clearAllBtn.addEventListener('click', () => {
+    photoItems.forEach(item => URL.revokeObjectURL(item.url));
+    photoItems = [];
+    renderThumbnails();
+    canvas.style.display = 'none';
+    actionBar.style.display = 'none';
+    placeholderText.style.display = 'block';
+    setStatus('All photos cleared. Select or drop 1 to 25 photos to begin.', false);
+  });
+
+  // --- 2. Render & Drag-and-Drop Reordering of Thumbnails with Per-Photo Labels ---
+  function renderThumbnails() {
+    thumbnailGrid.innerHTML = '';
+    generateBtn.disabled = photoItems.length === 0;
+    previewHeader.style.display = photoItems.length > 0 ? 'flex' : 'none';
+
+    photoItems.forEach((item, index) => {
+      const card = document.createElement('div');
+      card.className = 'thumb-card';
+      card.draggable = true;
+      card.dataset.index = index;
+
+      const media = document.createElement('div');
+      media.className = 'thumb-media';
+
+      const img = document.createElement('img');
+      img.src = item.url;
+
+      const badge = document.createElement('span');
+      badge.className = 'thumb-badge';
+      badge.textContent = index + 1;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'thumb-remove';
+      removeBtn.innerHTML = '&times;';
+      removeBtn.title = 'Remove photo';
+      removeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        URL.revokeObjectURL(item.url);
+        photoItems.splice(index, 1);
+        renderThumbnails();
+        setStatus(
+          photoItems.length > 0
+            ? `${photoItems.length} photo(s) remaining.`
+            : 'Select or drop 1 to 25 photos to begin.',
+          false
+        );
+      });
+
+      const labelInput = document.createElement('input');
+      labelInput.type = 'text';
+      labelInput.className = 'thumb-label-input';
+      labelInput.placeholder = `Label #${index + 1}`;
+      labelInput.maxLength = 24;
+      labelInput.value = item.label;
+
+      // Prevent drag initiation when selecting/typing in the input box
+      labelInput.addEventListener('mousedown', (e) => e.stopPropagation());
+      labelInput.addEventListener('dragstart', (e) => e.preventDefault());
+      labelInput.addEventListener('input', (e) => {
+        item.label = e.target.value;
+      });
+
+      card.addEventListener('dragstart', (e) => {
+        if (document.activeElement === labelInput) {
+          e.preventDefault();
+          return;
+        }
+        draggedIndex = index;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        document.querySelectorAll('.thumb-card').forEach(el => el.classList.remove('drag-over'));
+        draggedIndex = null;
+      });
+
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        if (draggedIndex !== null && draggedIndex !== index) {
+          card.classList.add('drag-over');
+        }
+      });
+
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('drag-over');
+      });
+
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        if (draggedIndex !== null && draggedIndex !== index) {
+          const movedItem = photoItems.splice(draggedIndex, 1)[0];
+          photoItems.splice(index, 0, movedItem);
+          renderThumbnails();
+          setStatus('Photo order updated. Click "Generate Grid" to apply.', false);
+        }
+      });
+
+      media.appendChild(img);
+      media.appendChild(badge);
+      media.appendChild(removeBtn);
+
+      card.appendChild(media);
+      card.appendChild(labelInput);
+      thumbnailGrid.appendChild(card);
+    });
+  }
+
+  // --- 3. Image Loading & Styled Drawing Helpers ---
+  function loadImage(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+
+  function drawImageCover(ctx, img, x, y, w, h) {
+    const imgRatio = img.width / img.height;
+    const cellRatio = w / h;
+    let sx, sy, sWidth, sHeight;
+
+    if (imgRatio > cellRatio) {
+      sHeight = img.height;
+      sWidth = img.height * cellRatio;
+      sx = (img.width - sWidth) / 2;
+      sy = 0;
+    } else {
+      sWidth = img.width;
+      sHeight = img.width / cellRatio;
+      sx = 0;
+      sy = (img.height - sHeight) / 2;
+    }
+
+    ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, w, h);
+  }
+
+  function applyShadow(ctx, enabled) {
+    if (enabled) {
+      ctx.shadowColor = 'rgba(15, 23, 42, 0.24)';
+      ctx.shadowBlur = 22;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 10;
+    } else {
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+    }
+  }
+
+  // Draws a pill-backed label directly beneath a photo node/cell so it stays legible on any background
+  function drawPhotoLabel(ctx, text, centerX, topY, maxWidth, textColor, bgColor) {
+    const trimmed = (text || '').trim();
+    if (!trimmed) return;
+
+    ctx.save();
+    const fontSize = Math.max(15, Math.min(28, Math.round(maxWidth * 0.13)));
+    ctx.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+
+    const metrics = ctx.measureText(trimmed);
+    const padX = Math.round(fontSize * 0.65);
+    const padY = Math.round(fontSize * 0.28);
+    const pillW = Math.min(maxWidth, metrics.width + padX * 2);
+    const pillH = fontSize + padY * 2;
+    const pillX = centerX - pillW / 2;
+    const pillY = topY + 6;
+    const radius = pillH / 2;
+
+    // Subtle pill backdrop for contrast
+    ctx.fillStyle = bgColor === '#ffffff' ? 'rgba(241, 245, 249, 0.92)' : 'rgba(255, 255, 255, 0.85)';
+    ctx.shadowColor = 'rgba(15, 23, 42, 0.12)';
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetY = 2;
+
+    ctx.beginPath();
+    ctx.roundRect(pillX, pillY, pillW, pillH, radius);
+    ctx.fill();
+
+    // Reset shadow for crisp text
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+
+    ctx.fillStyle = textColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(trimmed, centerX, pillY + pillH / 2, pillW - padX * 1.4);
+    ctx.restore();
+  }
+
+  function drawCircleImage(ctx, img, cx, cy, radius, options, labelText) {
+    const { ringColor, ringWidth, hasShadow, captionColor, bgColor, hasAnyLabels } = options;
+    // Reserve small vertical space under the circle if labels are active
+    const labelAllowance = hasAnyLabels ? Math.min(34, radius * 0.26) : 0;
+    const effectiveRadius = Math.max(16, radius - labelAllowance * 0.5);
+    const innerRadius = Math.max(4, effectiveRadius - ringWidth / 2);
+    const adjustedCy = cy - labelAllowance * 0.45;
+
+    ctx.save();
+    applyShadow(ctx, hasShadow);
+    ctx.beginPath();
+    ctx.arc(cx, adjustedCy, innerRadius, 0, Math.PI * 2);
+    if (ringWidth > 0) {
+      ctx.strokeStyle = ringColor;
+      ctx.lineWidth = ringWidth;
+      ctx.stroke();
+    } else if (hasShadow) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+    }
+    ctx.restore();
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, adjustedCy, innerRadius, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+
+    const diameter = innerRadius * 2;
+    drawImageCover(ctx, img, cx - innerRadius, adjustedCy - innerRadius, diameter, diameter);
+    ctx.restore();
+
+    if (labelText) {
+      drawPhotoLabel(ctx, labelText, cx, adjustedCy + effectiveRadius, effectiveRadius * 2.1, captionColor, bgColor);
+    }
+  }
+
+  function drawRectImage(ctx, img, x, y, w, h, options, labelText) {
+    const { ringColor, ringWidth, hasShadow, captionColor, bgColor, hasAnyLabels } = options;
+    const labelAllowance = hasAnyLabels ? Math.min(36, h * 0.16) : 0;
+    const imgH = Math.max(20, h - labelAllowance);
+
+    ctx.save();
+    applyShadow(ctx, hasShadow);
+    if (ringWidth > 0 || hasShadow) {
+      ctx.fillStyle = ringWidth > 0 ? ringColor : '#ffffff';
+      ctx.fillRect(x - ringWidth / 2, y - ringWidth / 2, w + ringWidth, imgH + ringWidth);
+    }
+    ctx.restore();
+
+    ctx.save();
+    drawImageCover(ctx, img, x, y, w, imgH);
+    ctx.restore();
+
+    if (labelText) {
+      drawPhotoLabel(ctx, labelText, x + w / 2, y + imgH + ringWidth / 2, w * 0.96, captionColor, bgColor);
+    }
+  }
+
+  function drawBannerCaption(ctx, text, totalW, centerY, isFooter, captionColor) {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    ctx.save();
+    const fontSize = isFooter
+      ? Math.max(24, Math.round(totalW * 0.024))
+      : Math.max(34, Math.round(totalW * 0.036));
+    const weight = isFooter ? '500' : '700';
+
+    ctx.font = `${weight} ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    ctx.fillStyle = captionColor;
+    ctx.globalAlpha = isFooter ? 0.85 : 1;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.08)';
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetY = 2;
+
+    const maxTextWidth = totalW * 0.88;
+    ctx.fillText(trimmed, totalW / 2, centerY, maxTextWidth);
+    ctx.restore();
+  }
+
+  function getCanvasDimensions(ratioStr) {
+    switch (ratioStr) {
+      case '4:5':  return { width: 1440, height: 1800 };
+      case '9:16': return { width: 1080, height: 1920 };
+      case '16:9': return { width: 1920, height: 1080 };
+      case '1:1':
+      default:     return { width: 1600, height: 1600 };
+    }
+  }
+
+  function computeConcentricCircles(count, maxDiameter, gap) {
+    if (count === 1) {
+      return [{ cx: 0, cy: 0, radius: maxDiameter * 0.42 }];
+    }
+
+    const ringConfigs = {
+      2:  [2],
+      3:  [3],
+      4:  [4],
+      5:  [1, 4],
+      6:  [1, 5],
+      7:  [1, 6],
+      8:  [2, 6],
+      9:  [1, 8],
+      10: [2, 8],
+      11: [3, 8],
+      12: [4, 8],
+      13: [1, 4, 8],
+      14: [1, 5, 8],
+      15: [1, 5, 9],
+      16: [1, 5, 10],
+      17: [1, 6, 10],
+      18: [2, 6, 10],
+      19: [1, 6, 12],
+      20: [2, 6, 12],
+      21: [1, 7, 13],
+      22: [2, 7, 13],
+      23: [1, 7, 15],
+      24: [2, 8, 14],
+      25: [1, 8, 16]
+    };
+
+    const rings = ringConfigs[count] || [count];
+    const outerRadius = maxDiameter / 2;
+    const ringCount = rings.length;
+
+    const maxRingItems = Math.max(...rings);
+    const angularFactor = Math.sin(Math.PI / Math.max(maxRingItems, 3));
+    const radialStep = outerRadius / (ringCount + 0.35);
+    const radiusFromRings = (radialStep - gap * 0.5) * 0.92;
+    const radiusFromCircumference = (outerRadius * angularFactor * 0.82) - gap * 0.25;
+    const radius = Math.max(24, Math.min(radiusFromRings, radiusFromCircumference));
+
+    const positions = [];
+    const usableSpan = Math.max(0, outerRadius - radius - gap * 0.5);
+
+    rings.forEach((itemsInRing, ringIdx) => {
+      const ringDist = ringCount === 1
+        ? usableSpan * 0.65
+        : (ringIdx / (ringCount - 1)) * usableSpan;
+
+      if (itemsInRing === 1 && ringIdx === 0 && rings.length > 1) {
+        positions.push({ cx: 0, cy: 0, radius });
+      } else {
+        for (let i = 0; i < itemsInRing; i++) {
+          const angle = (i / itemsInRing) * Math.PI * 2 - Math.PI / 2;
+          positions.push({
+            cx: Math.cos(angle) * ringDist,
+            cy: Math.sin(angle) * ringDist,
+            radius
+          });
+        }
+      }
+    });
+
+    return positions;
+  }
+
+  // --- 4. Generate Grid ---
+  generateBtn.addEventListener('click', async () => {
+    if (photoItems.length === 0) return;
+
+    generateBtn.disabled = true;
+    setStatus('Generating grid...', false);
+
+    try {
+      const images = await Promise.all(photoItems.map(item => loadImage(item.url)));
+      const labels = photoItems.map(item => item.label.trim());
+      const hasAnyLabels = labels.some(l => l.length > 0);
+      const count = images.length;
+
+      const ratioStr = aspectRatioSelect.value;
+      const { width: totalW, height: totalH } = getCanvasDimensions(ratioStr);
+      const gap = parseInt(gapSizeSelect.value, 10);
+      const bgColor = bgColorInput.value;
+      const shape = gridShapeSelect.value;
+      const topTitle = titleCaptionInput.value.trim();
+      const bottomFooter = footerCaptionInput.value.trim();
+
+      const styleOptions = {
+        ringColor: ringColorInput.value,
+        ringWidth: parseInt(ringWidthSelect.value, 10),
+        hasShadow: dropShadowToggle.checked,
+        captionColor: captionColorInput.value,
+        bgColor,
+        hasAnyLabels
+      };
+
+      canvas.width = totalW;
+      canvas.height = totalH;
+
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Reserve header and footer bands if present
+      const headerHeight = topTitle ? Math.max(84, Math.round(totalH * 0.08)) : 0;
+      const footerHeight = bottomFooter ? Math.max(68, Math.round(totalH * 0.065)) : 0;
+
+      if (topTitle) {
+        drawBannerCaption(ctx, topTitle, totalW, headerHeight / 2, false, captionColorInput.value);
+      }
+
+      if (bottomFooter) {
+        drawBannerCaption(ctx, bottomFooter, totalW, totalH - footerHeight / 2, true, captionColorInput.value);
+      }
+
+      const contentTop = headerHeight;
+      const contentH = totalH - headerHeight - footerHeight;
+      const contentRatio = totalW / contentH;
+
+      let cols = Math.round(Math.sqrt(count * contentRatio));
+      cols = Math.max(1, Math.min(count, cols));
+      const rows = Math.ceil(count / cols);
+
+      if (shape === 'rect') {
+        const pad = styleOptions.ringWidth / 2;
+        const cellW = (totalW - gap * (cols + 1) - pad * 2) / cols;
+        const cellH = (contentH - gap * (rows + 1) - pad * 2) / rows;
+
+        images.forEach((img, index) => {
+          const r = Math.floor(index / cols);
+          const c = index % cols;
+          const itemsInThisRow = (r === rows - 1 && count % cols !== 0) ? (count % cols) : cols;
+          const rowOffset = ((cols - itemsInThisRow) * (cellW + gap)) / 2;
+
+          const x = gap + pad + c * (cellW + gap) + rowOffset;
+          const y = contentTop + gap + pad + r * (cellH + gap);
+
+          drawRectImage(ctx, img, x, y, cellW, cellH, styleOptions, labels[index]);
+        });
+
+        setStatus(`Generated ${ratioStr} rectangular grid with ${count} photo(s).`, false);
+      } else if (circularModeSelect.value === 'grid-in-circle') {
+        const outerDiameter = Math.min(totalW, contentH) - gap * 2;
+        const masterRadius = outerDiameter / 2;
+        const centerX = totalW / 2;
+        const centerY = contentTop + contentH / 2;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, masterRadius, 0, Math.PI * 2);
+        ctx.clip();
+
+        const cellSize = (outerDiameter - gap * (cols + 1)) / cols;
+        const gridTotalH = rows * cellSize + (rows - 1) * gap;
+        const startY = centerY - gridTotalH / 2;
+
+        images.forEach((img, index) => {
+          const r = Math.floor(index / cols);
+          const c = index % cols;
+          const itemsInThisRow = (r === rows - 1 && count % cols !== 0) ? (count % cols) : cols;
+          const rowWidth = itemsInThisRow * cellSize + (itemsInThisRow - 1) * gap;
+          const rowStartX = centerX - rowWidth / 2;
+
+          const cx = rowStartX + c * (cellSize + gap) + cellSize / 2;
+          const cy = startY + r * (cellSize + gap) + cellSize / 2;
+          const radius = Math.max(8, cellSize / 2 - gap * 0.15);
+
+          drawCircleImage(ctx, img, cx, cy, radius, styleOptions, labels[index]);
+        });
+
+        ctx.restore();
+        setStatus(`Generated ${ratioStr} circular grid (${cols}×${rows} inside circle) with ${count} photo(s).`, false);
+      } else {
+        const maxDiameter = Math.min(totalW, contentH) - gap * 2;
+        const centerX = totalW / 2;
+        const centerY = contentTop + contentH / 2;
+        const nodes = computeConcentricCircles(count, maxDiameter, gap);
+
+        images.forEach((img, index) => {
+          const node = nodes[index];
+          drawCircleImage(ctx, img, centerX + node.cx, centerY + node.cy, node.radius, styleOptions, labels[index]);
+        });
+
+        setStatus(`Generated ${ratioStr} concentric circular grid with ${count} photo(s).`, false);
+      }
+
+      placeholderText.style.display = 'none';
+      canvas.style.display = 'block';
+      actionBar.style.display = 'flex';
+    } catch (err) {
+      console.error(err);
+      setStatus('Error generating grid. Please try again.', true);
+    } finally {
+      generateBtn.disabled = false;
+    }
+  });
+
+  // --- 5. Download, Copy, Share & Email Actions ---
+  function getCanvasBlob() {
+    return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+  }
+
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.download = `photo-grid-${aspectRatioSelect.value.replace(':', 'x')}-${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    setStatus('Grid downloaded!', false);
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    try {
+      const blob = await getCanvasBlob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob })
+      ]);
+      setStatus('Grid copied to clipboard! Paste (Ctrl+V / Cmd+V) anywhere.', false);
+    } catch (err) {
+      setStatus('Copy failed. Ensure you are running on HTTPS or localhost.', true);
+    }
+  });
+
+  document.getElementById('shareBtn').addEventListener('click', async () => {
+    try {
+      const blob = await getCanvasBlob();
+      const file = new File([blob], 'photo-grid.png', { type: 'image/png' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: titleCaptionInput.value.trim() || 'My Photo Grid',
+          text: footerCaptionInput.value.trim() || 'Check out this photo grid I created!',
+          files: [file]
+        });
+        setStatus('Shared successfully!', false);
+      } else {
+        setStatus('Direct file sharing is not supported in this browser. Use Download or Copy.', true);
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        setStatus('Sharing cancelled or unavailable.', true);
+      }
+    }
+  });
+
+  document.getElementById('emailBtn').addEventListener('click', async () => {
+    try {
+      const blob = await getCanvasBlob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob })
+      ]);
+      setStatus('Image copied to clipboard! Paste it directly into the email body.', false);
+    } catch (e) {
+      setStatus('Opening email client. Download the image first to attach it.', false);
+    }
+
+    const title = titleCaptionInput.value.trim() || 'Photo Grid';
+    const footer = footerCaptionInput.value.trim();
+    const subject = encodeURIComponent(title);
+    const body = encodeURIComponent(`Hi,\n\nHere is my photo grid (${title}${footer ? ' — ' + footer : ''}). Paste the copied image below or attach the downloaded file:\n\n`);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  });
+</script>
+
+</body>
+</html>
